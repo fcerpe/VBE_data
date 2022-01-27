@@ -5,3 +5,7 @@
 	path = inputs/raw
 	url = ./inputs/raw
 	datalad-id = 0fe42d58-bd8b-4272-8a6e-66d32790c0fa
+[submodule "outputs/derivatives"]
+	path = outputs/derivatives
+	url = ./outputs/derivatives
+	datalad-id = 94dc3853-0296-4ccb-adc9-a166a74b9dd8
