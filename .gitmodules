@@ -1,3 +1,7 @@
 [submodule "code/lib/CPP_SPM"]
 	path = code/lib/CPP_SPM
 	url = https://github.com/cpp-lln-lab/CPP_SPM.git
+[submodule "inputs/raw"]
+	path = inputs/raw
+	url = ./inputs/raw
+	datalad-id = 0fe42d58-bd8b-4272-8a6e-66d32790c0fa
