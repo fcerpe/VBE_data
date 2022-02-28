@@ -10,3 +10,7 @@
 	url = /Users/cerpelloni/Desktop/VisualBraille/analysis/inputs/raw
 	datalad-id = 0032ad78-7460-4af0-b3e3-30213ac9bbe9
 	datalad-url = /Users/cerpelloni/Desktop/VisualBraille/analysis/inputs/raw
+[submodule "ouptuts/derivatives/cpp_spm-preproc"]
+	path = ouptuts/derivatives/cpp_spm-preproc
+	url = ./ouptuts/derivatives/cpp_spm-preproc
+	datalad-id = f69e8d1d-54e6-4ba8-b48e-19558a23bfca
