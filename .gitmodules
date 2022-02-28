@@ -26,3 +26,7 @@
 	path = ouptuts/derivatives/ccp_spm-stats
 	url = ./ouptuts/derivatives/ccp_spm-stats
 	datalad-id = 3ce00d97-f6fc-49c1-9bd5-39862f9b9001
+[submodule "ouptuts/derivatives/CoSMoMVPA"]
+	path = ouptuts/derivatives/CoSMoMVPA
+	url = ./ouptuts/derivatives/CoSMoMVPA
+	datalad-id = 562e7f90-9517-4847-bad9-0e287ee7f2c2
