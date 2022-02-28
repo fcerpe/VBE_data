@@ -14,3 +14,7 @@
 	path = ouptuts/derivatives/cpp_spm-preproc
 	url = ./ouptuts/derivatives/cpp_spm-preproc
 	datalad-id = f69e8d1d-54e6-4ba8-b48e-19558a23bfca
+[submodule "ouptuts/derivatives/mriQC"]
+	path = ouptuts/derivatives/mriQC
+	url = ./ouptuts/derivatives/mriQC
+	datalad-id = 702fd8ff-115b-4995-afaf-4738a8aed6ab
