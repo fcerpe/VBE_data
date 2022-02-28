@@ -1,0 +1,90 @@
+{
+  "Name": "Visual localizer",
+  "Description": "contrasts for the visbra_localizer experiment and dataset",
+  "Input": {
+    "task": "visualLocalizer"
+  },
+  "Nodes": [
+    {
+      "Level": "run",
+      "Model": {
+        "X": [
+          "trial_type.fw",
+          "trial_type.sfw",
+          "trial_type.bw",
+          "trial_type.sbw",
+          "trial_type.ld",
+          "trial_type.sld",
+          "trans_x", "trans_y", "trans_z", "rot_x", "rot_y", "rot_z"
+        ]
+      },
+      "AutoContrasts": [
+        "trial_type.fw",
+        "trial_type.sfw",
+        "trial_type.bw",
+        "trial_type.sbw",
+        "trial_type.ld",
+        "trial_type.sld"
+      ]
+    },
+    {
+      "Level": "subject",
+      "AutoContrasts": [
+        "trial_type.fw",
+        "trial_type.sfw",
+        "trial_type.bw",
+        "trial_type.sbw",
+        "trial_type.ld",
+        "trial_type.sld"],
+      "Contrasts": [
+        {
+          "Name": "french_gt_scrambled",
+          "ConditionList": [
+            "trial_type.fw", "trial_type.sfw"
+          ],
+          "weights": [1, -1],
+          "type": "t"
+        },
+        {
+          "Name": "braille_gt_scrambled",
+          "ConditionList": [
+            "trial_type.bw", "trial_type.sbw"
+          ],
+          "weights": [1, -1],
+          "type": "t"
+        },
+        {
+          "Name": "drawing_gt_scrambled",
+          "ConditionList": [
+            "trial_type.ld", "trial_type.sld"
+          ],
+          "weights": [1, -1],
+          "type": "t"
+        },
+        {
+          "Name": "allFrench",
+          "ConditionList": [
+            "trial_type.fw", "trial_type.sfw"
+          ],
+          "weights": [0.5, 0.5],
+          "type": "t"
+        }
+      ]
+    },
+    {
+      "Level": "dataset",
+      "AutoContrasts": [
+        "trial_type.fw",
+        "trial_type.sfw",
+        "trial_type.bw",
+        "trial_type.sbw",
+        "trial_type.ld",
+        "trial_type.sld",
+        "french_gt_scrambled",
+        "braille_gt_scrambled",
+        "drawing_gt_scrambled",
+        "allFrench"
+        ]
+      }
+  ]
+}
