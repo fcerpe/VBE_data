@@ -1,8 +1,7 @@
-[submodule "lib/CPP_SPM"]
-	path = lib/CPP_SPM
-	url = https://github.com/cpp-lln-lab/CPP_SPM.git
-	datalad-url = https://github.com/cpp-lln-lab/CPP_SPM.git
 [submodule "outputs/derivatives"]
 	path = outputs/derivatives
 	url = ./outputs/derivatives
 	datalad-id = f5ae1392-7108-4c79-b94f-98ddc8cc1982
+[submodule "code/lib/CPP_SPM"]
+	path = code/lib/CPP_SPM
+	url = https://github.com/cpp-lln-lab/CPP_SPM.git
