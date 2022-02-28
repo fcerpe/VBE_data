@@ -18,3 +18,7 @@
 	path = ouptuts/derivatives/mriQC
 	url = ./ouptuts/derivatives/mriQC
 	datalad-id = 702fd8ff-115b-4995-afaf-4738a8aed6ab
+[submodule "ouptuts/derivatives/fmriprep"]
+	path = ouptuts/derivatives/fmriprep
+	url = ./ouptuts/derivatives/fmriprep
+	datalad-id = 311e2a4b-68a6-4176-8388-b049c2c00d60
