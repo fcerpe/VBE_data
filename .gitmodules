@@ -22,3 +22,7 @@
 	path = ouptuts/derivatives/fmriprep
 	url = ./ouptuts/derivatives/fmriprep
 	datalad-id = 311e2a4b-68a6-4176-8388-b049c2c00d60
+[submodule "ouptuts/derivatives/ccp_spm-stats"]
+	path = ouptuts/derivatives/ccp_spm-stats
+	url = ./ouptuts/derivatives/ccp_spm-stats
+	datalad-id = 3ce00d97-f6fc-49c1-9bd5-39862f9b9001
