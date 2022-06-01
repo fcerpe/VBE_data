@@ -1,0 +1,180 @@
+{
+  "Name": "visualEventRelated",
+  "BIDSModelVersion": "1.0.0",
+  "Description": "default model for visualEventRelated",
+  "Input": {
+      "task": [
+          "visualEventRelated"
+      ]
+  },
+  "Steps": [
+    {
+      "Level": "run",
+      "Model": {
+        "X": [
+          "trial_type.fr_ba", "trial_type.fr_va", "trial_type.fr_co",
+          "trial_type.fr_fa", "trial_type.fr_ch", "trial_type.fr_so",
+          "trial_type.fr_po", "trial_type.fr_ro",
+          "trial_type.br_ba", "trial_type.br_va", "trial_type.br_co",
+          "trial_type.br_fa", "trial_type.br_ch", "trial_type.br_so",
+          "trial_type.br_po", "trial_type.br_ro",
+          "trial_type.blank",
+          "trial_type.response",
+          "trial_type.target",
+          "trans_x",
+          "trans_y",
+          "trans_z",
+          "rot_x",
+          "rot_y",
+          "rot_z"
+        ]
+      },
+      "AutoContrasts": [
+        "trial_type.fr_ba", "trial_type.fr_va", "trial_type.fr_co",
+        "trial_type.fr_fa", "trial_type.fr_ch", "trial_type.fr_so",
+        "trial_type.fr_po", "trial_type.fr_ro",
+        "trial_type.br_ba", "trial_type.br_va", "trial_type.br_co",
+        "trial_type.br_fa", "trial_type.br_ch", "trial_type.br_so",
+        "trial_type.br_po", "trial_type.br_ro",
+        "trial_type.blank",
+        "trial_type.response",
+        "trial_type.target"]
+    },
+    {
+        "Level": "Subject",
+        "Name": "subject_level",
+        "Model": {
+            "X": [
+              "trial_type.fr_ba", "trial_type.fr_va", "trial_type.fr_co",
+              "trial_type.fr_fa", "trial_type.fr_ch", "trial_type.fr_so",
+              "trial_type.fr_po", "trial_type.fr_ro",
+              "trial_type.br_ba", "trial_type.br_va", "trial_type.br_co",
+              "trial_type.br_fa", "trial_type.br_ch", "trial_type.br_so",
+              "trial_type.br_po", "trial_type.br_ro",
+              "trial_type.blank",
+              "trial_type.response",
+              "trial_type.target",
+              "trans_x",
+              "trans_y",
+              "trans_z",
+              "rot_x",
+              "rot_y",
+              "rot_z"
+            ],
+            "HRF": {
+                "Variables": [
+                  "trial_type.french",
+                  "trial_type.braille",
+                  "trial_type.blank",
+                    "trial_type.response"
+                ],
+                "Model": "DoubleGamma"
+            },
+            "Type": "glm",
+            "Options": {
+                "HighPassFilterCutoffHz": 0.0078,
+                "Mask": ""
+            },
+            "Software": {
+                "SPM": {
+                    "SerialCorrelation": "FAST",
+                    "HRFderivatives": "Temporal"
+                }
+            }
+        },
+        "Contrasts": [
+            {
+                "Name": "words_gt_blanks",
+                "ConditionList": [
+                  "trial_type.fr_ba", "trial_type.fr_va", "trial_type.fr_co",
+                  "trial_type.fr_fa", "trial_type.fr_ch", "trial_type.fr_so",
+                  "trial_type.fr_po", "trial_type.fr_ro",
+                  "trial_type.br_ba", "trial_type.br_va", "trial_type.br_co",
+                  "trial_type.br_fa", "trial_type.br_ch", "trial_type.br_so",
+                  "trial_type.br_po", "trial_type.br_ro",
+                  "trial_type.blank"
+                ],
+                "Weights": [
+                    0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25,
+                    0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25,
+                    -4
+                ],
+                "Type": "t"
+            },
+            {
+                "Name": "french_gt_braille",
+                "ConditionList": [
+                  "trial_type.fr_ba", "trial_type.fr_va", "trial_type.fr_co",
+                  "trial_type.fr_fa", "trial_type.fr_ch", "trial_type.fr_so",
+                  "trial_type.fr_po", "trial_type.fr_ro",
+                  "trial_type.br_ba", "trial_type.br_va", "trial_type.br_co",
+                  "trial_type.br_fa", "trial_type.br_ch", "trial_type.br_so",
+                  "trial_type.br_po", "trial_type.br_ro"
+                ],
+                "Weights": [
+                    1, 1, 1, 1, 1, 1, 1, 1,
+                    -1, -1, -1, -1, -1, -1, -1, -1
+                ],
+                "Type": "t"
+            },
+            {
+                "Name": "braille_gt_french",
+                "ConditionList": [
+                  "trial_type.br_ba", "trial_type.br_va", "trial_type.br_co",
+                  "trial_type.br_fa", "trial_type.br_ch", "trial_type.br_so",
+                  "trial_type.br_po", "trial_type.br_ro",
+                    "trial_type.fr_ba", "trial_type.fr_va", "trial_type.fr_co",
+                    "trial_type.fr_fa", "trial_type.fr_ch", "trial_type.fr_so",
+                    "trial_type.fr_po", "trial_type.fr_ro"
+                ],
+                "Weights": [
+                    1, 1, 1, 1, 1, 1, 1, 1,
+                    -1, -1, -1, -1, -1, -1, -1, -1
+                ],
+                "Type": "t"
+            }
+        ],
+        "DummyContrasts": {
+            "Test": "t",
+            "Contrasts": [
+              "trial_type.fr_ba", "trial_type.fr_va", "trial_type.fr_co",
+              "trial_type.fr_fa", "trial_type.fr_ch", "trial_type.fr_so",
+              "trial_type.fr_po", "trial_type.fr_ro",
+              "trial_type.br_ba", "trial_type.br_va", "trial_type.br_co",
+              "trial_type.br_fa", "trial_type.br_ch", "trial_type.br_so",
+              "trial_type.br_po", "trial_type.br_ro",
+              "trial_type.blank",
+              "trial_type.response",
+              "trial_type.target"
+            ]
+        }
+    },
+    {
+        "Level": "Dataset",
+        "Name": "dataset_level",
+        "Model": {
+            "X": [
+                " "
+            ],
+            "Type": "glm",
+            "Options": {
+                "Mask": ""
+            }
+        },
+        "DummyContrasts": {
+            "Test": "t",
+            "Contrasts": [
+              "trial_type.fr_ba", "trial_type.fr_va", "trial_type.fr_co",
+              "trial_type.fr_fa", "trial_type.fr_ch", "trial_type.fr_so",
+              "trial_type.fr_po", "trial_type.fr_ro",
+              "trial_type.br_ba", "trial_type.br_va", "trial_type.br_co",
+              "trial_type.br_fa", "trial_type.br_ch", "trial_type.br_so",
+              "trial_type.br_po", "trial_type.br_ro",
+              "trial_type.blank",
+              "trial_type.response",
+              "trial_type.target"
+            ]
+        }
+    }
+  ]
+}

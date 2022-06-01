@@ -7,7 +7,7 @@ clear;
 clc;
 
 %% Load options
-% 
+%
 
 % options come from event related design, the one set up to do mvpa
 opt = mvpa_getOption();
@@ -40,24 +40,23 @@ bidsSpatialPrepro(opt);
 % WIP: group level results
 % bidsResults(opt, FWHM);
 
-
 %% MVPA
 
 % %% SMOOTHING OF 0
 % funcFWHM = 0;
-%     
+%
 % bidsSmoothing(funcFWHM, opt);
-% 
+%
 % bidsFFX('specifyAndEstimate', opt, funcFWHM);
 % bidsFFX('contrasts', opt, funcFWHM);
-% 
+%
 % bidsResults(opt, funcFWHM);
 % % % prep for mvpa
-% 
+%
 % bidsConcatBetaTmaps(opt, funcFWHM, 0, 0);
 
 %% SMOOTHING OF 2
-funcFWHM = 2; 
+funcFWHM = 2;
 
 bidsSmoothing(funcFWHM, opt);
 
@@ -67,4 +66,3 @@ bidsFFX('contrasts', opt, funcFWHM);
 bidsResults(opt, funcFWHM);
 
 bidsConcatBetaTmaps(opt, funcFWHM, 0, 0);
-

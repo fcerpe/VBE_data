@@ -6,17 +6,32 @@
 clear;
 clc;
 
+warning('off')
+
+% add cpp_spm to the path
 addpath(fullfile(pwd, 'lib', 'CPP_SPM'));
 cpp_spm('init');
 
+% check inside if everything is ok before starting the pipeline
 opt = preproc_option();
 
-opt.subjects = '001';
+%% GO FOR IT
 
 bidsCopyInputFolder(opt);
 
 bidsSTC(opt);
 
 bidsSpatialPrepro(opt);
+
+% Smoothiing: check which task are we talking about before choosing FWHM
+% Localizer: 6 mm (also, default)
+% MVPA (aka event-related): 2 mm
+if strcmp(opt.taskName, 'visualEventRelated')
+
+    % set the smmothing to 2mm instead of 6 (default)
+    opt.fwhm.func = 2;
+    opt.fwhm.contrast = 2;
+
+end
 
 bidsSmoothing(opt);

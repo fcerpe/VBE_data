@@ -1,0 +1,54 @@
+{
+  "Name": "FBDecodingSingleWords",
+  "BIDSModelVersion": "1.0.0",
+  "Description": "contrasts for the visbra dataset",
+  "Input": {
+    "task": [
+        "visualEventRelated"
+      ]
+  },
+  "Steps": [
+    {
+      "Level": "run",
+      "Model": {
+        "X": [
+          "trial_type.fr_ba_rep1", "trial_type.fr_ba_rep2", "trial_type.fr_ba_rep3", "trial_type.fr_ba_rep4",
+          "trial_type.fr_va_rep1", "trial_type.fr_va_rep2", "trial_type.fr_va_rep3", "trial_type.fr_va_rep4",
+          "trial_type.fr_co_rep1", "trial_type.fr_co_rep2", "trial_type.fr_co_rep3", "trial_type.fr_co_rep4",
+          "trial_type.fr_fa_rep1", "trial_type.fr_fa_rep2", "trial_type.fr_fa_rep3", "trial_type.fr_fa_rep4",
+          "trial_type.fr_ch_rep1", "trial_type.fr_ch_rep2", "trial_type.fr_ch_rep3", "trial_type.fr_ch_rep4",
+          "trial_type.fr_so_rep1", "trial_type.fr_so_rep2", "trial_type.fr_so_rep3", "trial_type.fr_so_rep4",
+          "trial_type.fr_po_rep1", "trial_type.fr_po_rep2", "trial_type.fr_po_rep3", "trial_type.fr_po_rep4",
+          "trial_type.fr_ro_rep1", "trial_type.fr_ro_rep2", "trial_type.fr_ro_rep3", "trial_type.fr_ro_rep4",
+          "trial_type.br_ba_rep1", "trial_type.br_ba_rep2", "trial_type.br_ba_rep3", "trial_type.br_ba_rep4",
+          "trial_type.br_va_rep1", "trial_type.br_va_rep2", "trial_type.br_va_rep3", "trial_type.br_va_rep4",
+          "trial_type.br_co_rep1", "trial_type.br_co_rep2", "trial_type.br_co_rep3", "trial_type.br_co_rep4",
+          "trial_type.br_fa_rep1", "trial_type.br_fa_rep2", "trial_type.br_fa_rep3", "trial_type.br_fa_rep4",
+          "trial_type.br_ch_rep1", "trial_type.br_ch_rep2", "trial_type.br_ch_rep3", "trial_type.br_ch_rep4",
+          "trial_type.br_so_rep1", "trial_type.br_so_rep2", "trial_type.br_so_rep3", "trial_type.br_so_rep4",
+          "trial_type.br_po_rep1", "trial_type.br_po_rep2", "trial_type.br_po_rep3", "trial_type.br_po_rep4",
+          "trial_type.br_ro_rep1", "trial_type.br_ro_rep2", "trial_type.br_ro_rep3", "trial_type.br_ro_rep4",
+          "trans_x", "trans_y", "trans_z", "rot_x", "rot_y", "rot_z"
+        ]
+      },
+      "AutoContrasts": [
+        "trial_type.fr_ba_rep1","trial_type.fr_ba_rep2","trial_type.fr_ba_rep3", "trial_type.fr_ba_rep4",
+        "trial_type.fr_va_rep1","trial_type.fr_va_rep2","trial_type.fr_va_rep3", "trial_type.fr_va_rep4",
+        "trial_type.fr_co_rep1","trial_type.fr_co_rep2","trial_type.fr_co_rep3", "trial_type.fr_co_rep4",
+        "trial_type.fr_fa_rep1","trial_type.fr_fa_rep2","trial_type.fr_fa_rep3", "trial_type.fr_fa_rep4",
+        "trial_type.fr_ch_rep1","trial_type.fr_ch_rep2","trial_type.fr_ch_rep3", "trial_type.fr_ch_rep4",
+        "trial_type.fr_so_rep1","trial_type.fr_so_rep2","trial_type.fr_so_rep3", "trial_type.fr_so_rep4",
+        "trial_type.fr_po_rep1","trial_type.fr_po_rep2","trial_type.fr_po_rep3", "trial_type.fr_po_rep4",
+        "trial_type.fr_ro_rep1","trial_type.fr_ro_rep2","trial_type.fr_ro_rep3", "trial_type.fr_ro_rep4",
+        "trial_type.br_ba_rep1","trial_type.br_ba_rep2","trial_type.br_ba_rep3", "trial_type.br_ba_rep4",
+        "trial_type.br_va_rep1","trial_type.br_va_rep2","trial_type.br_va_rep3", "trial_type.br_va_rep4",
+        "trial_type.br_co_rep1","trial_type.br_co_rep2","trial_type.br_co_rep3", "trial_type.br_co_rep4",
+        "trial_type.br_fa_rep1","trial_type.br_fa_rep2","trial_type.br_fa_rep3", "trial_type.br_fa_rep4",
+        "trial_type.br_ch_rep1","trial_type.br_ch_rep2","trial_type.br_ch_rep3", "trial_type.br_ch_rep4",
+        "trial_type.br_so_rep1","trial_type.br_so_rep2","trial_type.br_so_rep3", "trial_type.br_so_rep4",
+        "trial_type.br_po_rep1","trial_type.br_po_rep2","trial_type.br_po_rep3", "trial_type.br_po_rep4",
+        "trial_type.br_ro_rep1","trial_type.br_ro_rep2","trial_type.br_ro_rep3", "trial_type.br_ro_rep4"
+        ]
+    }
+  ]
+}
