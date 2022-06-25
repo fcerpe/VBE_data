@@ -1,0 +1,37 @@
+{
+  "Name": "FBDecodingSingleWords",
+  "BIDSModelVersion": "1.0.0",
+  "Description": "contrasts for the visbra dataset",
+  "Input": {
+    "task": [
+        "visualEventRelated"
+      ]
+  },
+  "Steps": [
+    {
+      "Level": "run",
+      "Model": {
+        "X": [
+          "trial_type.frw",
+          "trial_type.fpw",
+          "trial_type.fnw",
+          "trial_type.ffs",
+          "trial_type.brw",
+          "trial_type.bpw",
+          "trial_type.bnw",
+          "trial_type.bfs",
+          "trans_x", "trans_y", "trans_z", "rot_x", "rot_y", "rot_z"
+        ]
+      },
+      "AutoContrasts": [
+        "trial_type.frw",
+        "trial_type.fpw",
+        "trial_type.fnw",
+        "trial_type.ffs",
+        "trial_type.brw",
+        "trial_type.bpw",
+        "trial_type.bnw",
+        "trial_type.bfs"]
+    }
+  ]
+}

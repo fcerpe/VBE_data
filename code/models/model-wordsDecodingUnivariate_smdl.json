@@ -1,0 +1,316 @@
+{
+    "Name": "blockMvpa GLM",
+    "BIDSModelVersion": "1.0.0",
+    "Description": "default model for VisualBraille project - words decoding task",
+    "Input": {
+        "task": [
+            "wordsDecoding"
+        ]
+    },
+    "Nodes": [
+        {
+            "Level": "Run",
+            "Name": "run_level",
+            "Model": {
+                "Type": "glm",
+                "X": [
+                    "trial_type.frw",
+                    "trial_type.fpw",
+                    "trial_type.fnw",
+                    "trial_type.ffs",
+                    "trial_type.brw",
+                    "trial_type.bpw",
+                    "trial_type.bnw",
+                    "trial_type.bfs",
+                    "trial_type.target",
+                    "trial_type.response",
+                    "trans_x",
+                    "trans_y",
+                    "trans_z",
+                    "rot_x",
+                    "rot_y",
+                    "rot_z"
+                ],
+                "HRF": {
+                    "Variables": [
+                      "trial_type.frw",
+                      "trial_type.fpw",
+                      "trial_type.fnw",
+                      "trial_type.ffs",
+                      "trial_type.brw",
+                      "trial_type.bpw",
+                      "trial_type.bnw",
+                      "trial_type.bfs",
+                      "trial_type.target",
+                      "trial_type.response"
+                    ],
+                    "Model": "DoubleGamma"
+                },
+                "Options": {
+                    "HighPassFilterCutoffHz": 0.0078,
+                    "Mask": ""
+                },
+                "Software": {
+                    "SPM": {
+                        "SerialCorrelation": "FAST",
+                        "HRFderivatives": "Temporal"
+                    }
+                }
+            },
+            "DummyContrasts": {
+                "Test": "t",
+                "Contrasts": [
+                  "trial_type.frw",
+                  "trial_type.fpw",
+                  "trial_type.fnw",
+                  "trial_type.ffs",
+                  "trial_type.brw",
+                  "trial_type.bpw",
+                  "trial_type.bnw",
+                  "trial_type.bfs",
+                  "trial_type.target",
+                  "trial_type.response"
+                ]
+            }
+        },
+        {
+            "Level": "Subject",
+            "Name": "subject_level",
+            "Model": {
+                "X": [
+                    "trial_type.frw",
+                    "trial_type.fpw",
+                    "trial_type.fnw",
+                    "trial_type.ffs",
+                    "trial_type.brw",
+                    "trial_type.bpw",
+                    "trial_type.bnw",
+                    "trial_type.bfs",
+                    "trial_type.target",
+                    "trial_type.response",
+                    "trans_x",
+                    "trans_y",
+                    "trans_z",
+                    "rot_x",
+                    "rot_y",
+                    "rot_z"
+                ],
+                "HRF": {
+                    "Variables": [
+                        "trial_type.frw",
+                        "trial_type.fpw",
+                        "trial_type.fnw",
+                        "trial_type.ffs",
+                        "trial_type.brw",
+                        "trial_type.bpw",
+                        "trial_type.bnw",
+                        "trial_type.bfs",
+                        "trial_type.target",
+                        "trial_type.response"
+                    ],
+                    "Model": "DoubleGamma"
+                },
+                "Type": "glm",
+                "Options": {
+                    "HighPassFilterCutoffHz": 0.0078,
+                    "Mask": ""
+                },
+                "Software": {
+                    "SPM": {
+                        "SerialCorrelation": "FAST",
+                        "HRFderivatives": "Temporal"
+                    }
+                }
+            },
+            "Contrasts": [
+                {
+                    "Name": "frw_gt_ffs",
+                    "ConditionList": [
+                        "trial_type.frw",
+                        "trial_type.ffs"
+                    ],
+                    "Weights": [
+                        1,
+                        -1
+                    ],
+                    "Type": "t"
+                },
+                {
+                    "Name": "frw_gt_fnw",
+                    "ConditionList": [
+                        "trial_type.frw",
+                        "trial_type.fnw"
+                    ],
+                    "Weights": [
+                        1,
+                        -1
+                    ],
+                    "Type": "t"
+                },
+                {
+                    "Name": "frw_gt_fpw",
+                    "ConditionList": [
+                        "trial_type.frw",
+                        "trial_type.fpw"
+                    ],
+                    "Weights": [
+                        1,
+                        -1
+                    ],
+                    "Type": "t"
+                },
+                {
+                    "Name": "fpw_gt_ffs",
+                    "ConditionList": [
+                        "trial_type.fpw",
+                        "trial_type.ffs"
+                    ],
+                    "Weights": [
+                        1,
+                        -1
+                    ],
+                    "Type": "t"
+                },
+                {
+                    "Name": "fpw_gt_fnw",
+                    "ConditionList": [
+                        "trial_type.fpw",
+                        "trial_type.fnw"
+                    ],
+                    "Weights": [
+                        1,
+                        -1
+                    ],
+                    "Type": "t"
+                },
+                {
+                    "Name": "fnw_gt_ffs",
+                    "ConditionList": [
+                        "trial_type.fnw",
+                        "trial_type.ffs"
+                    ],
+                    "Weights": [
+                        1,
+                        -1
+                    ],
+                    "Type": "t"
+                },
+                {
+                    "Name": "brw_gt_bfs",
+                    "ConditionList": [
+                        "trial_type.brw",
+                        "trial_type.bfs"
+                    ],
+                    "Weights": [
+                        1,
+                        -1
+                    ],
+                    "Type": "t"
+                },
+                {
+                    "Name": "brw_gt_bnw",
+                    "ConditionList": [
+                        "trial_type.brw",
+                        "trial_type.bnw"
+                    ],
+                    "Weights": [
+                        1,
+                        -1
+                    ],
+                    "Type": "t"
+                },
+                {
+                    "Name": "brw_gt_bpw",
+                    "ConditionList": [
+                        "trial_type.brw",
+                        "trial_type.bpw"
+                    ],
+                    "Weights": [
+                        1,
+                        -1
+                    ],
+                    "Type": "t"
+                },
+                {
+                    "Name": "bpw_gt_bfs",
+                    "ConditionList": [
+                        "trial_type.bpw",
+                        "trial_type.bfs"
+                    ],
+                    "Weights": [
+                        1,
+                        -1
+                    ],
+                    "Type": "t"
+                },
+                {
+                    "Name": "bpw_gt_bnw",
+                    "ConditionList": [
+                        "trial_type.bpw",
+                        "trial_type.bnw"
+                    ],
+                    "Weights": [
+                        1,
+                        -1
+                    ],
+                    "Type": "t"
+                },
+                {
+                    "Name": "bnw_gt_bfs",
+                    "ConditionList": [
+                        "trial_type.bnw",
+                        "trial_type.bfs"
+                    ],
+                    "Weights": [
+                        1,
+                        -1
+                    ],
+                    "Type": "t"
+                }
+            ],
+            "DummyContrasts": {
+                "Test": "t",
+                "Contrasts": [
+                    "trial_type.frw",
+                    "trial_type.fpw",
+                    "trial_type.fnw",
+                    "trial_type.ffs",
+                    "trial_type.brw",
+                    "trial_type.bpw",
+                    "trial_type.bnw",
+                    "trial_type.bfs",
+                    "trial_type.target",
+                    "trial_type.response"
+                ]
+            }
+        },
+        {
+            "Level": "Dataset",
+            "Name": "dataset_level",
+            "Model": {
+                "X": [
+                    " "
+                ],
+                "Type": "glm",
+                "Options": {
+                    "Mask": ""
+                }
+            },
+            "DummyContrasts": {
+                "Test": "t",
+                "Contrasts": [
+                    "trial_type.frw",
+                    "trial_type.fpw",
+                    "trial_type.fnw",
+                    "trial_type.ffs",
+                    "trial_type.brw",
+                    "trial_type.bpw",
+                    "trial_type.bnw",
+                    "trial_type.bfs",
+                    "trial_type.target",
+                    "trial_type.response"
+                ]
+            }
+        }
+    ]
+}
