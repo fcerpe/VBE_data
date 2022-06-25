@@ -12,7 +12,7 @@ opt = [];
 opt.taskName = 'visualLocalizer';
 
 % who will be preprocessed?
-opt.subjects = {'002','003','004','005'};
+opt.subjects = {'004'}; % ,'002','004','005'
 
 % space is not important now, if not specified, do it for both individual and MNI
 opt.space = 'MNI';
