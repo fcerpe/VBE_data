@@ -7,7 +7,7 @@ function opt = stats_localizer_option()
 
 opt = [];
 
-opt.subjects = {'002','003','004','005'};
+opt.subjects = {'008'}; % 002 003 004 005
 
 % Task to analyze - change accordingly
 opt.taskName = 'viualLocalizer';
@@ -37,7 +37,7 @@ opt.dir.stats = fullfile(opt.dir.root, 'outputs', 'derivatives', 'cpp_spm-stats'
 
 % Model specifies all the contrasts
 opt.model.file = fullfile(fileparts(mfilename('fullpath')), ...
-    'models', 'model-visualLocalizerUnivariate_smdl.json');
+    'models', 'model-visualLocalizerUnivariateNoResp_smdl.json');
 
 opt.pipeline.type = 'stats';
 

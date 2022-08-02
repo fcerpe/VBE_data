@@ -1,17 +1,19 @@
 #!/bin/bash
 
 #update this to your participant label
-participants="001 002"
+participants="006"
 
 code_dir=$(pwd)
-bids_dir=$(pwd)/../inputs/raw
-derivatives_dir=$(pwd)/../outputs/derivatives
+bids_dir=$(pwd)/../../inputs/raw
+derivatives_dir=$(pwd)/../../outputs/derivatives
 
 docker run -it --rm \
-    -v $code:/code:ro \
-    -v $bids_dir:/data:ro \
-    -v $derivatives_dir:/out \
-    nipreps/fmriprep:20.2.0 /data /out \
-    participant --participant_label ${participants} \
-    --fs-license-file /code/license.txt \
-    --output-spaces T1w:res-native MNI152NLin2009cAsym:res-native
+    -v ~/Desktop/GitHub/VisualBraille_data/code:/code:ro \
+    -v ~/Desktop/GitHub/VisualBraille_data/inputs/raw:/data:ro \
+    -v ~/Desktop/GitHub/VisualBraille_data/outputs/derivatives/fmriprep:/out \
+    -v ~/Desktop/GitHub/VisualBraille_data/code/containers/freesurfer_lic.txt:/license \
+    nipreps/fmriprep:21.0.2 /data /out \
+    participant --participant-label 004 \
+    --fs-license-file /license \
+    --output-spaces MNI152NLin2009cAsym
+    --work-dir /out/temp

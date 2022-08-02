@@ -8,11 +8,11 @@ function opt = preproc_option()
 opt = [];
 
 % task to analyze: alternate
-% opt.taskName = 'visualEventRelated';
-opt.taskName = 'visualLocalizer';
+opt.taskName = 'wordsDecoding';
+% opt.taskName = 'visualLocalizer';
 
 % who will be preprocessed?
-opt.subjects = {'004'}; % ,'002','004','005'
+opt.subjects = {'006', '007', '008'}; % ,'002','004','005'
 
 % space is not important now, if not specified, do it for both individual and MNI
 opt.space = 'MNI';

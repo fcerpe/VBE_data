@@ -5,7 +5,7 @@
 
 clear;
 
-warning('off')
+% warning('off')
 
 % add cpp_spm to the path
 addpath(fullfile(pwd, 'lib', 'CPP_SPM'));
