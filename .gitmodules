@@ -30,6 +30,3 @@
 	path = ouptuts/derivatives/CoSMoMVPA
 	url = ./ouptuts/derivatives/CoSMoMVPA
 	datalad-id = 562e7f90-9517-4847-bad9-0e287ee7f2c2
-[submodule "CPP_BIDS"]
-	path = CPP_BIDS
-	url = git@github.com:cpp-lln-lab/CPP_BIDS.git
