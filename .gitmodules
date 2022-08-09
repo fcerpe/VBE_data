@@ -30,3 +30,6 @@
 	path = ouptuts/derivatives/CoSMoMVPA
 	url = ./ouptuts/derivatives/CoSMoMVPA
 	datalad-id = 562e7f90-9517-4847-bad9-0e287ee7f2c2
+[submodule "nifti_tools"]
+	path = nifti_tools
+	url = git@github.com:sergivalverde/nifti_tools.git
