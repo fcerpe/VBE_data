@@ -1,5 +1,5 @@
 {
-    "Name": "blockMvpa GLM",
+    "Name": "wordsDecoding GLM",
     "BIDSModelVersion": "1.0.0",
     "Description": "default model for VisualBraille project - words decoding task",
     "Input": {
@@ -10,7 +10,11 @@
     "Nodes": [
         {
             "Level": "Run",
-            "Name": "run_level",
+            "Name": "wordsDecoding GLM",
+            "GroupBy": [
+              "run",
+              "subject"
+            ],
             "Model": {
                 "Type": "glm",
                 "X": [

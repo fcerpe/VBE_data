@@ -10,7 +10,11 @@
     "Nodes": [
         {
             "Level": "Run",
-            "Name": "run_level",
+            "Name": "localizer GLM",
+            "GroupBy": [
+              "run",
+              "subject"
+            ],
             "Model": {
                 "Type": "glm",
                 "X": [
@@ -41,64 +45,7 @@
                     "Model": "DoubleGamma"
                 },
                 "Options": {
-                    "HighPassFilterCutoffHz": 0.0078,
-                    "Mask": ""
-                },
-                "Software": {
-                    "SPM": {
-                        "SerialCorrelation": "FAST",
-                        "HRFderivatives": "Temporal"
-                    }
-                }
-            },
-            "DummyContrasts": {
-                "Test": "t",
-                "Contrasts": [
-                  "trial_type.fw",
-                  "trial_type.sfw",
-                  "trial_type.bw",
-                  "trial_type.sbw",
-                  "trial_type.ld",
-                  "trial_type.sld",
-                  "trial_type.response"
-                ]
-            }
-        },
-        {
-            "Level": "Subject",
-            "Name": "subject_level",
-            "Model": {
-                "X": [
-                    "trial_type.fw",
-                    "trial_type.sfw",
-                    "trial_type.bw",
-                    "trial_type.sbw",
-                    "trial_type.ld",
-                    "trial_type.sld",
-                    "trial_type.response",
-                    "trans_x",
-                    "trans_y",
-                    "trans_z",
-                    "rot_x",
-                    "rot_y",
-                    "rot_z"
-                ],
-                "HRF": {
-                    "Variables": [
-                        "trial_type.fw",
-                        "trial_type.sfw",
-                        "trial_type.bw",
-                        "trial_type.sbw",
-                        "trial_type.ld",
-                        "trial_type.sld",
-                        "trial_type.response"
-                    ],
-                    "Model": "DoubleGamma"
-                },
-                "Type": "glm",
-                "Options": {
-                    "HighPassFilterCutoffHz": 0.0078,
-                    "Mask": ""
+                    "HighPassFilterCutoffHz": 0.0078
                 },
                 "Software": {
                     "SPM": {
@@ -118,7 +65,7 @@
                         1,
                         -1
                     ],
-                    "Type": "t"
+                    "Test": "t"
                 },
                 {
                     "Name": "braille_gt_scrambled",
@@ -130,7 +77,7 @@
                         1,
                         -1
                     ],
-                    "Type": "t"
+                    "Test": "t"
                 },
                 {
                     "Name": "drawing_gt_scrambled",
@@ -142,7 +89,7 @@
                         1,
                         -1
                     ],
-                    "Type": "t"
+                    "Test": "t"
                 },
                 {
                     "Name": "frWords_gt_scrLines",
@@ -154,7 +101,7 @@
                         1,
                         -1
                     ],
-                    "Type": "t"
+                    "Test": "t"
                 },
                 {
                     "Name": "allWords_gt_scrLines",
@@ -168,45 +115,53 @@
                         0.5,
                         -1
                     ],
-                    "Type": "t"
+                    "Test": "t"
                 }
             ],
             "DummyContrasts": {
                 "Test": "t",
                 "Contrasts": [
-                    "trial_type.fw",
-                    "trial_type.sfw",
-                    "trial_type.bw",
-                    "trial_type.sbw",
-                    "trial_type.ld",
-                    "trial_type.sld",
-                    "trial_type.response"
+                  "trial_type.fw",
+                  "trial_type.sfw",
+                  "trial_type.bw",
+                  "trial_type.sbw",
+                  "trial_type.ld",
+                  "trial_type.sld",
+                  "trial_type.response"
                 ]
+            }
+        },
+        {
+            "Level": "Subject",
+            "Name": "subject_level",
+            "GroupBy": [
+            "contrast",
+            "subject"
+            ],
+            "Model": {
+                "X": [
+                    1
+                ],
+                "Type": "glm"
+            },
+            "DummyContrasts": {
+                "Test": "t"
             }
         },
         {
             "Level": "Dataset",
             "Name": "dataset_level",
+            "GroupBy": [
+            "contrast"
+            ],
             "Model": {
                 "X": [
-                    " "
+                    1
                 ],
-                "Type": "glm",
-                "Options": {
-                    "Mask": ""
-                }
+                "Type": "glm"
             },
             "DummyContrasts": {
-                "Test": "t",
-                "Contrasts": [
-                    "trial_type.fw",
-                    "trial_type.sfw",
-                    "trial_type.bw",
-                    "trial_type.sbw",
-                    "trial_type.ld",
-                    "trial_type.sld",
-                    "trial_type.response"
-                ]
+                "Test": "t"
             }
         }
     ]

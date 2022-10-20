@@ -7,11 +7,33 @@
         "wordsDecoding"
       ]
   },
-
   "Nodes": [
       {
           "Level": "Run",
-          "Name": "run_level",
+          "Name": "wordsDecoding MVPA",
+          "GroupBy": [
+            "run",
+            "subject"
+          ],
+          "Transformations": {
+            "Description": "merge the different semantic categories of real words into one",
+            "Transformer": "cpp_spm",
+            "Instructions": [
+               {
+                 "Name": "Replace",
+                 "Input": "trial_type",
+                 "Replace": [
+                   {"key": "frw_liv", "value": "frw"},
+                   {"key": "frw_nli", "value": "frw"},
+                   {"key": "frw_mix", "value": "frw"},
+                   {"key": "brw_liv", "value": "brw"},
+                   {"key": "brw_nli", "value": "brw"},
+                   {"key": "brw_mix", "value": "brw"}
+                 ],
+                 "Attribute": "value"
+               }
+            ]
+          },
           "Model": {
               "Type": "glm",
               "X": [
@@ -54,6 +76,7 @@
                   }
               }
           },
+
           "DummyContrasts": {
               "Test": "t",
               "Contrasts": [

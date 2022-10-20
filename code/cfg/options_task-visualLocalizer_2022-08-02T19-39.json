@@ -1,0 +1,205 @@
+{
+    "QA": {
+        "glm": {
+            "do": false
+        },
+        "anat": {
+            "do": true
+        },
+        "func": {
+            "carpetPlot": true,
+            "Motion": "on",
+            "FD": "on",
+            "Voltera": "on",
+            "Globals": "on",
+            "Movie": "off",
+            "Basics": "on"
+        }
+    },
+    "anatOnly": false,
+    "bidsFilterFile": {
+        "fmap": {
+            "modality": "fmap"
+        },
+        "bold": {
+            "modality": "func",
+            "suffix": "bold"
+        },
+        "t2w": {
+            "modality": "anat",
+            "suffix": "T2w"
+        },
+        "t1w": {
+            "modality": "anat",
+            "space": "",
+            "suffix": "T1w"
+        },
+        "roi": {
+            "modality": "roi",
+            "suffix": "roi"
+        }
+    },
+    "contrastList": [],
+    "dir": {
+        "derivatives": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives",
+        "input": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives/cpp_spm-preproc",
+        "jobs": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives/cpp_spm-stats/jobs/visualLocalizer",
+        "output": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives/cpp_spm-stats",
+        "preproc": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives/cpp_spm-preproc",
+        "raw": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/inputs/raw",
+        "roi": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives/cpp_spm-roi",
+        "root": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data",
+        "stats": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives/cpp_spm-stats"
+    },
+    "dryRun": false,
+    "funcVolToSelect": [],
+    "funcVoxelDims": [],
+    "fwhm": {
+        "contrast": 6,
+        "func": 6
+    },
+    "glm": {
+        "QA": {
+            "do": false
+        },
+        "keepResiduals": false,
+        "maxNbVols": null,
+        "roibased": {
+            "do": false
+        },
+        "useDummyRegressor": false
+    },
+    "groups": [""],
+    "model": {
+        "designOnly": false,
+        "file": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/code/models/model-visualLocalizerUnivariateNoResp_smdl.json"
+    },
+    "pipeline": {
+        "name": "cpp_spm",
+        "type": "stats"
+    },
+    "query": {
+        "modality": [
+            "anat",
+            "func"
+        ]
+    },
+    "realign": {
+        "useUnwarp": true
+    },
+    "rename": true,
+    "result": {
+        "Nodes": {
+            "Contrasts": [
+                {
+                    "MC": "none",
+                    "Name": "french_gt_scrambled",
+                    "k": 0,
+                    "p": 0.001,
+                    "useMask": false
+                },
+                {
+                    "MC": "none",
+                    "Name": "braille_gt_scrambled",
+                    "k": 0,
+                    "p": 0.001,
+                    "useMask": false
+                },
+                {
+                    "MC": "none",
+                    "Name": "drawing_gt_scrambled",
+                    "k": 0,
+                    "p": 0.001,
+                    "useMask": false
+                },
+                {
+                    "MC": "none",
+                    "Name": "frWords_gt_scrLines",
+                    "k": 0,
+                    "p": 0.001,
+                    "useMask": false
+                },
+                {
+                    "MC": "none",
+                    "Name": "allWords_gt_scrLines",
+                    "k": 0,
+                    "p": 0.001,
+                    "useMask": false
+                }
+            ],
+            "Level": "subject",
+            "Output": {
+                "NIDM_results": true,
+                "binary": true,
+                "csv": true,
+                "montage": {
+                    "background": "/Users/cerpelloni/spm12/canonical/avg152T1.nii",
+                    "do": true,
+                    "orientation": "axial",
+                    "slices": [-20,-18,-16,-14,-12,-10,-8,-6,-4,-2,0]
+                },
+                "png": true,
+                "thresh_spm": true
+            }
+        }
+    },
+    "segment": {
+        "force": false
+    },
+    "skullstrip": {
+        "threshold": 0.75,
+        "mean": false
+    },
+    "space": ["IXI549Space"],
+    "stc": {
+        "referenceSlice": [],
+        "sliceOrder": [],
+        "skip": false
+    },
+    "subjects": ["008"],
+    "taskName": ["visualLocalizer"],
+    "toolbox": {
+        "MACS": {
+            "model": {
+                "files": []
+            }
+        },
+        "rsHRF": {
+            "vox_rsHRF": {
+                "Denoising": {
+                    "generic": [],
+                    "Detrend": 0,
+                    "BPF": [],
+                    "Despiking": 0,
+                    "which1st": 3
+                },
+                "HRFE": {
+                    "hrfm": 2,
+                    "hrflen": 32,
+                    "num_basis": null,
+                    "mdelay": [4,8],
+                    "cvi": 0,
+                    "fmri_t": 1,
+                    "fmri_t0": 1,
+                    "thr": 1,
+                    "localK": 2,
+                    "tmask": null,
+                    "hrfdeconv": 1
+                },
+                "rmoutlier": 0,
+                "connectivity": [],
+                "savedata": {
+                    "deconv_save": 0,
+                    "hrfmat_save": 1,
+                    "hrfnii_save": 1,
+                    "job_save": 0
+                },
+                "prefix": "deconv_"
+            }
+        }
+    },
+    "useBidsSchema": false,
+    "useFieldmaps": true,
+    "verbosity": 1,
+    "zeropad": 2
+}
