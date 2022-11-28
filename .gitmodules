@@ -10,10 +10,6 @@
 	url = /Users/cerpelloni/Desktop/VisualBraille/analysis/inputs/raw
 	datalad-id = 0032ad78-7460-4af0-b3e3-30213ac9bbe9
 	datalad-url = /Users/cerpelloni/Desktop/VisualBraille/analysis/inputs/raw
-[submodule "ouptuts/derivatives/fmriprep"]
-	path = ouptuts/derivatives/fmriprep
-	url = ./ouptuts/derivatives/fmriprep
-	datalad-id = 311e2a4b-68a6-4176-8388-b049c2c00d60
 [submodule "code/lib/bidspm"]
 	path = code/lib/bidspm
 	url = git@github.com:cpp-lln-lab/bidspm.git
