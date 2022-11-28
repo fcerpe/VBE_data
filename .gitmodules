@@ -14,19 +14,7 @@
 	path = ouptuts/derivatives/cpp_spm-preproc
 	url = ./ouptuts/derivatives/cpp_spm-preproc
 	datalad-id = f69e8d1d-54e6-4ba8-b48e-19558a23bfca
-[submodule "ouptuts/derivatives/mriQC"]
-	path = ouptuts/derivatives/mriQC
-	url = ./ouptuts/derivatives/mriQC
-	datalad-id = 702fd8ff-115b-4995-afaf-4738a8aed6ab
 [submodule "ouptuts/derivatives/fmriprep"]
 	path = ouptuts/derivatives/fmriprep
 	url = ./ouptuts/derivatives/fmriprep
 	datalad-id = 311e2a4b-68a6-4176-8388-b049c2c00d60
-[submodule "ouptuts/derivatives/ccp_spm-stats"]
-	path = ouptuts/derivatives/ccp_spm-stats
-	url = ./ouptuts/derivatives/ccp_spm-stats
-	datalad-id = 3ce00d97-f6fc-49c1-9bd5-39862f9b9001
-[submodule "ouptuts/derivatives/CoSMoMVPA"]
-	path = ouptuts/derivatives/CoSMoMVPA
-	url = ./ouptuts/derivatives/CoSMoMVPA
-	datalad-id = 562e7f90-9517-4847-bad9-0e287ee7f2c2
