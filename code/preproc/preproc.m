@@ -29,7 +29,7 @@ if strcmp(opt.taskName, 'wordsDecoding')
 
     % set the smmothing to 2mm instead of 6 (default)
     opt.fwhm.func = 2;
-    opt.fwhm.contrast = 2;
+    opt.fwhm.contrast = 0;
 
 end
 

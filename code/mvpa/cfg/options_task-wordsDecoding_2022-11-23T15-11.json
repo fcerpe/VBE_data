@@ -1,0 +1,424 @@
+{
+    "QA": {
+        "glm": {
+            "do": false
+        },
+        "anat": {
+            "do": true
+        },
+        "func": {
+            "carpetPlot": true,
+            "Motion": "on",
+            "FD": "on",
+            "Voltera": "on",
+            "Globals": "on",
+            "Movie": "off",
+            "Basics": "on"
+        }
+    },
+    "anatOnly": false,
+    "bidsFilterFile": {
+        "fmap": {
+            "modality": "fmap"
+        },
+        "bold": {
+            "modality": "func",
+            "suffix": "bold"
+        },
+        "t2w": {
+            "modality": "anat",
+            "suffix": "T2w"
+        },
+        "t1w": {
+            "modality": "anat",
+            "space": "",
+            "suffix": "T1w"
+        },
+        "mp2rage": {
+            "modality": "anat",
+            "space": "",
+            "suffix": "MP2RAGE"
+        },
+        "roi": {
+            "modality": "roi",
+            "suffix": "mask"
+        }
+    },
+    "contrastList": [],
+    "decodingCondition": ["within_script"],
+    "desc": "MVPA",
+    "dir": {
+        "cosmo": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives/CoSMoMVPA",
+        "derivatives": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives",
+        "input": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives/cpp_spm-preproc",
+        "jobs": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives/cpp_spm-stats/jobs/wordsDecoding",
+        "output": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives/cpp_spm-stats",
+        "preproc": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives/cpp_spm-preproc",
+        "raw": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/inputs/raw",
+        "rois": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives/cpp_spm-rois",
+        "root": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data",
+        "stats": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives/cpp_spm-stats"
+    },
+    "dryRun": false,
+    "funcVolToSelect": [],
+    "funcVoxelDims": [2.6,2.6,2.6],
+    "fwhm": {
+        "func": 6,
+        "contrast": 0
+    },
+    "glm": {
+        "QA": {
+            "do": false
+        },
+        "keepResiduals": false,
+        "maxNbVols": null,
+        "roibased": {
+            "do": false
+        },
+        "useDummyRegressor": false
+    },
+    "groups": [""],
+    "jobsDir": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/code/mvpa/../../outputs/derivatives/cpp_spm-stats/jobs/wordsDecoding",
+    "model": {
+        "designOnly": false,
+        "file": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/code/mvpa/../../code/models/model-wordsDecoding_fourConditions_smdl.json",
+        "bm": {
+            "content": {
+                "Name": "wordsDecoding MVPA",
+                "BIDSModelVersion": "1.0.0",
+                "Description": "contrasts for the visbra dataset",
+                "Input": {
+                    "task": ["wordsDecoding"]
+                },
+                "Nodes": {
+                    "Level": "Run",
+                    "Name": "run_level",
+                    "GroupBy": [
+                        "run",
+                        "subject"
+                    ],
+                    "Transformations": {
+                        "Description": "merge the different semantic categories of real words into one",
+                        "Transformer": "cpp_spm",
+                        "Instructions": {
+                            "Name": "Replace",
+                            "Input": "trial_type",
+                            "Replace": [
+                                {
+                                    "key": "frw_liv",
+                                    "value": "frw"
+                                },
+                                {
+                                    "key": "frw_nli",
+                                    "value": "frw"
+                                },
+                                {
+                                    "key": "frw_mix",
+                                    "value": "frw"
+                                },
+                                {
+                                    "key": "brw_liv",
+                                    "value": "brw"
+                                },
+                                {
+                                    "key": "brw_nli",
+                                    "value": "brw"
+                                },
+                                {
+                                    "key": "brw_mix",
+                                    "value": "brw"
+                                }
+                            ],
+                            "Attribute": "value"
+                        }
+                    },
+                    "Model": {
+                        "Type": "glm",
+                        "X": [
+                            "trial_type.frw",
+                            "trial_type.fpw",
+                            "trial_type.fnw",
+                            "trial_type.ffs",
+                            "trial_type.brw",
+                            "trial_type.bpw",
+                            "trial_type.bnw",
+                            "trial_type.bfs",
+                            "trans_x",
+                            "trans_y",
+                            "trans_z",
+                            "rot_x",
+                            "rot_y",
+                            "rot_z"
+                        ],
+                        "HRF": {
+                            "Variables": [
+                                "trial_type.frw",
+                                "trial_type.fpw",
+                                "trial_type.fnw",
+                                "trial_type.ffs",
+                                "trial_type.brw",
+                                "trial_type.bpw",
+                                "trial_type.bnw",
+                                "trial_type.bfs"
+                            ],
+                            "Model": "DoubleGamma"
+                        },
+                        "Options": {
+                            "HighPassFilterCutoffHz": 0.0039,
+                            "Mask": ""
+                        },
+                        "Software": {
+                            "SPM": {
+                                "SerialCorrelation": "FAST",
+                                "HRFderivatives": "Temporal"
+                            }
+                        }
+                    },
+                    "DummyContrasts": {
+                        "Test": "t",
+                        "Contrasts": [
+                            "trial_type.frw",
+                            "trial_type.fpw",
+                            "trial_type.fnw",
+                            "trial_type.ffs",
+                            "trial_type.brw",
+                            "trial_type.bpw",
+                            "trial_type.bnw",
+                            "trial_type.bfs"
+                        ]
+                    }
+                }
+            },
+            "Name": "wordsDecoding MVPA",
+            "Description": "contrasts for the visbra dataset",
+            "BIDSModelVersion": "1.0.0",
+            "Input": {
+                "task": ["wordsDecoding"]
+            },
+            "Nodes": [
+                {
+                    "Level": "Run",
+                    "Name": "run_level",
+                    "GroupBy": [
+                        "run",
+                        "subject"
+                    ],
+                    "Transformations": {
+                        "Description": "merge the different semantic categories of real words into one",
+                        "Transformer": "cpp_spm",
+                        "Instructions": {
+                            "Name": "Replace",
+                            "Input": "trial_type",
+                            "Replace": [
+                                {
+                                    "key": "frw_liv",
+                                    "value": "frw"
+                                },
+                                {
+                                    "key": "frw_nli",
+                                    "value": "frw"
+                                },
+                                {
+                                    "key": "frw_mix",
+                                    "value": "frw"
+                                },
+                                {
+                                    "key": "brw_liv",
+                                    "value": "brw"
+                                },
+                                {
+                                    "key": "brw_nli",
+                                    "value": "brw"
+                                },
+                                {
+                                    "key": "brw_mix",
+                                    "value": "brw"
+                                }
+                            ],
+                            "Attribute": "value"
+                        }
+                    },
+                    "Model": {
+                        "Type": "glm",
+                        "X": [
+                            "trial_type.frw",
+                            "trial_type.fpw",
+                            "trial_type.fnw",
+                            "trial_type.ffs",
+                            "trial_type.brw",
+                            "trial_type.bpw",
+                            "trial_type.bnw",
+                            "trial_type.bfs",
+                            "trans_x",
+                            "trans_y",
+                            "trans_z",
+                            "rot_x",
+                            "rot_y",
+                            "rot_z"
+                        ],
+                        "HRF": {
+                            "Variables": [
+                                "trial_type.frw",
+                                "trial_type.fpw",
+                                "trial_type.fnw",
+                                "trial_type.ffs",
+                                "trial_type.brw",
+                                "trial_type.bpw",
+                                "trial_type.bnw",
+                                "trial_type.bfs"
+                            ],
+                            "Model": "DoubleGamma"
+                        },
+                        "Options": {
+                            "HighPassFilterCutoffHz": 0.0039,
+                            "Mask": ""
+                        },
+                        "Software": {
+                            "SPM": {
+                                "SerialCorrelation": "FAST",
+                                "HRFderivatives": "Temporal"
+                            }
+                        }
+                    },
+                    "DummyContrasts": {
+                        "Test": "t",
+                        "Contrasts": [
+                            "trial_type.frw",
+                            "trial_type.fpw",
+                            "trial_type.fnw",
+                            "trial_type.ffs",
+                            "trial_type.brw",
+                            "trial_type.bpw",
+                            "trial_type.bnw",
+                            "trial_type.bfs"
+                        ]
+                    }
+                }
+            ],
+            "Edges": [],
+            "tolerant": true,
+            "verbose": true
+        }
+    },
+    "msg": {
+        "color": ""
+    },
+    "parallelize": {
+        "do": false,
+        "nbWorkers": 1,
+        "killOnExit": true
+    },
+    "pipeline": {
+        "name": "cpp_spm",
+        "type": "stats"
+    },
+    "query": {
+        "modality": [
+            "anat",
+            "func"
+        ]
+    },
+    "realign": {
+        "useUnwarp": true
+    },
+    "rename": true,
+    "segment": {
+        "do": true,
+        "force": false,
+        "biasfwhm": 60,
+        "samplingDistance": 3
+    },
+    "skullstrip": {
+        "do": true,
+        "force": false,
+        "threshold": 0.75,
+        "mean": false
+    },
+    "space": ["IXI549Space"],
+    "stc": {
+        "referenceSlice": [],
+        "sliceOrder": [],
+        "skip": false
+    },
+    "subjects": [
+        "006",
+        "007",
+        "008",
+        "009"
+    ],
+    "subsCondition": [
+        "006",
+        "007",
+        "008",
+        "009",
+        [1,3,5,7,9,11,2,4,6,8,10,12],
+        [2,4,6,8,10,12,1,3,5,7,9,11],
+        [1,3,5,7,9,11,2,4,6,8,10,12],
+        [2,4,6,8,10,12,1,3,5,7,9,11]
+    ],
+    "taskName": ["wordsDecoding"],
+    "toolbox": {
+        "MACS": {
+            "model": {
+                "files": []
+            }
+        },
+        "rsHRF": {
+            "vox_rsHRF": {
+                "Denoising": {
+                    "generic": [],
+                    "Detrend": 0,
+                    "BPF": [],
+                    "Despiking": 0,
+                    "which1st": 3
+                },
+                "HRFE": {
+                    "hrfm": 2,
+                    "hrflen": 32,
+                    "num_basis": null,
+                    "mdelay": [4,8],
+                    "cvi": 0,
+                    "fmri_t": 1,
+                    "fmri_t0": 1,
+                    "thr": 1,
+                    "localK": 2,
+                    "tmask": null,
+                    "hrfdeconv": 1
+                },
+                "rmoutlier": 0,
+                "connectivity": [],
+                "savedata": {
+                    "deconv_save": 0,
+                    "hrfmat_save": 1,
+                    "hrfnii_save": 1,
+                    "job_save": 0
+                },
+                "prefix": "deconv_"
+            }
+        }
+    },
+    "useBidsSchema": false,
+    "useFieldmaps": true,
+    "verbosity": 1,
+    "zeropad": 2,
+    "results": {
+        "nodeName": "",
+        "name": [""],
+        "useMask": false,
+        "MC": "FWE",
+        "p": 0.05,
+        "k": 0,
+        "png": true,
+        "csv": true,
+        "atlas": "Neuromorphometrics",
+        "threshSpm": false,
+        "binary": false,
+        "montage": {
+            "do": false,
+            "slices": [],
+            "orientation": "axial",
+            "background": "/Users/cerpelloni/spm12/canonical/avg152T1.nii"
+        },
+        "nidm": true
+    }
+}

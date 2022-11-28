@@ -9,7 +9,7 @@
 clear;
 clc;
 
-warning('off');
+warning('on');
 
 % add spm to the path
 addpath(fullfile(pwd, '..', 'lib', 'CPP_SPM'));

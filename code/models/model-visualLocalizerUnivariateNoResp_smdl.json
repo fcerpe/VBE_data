@@ -43,7 +43,7 @@
                     "Model": "DoubleGamma"
                 },
                 "Options": {
-                    "HighPassFilterCutoffHz": 0.0078,
+                    "HighPassFilterCutoffHz": 0.0036,
                     "Mask": ""
                 },
                 "Software": {
@@ -96,7 +96,7 @@
                 },
                 "Type": "glm",
                 "Options": {
-                    "HighPassFilterCutoffHz": 0.0078,
+                    "HighPassFilterCutoffHz": 0.0036,
                     "Mask": ""
                 },
                 "Software": {

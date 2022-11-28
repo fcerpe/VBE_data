@@ -7,7 +7,7 @@ clc;
 %% GET PATHS, CPP_SPM, OPTIONS
 
 % spm
-warning('off');
+warning('on');
 
 % cosmo
 cosmo = '~/Applications/CoSMoMVPA-master';
@@ -25,7 +25,7 @@ cosmo_check_external('libsvm'); % should not give an error
 initCppSpm;
 
 % load options
-opt = mvpa_blockMvpa_option();
+opt = mvpa_option();
 
 %% SET UP MASKS AND VOXELS
 

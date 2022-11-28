@@ -1,0 +1,588 @@
+{
+    "QA": {
+        "glm": {
+            "do": false
+        },
+        "anat": {
+            "do": true
+        },
+        "func": {
+            "carpetPlot": true,
+            "Motion": "on",
+            "FD": "on",
+            "Voltera": "on",
+            "Globals": "on",
+            "Movie": "off",
+            "Basics": "on"
+        }
+    },
+    "anatOnly": false,
+    "bidsFilterFile": {
+        "fmap": {
+            "modality": "fmap"
+        },
+        "bold": {
+            "modality": "func",
+            "suffix": "bold"
+        },
+        "t2w": {
+            "modality": "anat",
+            "suffix": "T2w"
+        },
+        "t1w": {
+            "modality": "anat",
+            "space": "",
+            "suffix": "T1w"
+        },
+        "mp2rage": {
+            "modality": "anat",
+            "space": "",
+            "suffix": "MP2RAGE"
+        },
+        "roi": {
+            "modality": "roi",
+            "suffix": "mask"
+        }
+    },
+    "contrastList": [],
+    "dir": {
+        "derivatives": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives",
+        "input": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives/cpp_spm-preproc",
+        "jobs": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives/cpp_spm-stats/jobs/visualLocalizer",
+        "output": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives/cpp_spm-stats",
+        "preproc": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives/cpp_spm-preproc",
+        "raw": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/inputs/raw",
+        "roi": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives/cpp_spm-roi",
+        "root": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data",
+        "stats": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives/cpp_spm-stats"
+    },
+    "dryRun": false,
+    "funcVolToSelect": [],
+    "funcVoxelDims": [],
+    "fwhm": {
+        "contrast": 0,
+        "func": 6
+    },
+    "glm": {
+        "QA": {
+            "do": false
+        },
+        "keepResiduals": false,
+        "maxNbVols": null,
+        "roibased": {
+            "do": false
+        },
+        "useDummyRegressor": false
+    },
+    "groups": [""],
+    "model": {
+        "designOnly": false,
+        "file": "/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/code/stats/../../code/models/model-visualLocalizerUnivariate_smdl.json",
+        "bm": {
+            "content": {
+                "Name": "localizer GLM",
+                "BIDSModelVersion": "1.0.0",
+                "Description": "default model for VisualBraille project - visualLocalizer",
+                "Input": {
+                    "task": ["visualLocalizer"]
+                },
+                "Nodes": [
+                    {
+                        "Level": "Run",
+                        "Name": "run_level",
+                        "GroupBy": [
+                            "run",
+                            "subject"
+                        ],
+                        "Model": {
+                            "Type": "glm",
+                            "X": [
+                                "trial_type.fw",
+                                "trial_type.sfw",
+                                "trial_type.bw",
+                                "trial_type.sbw",
+                                "trial_type.ld",
+                                "trial_type.sld",
+                                "trial_type.response",
+                                "trans_x",
+                                "trans_y",
+                                "trans_z",
+                                "rot_x",
+                                "rot_y",
+                                "rot_z"
+                            ],
+                            "HRF": {
+                                "Variables": [
+                                    "trial_type.fw",
+                                    "trial_type.sfw",
+                                    "trial_type.bw",
+                                    "trial_type.sbw",
+                                    "trial_type.ld",
+                                    "trial_type.sld",
+                                    "trial_type.response"
+                                ],
+                                "Model": "DoubleGamma"
+                            },
+                            "Options": {
+                                "HighPassFilterCutoffHz": 0.0036
+                            },
+                            "Software": {
+                                "SPM": {
+                                    "SerialCorrelation": "FAST",
+                                    "HRFderivatives": "Temporal"
+                                }
+                            }
+                        },
+                        "Contrasts": [
+                            {
+                                "Name": "french_gt_scrambled",
+                                "ConditionList": [
+                                    "trial_type.fw",
+                                    "trial_type.sfw"
+                                ],
+                                "Weights": [1,-1],
+                                "Test": "t"
+                            },
+                            {
+                                "Name": "braille_gt_scrambled",
+                                "ConditionList": [
+                                    "trial_type.bw",
+                                    "trial_type.sbw"
+                                ],
+                                "Weights": [1,-1],
+                                "Test": "t"
+                            },
+                            {
+                                "Name": "drawing_gt_scrambled",
+                                "ConditionList": [
+                                    "trial_type.ld",
+                                    "trial_type.sld"
+                                ],
+                                "Weights": [1,-1],
+                                "Test": "t"
+                            },
+                            {
+                                "Name": "frWords_gt_scrLines",
+                                "ConditionList": [
+                                    "trial_type.fw",
+                                    "trial_type.sld"
+                                ],
+                                "Weights": [1,-1],
+                                "Test": "t"
+                            },
+                            {
+                                "Name": "allWords_gt_scrLines",
+                                "ConditionList": [
+                                    "trial_type.fw",
+                                    "trial_type.bw",
+                                    "trial_type.sld"
+                                ],
+                                "Weights": [0.5,0.5,-1],
+                                "Test": "t"
+                            }
+                        ],
+                        "DummyContrasts": {
+                            "Test": "t",
+                            "Contrasts": [
+                                "trial_type.fw",
+                                "trial_type.sfw",
+                                "trial_type.bw",
+                                "trial_type.sbw",
+                                "trial_type.ld",
+                                "trial_type.sld",
+                                "trial_type.response"
+                            ]
+                        }
+                    },
+                    {
+                        "Level": "Subject",
+                        "Name": "subject_level",
+                        "GroupBy": [
+                            "contrast",
+                            "subject"
+                        ],
+                        "Model": {
+                            "X": 1,
+                            "Type": "glm"
+                        },
+                        "DummyContrasts": {
+                            "Test": "t"
+                        }
+                    },
+                    {
+                        "Level": "Dataset",
+                        "Name": "dataset_level",
+                        "GroupBy": ["contrast"],
+                        "Model": {
+                            "X": 1,
+                            "Type": "glm"
+                        },
+                        "DummyContrasts": {
+                            "Test": "t"
+                        }
+                    }
+                ]
+            },
+            "Name": "localizer GLM",
+            "Description": "default model for VisualBraille project - visualLocalizer",
+            "BIDSModelVersion": "1.0.0",
+            "Input": {
+                "task": ["visualLocalizer"]
+            },
+            "Nodes": [
+                {
+                    "Level": "Run",
+                    "Name": "run_level",
+                    "GroupBy": [
+                        "run",
+                        "subject"
+                    ],
+                    "Model": {
+                        "Type": "glm",
+                        "X": [
+                            "trial_type.fw",
+                            "trial_type.sfw",
+                            "trial_type.bw",
+                            "trial_type.sbw",
+                            "trial_type.ld",
+                            "trial_type.sld",
+                            "trial_type.response",
+                            "trans_x",
+                            "trans_y",
+                            "trans_z",
+                            "rot_x",
+                            "rot_y",
+                            "rot_z"
+                        ],
+                        "HRF": {
+                            "Variables": [
+                                "trial_type.fw",
+                                "trial_type.sfw",
+                                "trial_type.bw",
+                                "trial_type.sbw",
+                                "trial_type.ld",
+                                "trial_type.sld",
+                                "trial_type.response"
+                            ],
+                            "Model": "DoubleGamma"
+                        },
+                        "Options": {
+                            "HighPassFilterCutoffHz": 0.0036
+                        },
+                        "Software": {
+                            "SPM": {
+                                "SerialCorrelation": "FAST",
+                                "HRFderivatives": "Temporal"
+                            }
+                        }
+                    },
+                    "Contrasts": [
+                        {
+                            "Name": "french_gt_scrambled",
+                            "ConditionList": [
+                                "trial_type.fw",
+                                "trial_type.sfw"
+                            ],
+                            "Weights": [1,-1],
+                            "Test": "t"
+                        },
+                        {
+                            "Name": "braille_gt_scrambled",
+                            "ConditionList": [
+                                "trial_type.bw",
+                                "trial_type.sbw"
+                            ],
+                            "Weights": [1,-1],
+                            "Test": "t"
+                        },
+                        {
+                            "Name": "drawing_gt_scrambled",
+                            "ConditionList": [
+                                "trial_type.ld",
+                                "trial_type.sld"
+                            ],
+                            "Weights": [1,-1],
+                            "Test": "t"
+                        },
+                        {
+                            "Name": "frWords_gt_scrLines",
+                            "ConditionList": [
+                                "trial_type.fw",
+                                "trial_type.sld"
+                            ],
+                            "Weights": [1,-1],
+                            "Test": "t"
+                        },
+                        {
+                            "Name": "allWords_gt_scrLines",
+                            "ConditionList": [
+                                "trial_type.fw",
+                                "trial_type.bw",
+                                "trial_type.sld"
+                            ],
+                            "Weights": [0.5,0.5,-1],
+                            "Test": "t"
+                        }
+                    ],
+                    "DummyContrasts": {
+                        "Test": "t",
+                        "Contrasts": [
+                            "trial_type.fw",
+                            "trial_type.sfw",
+                            "trial_type.bw",
+                            "trial_type.sbw",
+                            "trial_type.ld",
+                            "trial_type.sld",
+                            "trial_type.response"
+                        ]
+                    }
+                },
+                {
+                    "Level": "Subject",
+                    "Name": "subject_level",
+                    "GroupBy": [
+                        "contrast",
+                        "subject"
+                    ],
+                    "Model": {
+                        "X": 1,
+                        "Type": "glm"
+                    },
+                    "DummyContrasts": {
+                        "Test": "t"
+                    }
+                },
+                {
+                    "Level": "Dataset",
+                    "Name": "dataset_level",
+                    "GroupBy": ["contrast"],
+                    "Model": {
+                        "X": 1,
+                        "Type": "glm"
+                    },
+                    "DummyContrasts": {
+                        "Test": "t"
+                    }
+                }
+            ],
+            "Edges": [
+                {
+                    "Source": "run_level",
+                    "Destination": "subject_level"
+                },
+                {
+                    "Source": "subject_level",
+                    "Destination": "dataset_level"
+                }
+            ],
+            "tolerant": true,
+            "verbose": true
+        }
+    },
+    "msg": {
+        "color": ""
+    },
+    "pipeline": {
+        "name": "cpp_spm",
+        "type": "stats"
+    },
+    "query": {
+        "modality": [
+            "anat",
+            "func"
+        ]
+    },
+    "realign": {
+        "useUnwarp": true
+    },
+    "rename": true,
+    "results": [
+        {
+            "MC": "none",
+            "atlas": "Neuromorphometrics",
+            "binary": true,
+            "csv": true,
+            "k": 0,
+            "montage": {
+                "background": {
+                    "suffix": "T1w",
+                    "desc": "preproc",
+                    "modality": "anat"
+                },
+                "do": true,
+                "orientation": "axial",
+                "slices": [-20,-18,-16,-14,-12,-10,-8,-6,-4,-2,0]
+            },
+            "name": ["french_gt_scrambled"],
+            "nidm": true,
+            "nodeName": "subject_level",
+            "p": 0.001,
+            "png": true,
+            "threshSpm": true,
+            "useMask": false
+        },
+        {
+            "MC": "none",
+            "atlas": "Neuromorphometrics",
+            "binary": true,
+            "csv": true,
+            "k": 0,
+            "montage": {
+                "background": {
+                    "suffix": "T1w",
+                    "desc": "preproc",
+                    "modality": "anat"
+                },
+                "do": true,
+                "orientation": "axial",
+                "slices": [-20,-18,-16,-14,-12,-10,-8,-6,-4,-2,0]
+            },
+            "name": ["braille_gt_scrambled"],
+            "nidm": true,
+            "nodeName": "subject_level",
+            "p": 0.001,
+            "png": true,
+            "threshSpm": true,
+            "useMask": false
+        },
+        {
+            "MC": "none",
+            "atlas": "Neuromorphometrics",
+            "binary": true,
+            "csv": true,
+            "k": 0,
+            "montage": {
+                "background": {
+                    "suffix": "T1w",
+                    "desc": "preproc",
+                    "modality": "anat"
+                },
+                "do": true,
+                "orientation": "axial",
+                "slices": [-20,-18,-16,-14,-12,-10,-8,-6,-4,-2,0]
+            },
+            "name": ["drawing_gt_scrambled"],
+            "nidm": true,
+            "nodeName": "subject_level",
+            "p": 0.001,
+            "png": true,
+            "threshSpm": true,
+            "useMask": false
+        },
+        {
+            "MC": "none",
+            "atlas": "Neuromorphometrics",
+            "binary": true,
+            "csv": true,
+            "k": 0,
+            "montage": {
+                "background": {
+                    "suffix": "T1w",
+                    "desc": "preproc",
+                    "modality": "anat"
+                },
+                "do": true,
+                "orientation": "axial",
+                "slices": [-20,-18,-16,-14,-12,-10,-8,-6,-4,-2,0]
+            },
+            "name": ["frWords_gt_scrLines"],
+            "nidm": true,
+            "nodeName": "subject_level",
+            "p": 0.001,
+            "png": true,
+            "threshSpm": true,
+            "useMask": false
+        },
+        {
+            "MC": "none",
+            "atlas": "Neuromorphometrics",
+            "binary": true,
+            "csv": true,
+            "k": 0,
+            "montage": {
+                "background": {
+                    "suffix": "T1w",
+                    "desc": "preproc",
+                    "modality": "anat"
+                },
+                "do": true,
+                "orientation": "axial",
+                "slices": [-20,-18,-16,-14,-12,-10,-8,-6,-4,-2,0]
+            },
+            "name": ["allWords_gt_scrLines"],
+            "nidm": true,
+            "nodeName": "subject_level",
+            "p": 0.001,
+            "png": true,
+            "threshSpm": true,
+            "useMask": false
+        }
+    ],
+    "segment": {
+        "do": true,
+        "force": false,
+        "biasfwhm": 60,
+        "samplingDistance": 3
+    },
+    "skullstrip": {
+        "do": true,
+        "force": false,
+        "threshold": 0.75,
+        "mean": false
+    },
+    "space": ["IXI549Space"],
+    "stc": {
+        "referenceSlice": [],
+        "sliceOrder": [],
+        "skip": false
+    },
+    "subjects": [
+        "010",
+        "011"
+    ],
+    "taskName": ["visualLocalizer"],
+    "toolbox": {
+        "MACS": {
+            "model": {
+                "files": []
+            }
+        },
+        "rsHRF": {
+            "vox_rsHRF": {
+                "Denoising": {
+                    "generic": [],
+                    "Detrend": 0,
+                    "BPF": [],
+                    "Despiking": 0,
+                    "which1st": 3
+                },
+                "HRFE": {
+                    "hrfm": 2,
+                    "hrflen": 32,
+                    "num_basis": null,
+                    "mdelay": [4,8],
+                    "cvi": 0,
+                    "fmri_t": 1,
+                    "fmri_t0": 1,
+                    "thr": 1,
+                    "localK": 2,
+                    "tmask": null,
+                    "hrfdeconv": 1
+                },
+                "rmoutlier": 0,
+                "connectivity": [],
+                "savedata": {
+                    "deconv_save": 0,
+                    "hrfmat_save": 1,
+                    "hrfnii_save": 1,
+                    "job_save": 0
+                },
+                "prefix": "deconv_"
+            }
+        }
+    },
+    "useBidsSchema": false,
+    "useFieldmaps": true,
+    "verbosity": 2,
+    "zeropad": 2
+}

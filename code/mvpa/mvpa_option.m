@@ -1,4 +1,4 @@
-function opt = mvpa_blockMvpa_option()
+function opt = mvpa_option()
 % returns a structure that contains the options chosen by the user to run
 % bidsConcat and also Decoding (two scripts)
 
@@ -7,7 +7,7 @@ if nargin < 1
 end
 
 % suject to run in each group
-opt.subjects = {'006','007'}; % 004
+opt.subjects = {'006','007','008','009'}; % 004
 
 % specify the order of the runs where we can find the following conditions
 % French - Braille: 003 006 008
@@ -15,9 +15,8 @@ opt.subjects = {'006','007'}; % 004
 %                            f  f  f  f  f  f  b  b  b  b  b  b
 opt.subsCondition = {'006', [1  3  5  7  9 11  2  4  6  8 10 12];
                      '007', [2  4  6  8 10 12  1  3  5  7  9 11];
-                     };
-%                     '008', [1  3  5  7  9 11  2  4  6  8 10 12];
-%                     '009', [2  4  6  8 10 12  1  3  5  7  9 11]
+                     '008', [1  3  5  7  9 11  2  4  6  8 10 12];
+                     '009', [2  4  6  8 10 12  1  3  5  7  9 11]};
 
 % assign the condition to decode, changes based on our aims
 % - french_v_braille: simple script decoding
@@ -72,32 +71,13 @@ opt.parallelize.do = false;
 opt.parallelize.nbWorkers = 1;
 opt.parallelize.killOnExit = true;
 
+% ROI method (empty will be 10mm sphere around individual peaks)
+opt.roiMethod = [];
+
 %% DO NOT TOUCH
 opt = checkOptions(opt);
 saveOptions(opt);
 % we cannot save opt with opt.mvpa, it crashes
-
-%% univariate options to specify contrasts etc.
-
-opt.result.Steps(1) = returnDefaultResultsStructure();
-opt.result.Steps(1).Level = 'subject';
-
-% Specify how you want your output (all the following are on false by default)
-opt.result.Steps(1).Output.png = true();
-opt.result.Steps(1).Output.csv = true();
-opt.result.Steps(1).Output.thresh_spm = true();
-opt.result.Steps(1).Output.binary = true();
-
-% MONTAGE FIGURE OPTIONS
-opt.result.Steps(1).Output.montage.do = true();
-opt.result.Steps(1).Output.montage.slices = -16:2:0; % in mm
-% axial is default 'sagittal', 'coronal'
-opt.result.Steps(1).Output.montage.orientation = 'axial';
-% will use the MNI T1 template by default but the underlay image can be changed.
-opt.result.Steps(1).Output.montage.background = ...
-    fullfile(spm('dir'), 'canonical', 'avg152T1.nii,1');
-
-opt.result.Steps(1).Output.NIDM_results = true();
 
 %% multivariate options
 
@@ -109,7 +89,7 @@ opt.fwhm.contrast = 2;
 % opt.mvpa.ratioToKeep = 300; % 100 150 250 350 420
 
 % set which type of ffx results you want to use
-opt.mvpa.map4D = {'beta', 'tMaps'};
+opt.mvpa.map4D = {'beta', 'tmap'};
 
 % design info
 opt.mvpa.nbRun = 12;

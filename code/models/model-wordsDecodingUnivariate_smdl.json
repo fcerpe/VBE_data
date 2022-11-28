@@ -10,7 +10,7 @@
     "Nodes": [
         {
             "Level": "Run",
-            "Name": "wordsDecoding GLM",
+            "Name": "run_level",
             "GroupBy": [
               "run",
               "subject"
@@ -51,7 +51,7 @@
                     "Model": "DoubleGamma"
                 },
                 "Options": {
-                    "HighPassFilterCutoffHz": 0.0078,
+                    "HighPassFilterCutoffHz": 0.0039,
                     "Mask": ""
                 },
                 "Software": {
@@ -116,7 +116,7 @@
                 },
                 "Type": "glm",
                 "Options": {
-                    "HighPassFilterCutoffHz": 0.0078,
+                    "HighPassFilterCutoffHz": 0.0039,
                     "Mask": ""
                 },
                 "Software": {

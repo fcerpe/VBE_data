@@ -15,7 +15,7 @@ opt.roiList = {'VWFA-Fr', 'VWFA-Br', 'LOC-Left', 'PFS-Left', 'LOC-Right', 'PFS-R
 opt.radius = 10; %mm
 
 % Number of voxels in the case of expanding ROI
-opt.numVoxels = 150;
+opt.numVoxels = 50;
 
 % Save the ROI?
 opt.saveROI = true;
@@ -78,7 +78,7 @@ saveOptions(opt);
 
 % define the 4D maps to be used
 opt.fwhm.func = 2;
-opt.fwhm.contrast = 2;
+opt.fwhm.contrast = 0;
 
 % take the most responsive xx nb of voxels
 % opt.mvpa.ratioToKeep = 300; % 100 150 250 350 420

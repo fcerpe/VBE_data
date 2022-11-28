@@ -7,7 +7,7 @@ function opt = stats_blockMvpa_option()
 
 opt = [];
 
-opt.subjects = {'006'}; 
+opt.subjects = {'006','007','008','009'}; 
 
 % Task to analyze - change accordingly
 opt.taskName = 'wordsDecoding';
@@ -24,7 +24,7 @@ opt.glm.QA.do = false;
 
 % The functional smoothing 
 opt.fwhm.func = 2;
-opt.fwhm.contrast = 2;
+opt.fwhm.contrast = 0;
 
 % The directory where the data are located
 opt.dir.root = fullfile(fileparts(mfilename('fullpath')), '..', '..');
@@ -43,9 +43,9 @@ opt.model.file = fullfile(fileparts(mfilename('fullpath')), '..', ...
 opt.pipeline.type = 'stats';
 
 % Specify the result to compute
-opt.result.Nodes(1) = defaultResultsStructure();
-
-opt.result.Nodes(1).Level = 'subject';
+% opt.result.Nodes(1) = defaultResultsStructure();
+% 
+% opt.result.Nodes(1).Level = 'subject';
 
 % For each contrats, you can adapt:
 %  - voxel level (p)
@@ -55,22 +55,18 @@ opt.result.Nodes(1).Level = 'subject';
 %    - 'FDR'
 %    - 'none'
 
+opt.results(1).nodeName = 'run_level';
+
 % Specify how you want your output (all the following are on false by default)
-opt.result.Nodes(1).Output.png = true();
-opt.result.Nodes(1).Output.csv = true();
-opt.result.Nodes(1).Output.thresh_spm = true();
-opt.result.Nodes(1).Output.binary = true();
-
-% MONTAGE FIGURE OPTIONS
-opt.result.Nodes(1).Output.montage.do = true();
-opt.result.Nodes(1).Output.montage.slices = -20:2:0; % in mm
-% axial is default 'sagittal', 'coronal'
-opt.result.Nodes(1).Output.montage.orientation = 'axial';
-% will use the MNI T1 template by default but the underlay image can be changed.
-opt.result.Nodes(1).Output.montage.background = ...
-    fullfile(spm('dir'), 'canonical', 'avg152T1.nii');
-
-opt.result.Nodes(1).Output.NIDM_results = true();
+opt.results(1).binary = true();
+opt.results(1).montage.do = true();
+opt.results(1).montage.background = struct('suffix', 'T1w', 'desc', 'preproc', 'modality', 'anat');
+opt.results(1).montage.slices = -20:2:0;
+opt.results(1).montage.orientation = 'axial'; % also 'sagittal', 'coronal'
+opt.results(1).nidm = true();
+opt.results(1).threshSpm = true();
+opt.results(1).png = true();
+opt.results(1).csv = true();
 
 %% DO NOT TOUCH
 opt = checkOptions(opt);

@@ -75,7 +75,7 @@ for iSub = 1:length(opt.subjects)
                              'label-',regName,'_','radius-',num2str(opt.radius),'mm','_mask'];
 
             betaReference = fullfile(opt.dir.stats, subName, ...
-                                 'task-wordsDecoding_space-IXI549Space_FWHM-2_node-wordsDecodingMVPA', ...
+                                 'task-wordsDecoding_space-IXI549Space_FWHM-2', ...
                                  'spmT_0001.nii');
             
             % specify the sphere characteristics for each of them
@@ -87,6 +87,7 @@ for iSub = 1:length(opt.subjects)
             outputPath = [opt.dir.rois,'/',subName];
 
             mask = createRoi('sphere', sphereParams, betaReference, outputPath, opt.saveROI);
+            mask = spm_summarise(betaReference, mask);
 
             % rename the mask to a bids-like name
             % movefile oldName newName

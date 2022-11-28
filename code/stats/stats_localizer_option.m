@@ -7,12 +7,12 @@ function opt = stats_localizer_option()
 
 opt = [];
 
-opt.subjects = {'006','007','008','009'}; % 002 003 004 005
+opt.subjects = {'007','008','009'}; % 002 003 004 005
 
 % Task to analyze - change accordingly
-opt.taskName = 'viualLocalizer';
+opt.taskName = 'visualLocalizer';
 
-opt.verbosity = 1;
+opt.verbosity = 2;
 
 % space to analyse
 opt.space = 'MNI';
@@ -36,15 +36,15 @@ opt.dir.roi = fullfile(opt.dir.root, 'outputs', 'derivatives', 'cpp_spm-roi');
 opt.dir.stats = fullfile(opt.dir.root, 'outputs', 'derivatives', 'cpp_spm-stats');
 
 % Model specifies all the contrasts
-opt.model.file = fullfile(fileparts(mfilename('fullpath')), '..', ...
+opt.model.file = fullfile(opt.dir.root, 'code', ...
     'models', 'model-visualLocalizerUnivariate_smdl.json');
 
 opt.pipeline.type = 'stats';
 
-% Specify the result to compute
-opt.result.Nodes(1) = defaultResultsStructure();
-
-opt.result.Nodes(1).Level = 'subject';
+% % Specify the result to compute
+% opt.results.Nodes(1) = defaultResultsStructure();
+% 
+% opt.results.Nodes(1).Level = 'subject';
 
 % For each contrats, you can adapt:
 %  - voxel level (p)
@@ -54,53 +54,91 @@ opt.result.Nodes(1).Level = 'subject';
 %    - 'FDR'
 %    - 'none'
 
-% Do it for all of them
-% FRENCH WORDS > SCRAMBLED FRENCH WORDS
-opt.result.Nodes(1).Contrasts(1).Name = 'french_gt_scrambled';
-opt.result.Nodes(1).Contrasts(1).MC =  'none';
-opt.result.Nodes(1).Contrasts(1).p = 0.0001;
-opt.result.Nodes(1).Contrasts(1).k = 0;
+% nodeName = name of the Node in the BIDS stats model
+opt.results(1).nodeName = 'subject_level';
+% name of the contrast in the BIDS stats model
+opt.results(1).name = {'french_gt_scrambled'};
+% Specify how you want your output (all the following are on false by default)
+opt.results(1).png = true();
+opt.results(1).csv = true();
+opt.results(1).p = 0.001;
+opt.results(1).MC = 'none';
+opt.results(1).k = 0;
+% those don't change across contrasts, try to put only once
+opt.results(1).binary = true();
+opt.results(1).montage.do = true();
+opt.results(1).montage.background = struct('suffix', 'T1w', 'desc', 'preproc', 'modality', 'anat');
+opt.results(1).montage.slices = -20:2:0;
+opt.results(1).montage.orientation = 'axial'; % also 'sagittal', 'coronal'
+opt.results(1).nidm = true();
+opt.results(1).threshSpm = true();
 
-% BRAILLE WORDS > SCRAMBLED BRAILLE WORDS
-opt.result.Nodes(1).Contrasts(2).Name = 'braille_gt_scrambled';
-opt.result.Nodes(1).Contrasts(2).MC =  'none';
-opt.result.Nodes(1).Contrasts(2).p = 0.0001;
-opt.result.Nodes(1).Contrasts(2).k = 0;
+opt.results(2).nodeName = 'subject_level';
+opt.results(2).name = {'braille_gt_scrambled'};
+opt.results(2).png = true();
+opt.results(2).csv = true();
+opt.results(2).p = 0.001;
+opt.results(2).MC = 'none';
+opt.results(2).k = 0;
+% those don't change across contrasts, try to put only once
+opt.results(2).binary = true();
+opt.results(2).montage.do = true();
+opt.results(2).montage.background = struct('suffix', 'T1w', 'desc', 'preproc', 'modality', 'anat');
+opt.results(2).montage.slices = -20:2:0;
+opt.results(2).montage.orientation = 'axial'; % also 'sagittal', 'coronal'
+opt.results(2).nidm = true();
+opt.results(2).threshSpm = true();
 
-% LINE DRAWINGS > SCRAMBLED LINE DRAWINGS
-opt.result.Nodes(1).Contrasts(3).Name = 'drawing_gt_scrambled';
-opt.result.Nodes(1).Contrasts(3).MC =  'none';
-opt.result.Nodes(1).Contrasts(3).p = 0.0001;
-opt.result.Nodes(1).Contrasts(3).k = 0;
+opt.results(3).nodeName = 'subject_level';
+opt.results(3).name = {'drawing_gt_scrambled'};
+opt.results(3).png = true();
+opt.results(3).csv = true();
+opt.results(3).p = 0.001;
+opt.results(3).MC = 'none';
+opt.results(3).k = 0;
+% those don't change across contrasts, try to put only once
+opt.results(3).binary = true();
+opt.results(3).montage.do = true();
+opt.results(3).montage.background = struct('suffix', 'T1w', 'desc', 'preproc', 'modality', 'anat');
+opt.results(3).montage.slices = -20:2:0;
+opt.results(3).montage.orientation = 'axial'; % also 'sagittal', 'coronal'
+opt.results(3).nidm = true();
+opt.results(3).threshSpm = true();
 
-% FRENCH WORDS > SCRAMBLED LINE DRAWINGS
-opt.result.Nodes(1).Contrasts(4).Name = 'frWords_gt_scrLines';
-opt.result.Nodes(1).Contrasts(4).MC =  'none';
-opt.result.Nodes(1).Contrasts(4).p = 0.001;
-opt.result.Nodes(1).Contrasts(4).k = 0;
+opt.results(4).nodeName = 'subject_level';
+opt.results(4).name = {'frWords_gt_scrLines'};
+opt.results(4).png = true();
+opt.results(4).csv = true();
+opt.results(4).p = 0.001;
+opt.results(4).MC = 'none';
+opt.results(4).k = 0;
+% those don't change across contrasts, try to put only once
+opt.results(4).binary = true();
+opt.results(4).montage.do = true();
+opt.results(4).montage.background = struct('suffix', 'T1w', 'desc', 'preproc', 'modality', 'anat');
+opt.results(4).montage.slices = -20:2:0;
+opt.results(4).montage.orientation = 'axial'; % also 'sagittal', 'coronal'
+opt.results(4).nidm = true();
+opt.results(4).threshSpm = true();
 
-% FRENCH AND BRAILLE WORDS > SCRAMBLED LINE DRAWINGS 
-opt.result.Nodes(1).Contrasts(5).Name = 'allWords_gt_scrLines';
-opt.result.Nodes(1).Contrasts(5).MC =  'none';
-opt.result.Nodes(1).Contrasts(5).p = 0.001;
-opt.result.Nodes(1).Contrasts(5).k = 0;
+opt.results(5).nodeName = 'subject_level';
+opt.results(5).name = {'allWords_gt_scrLines'};
+opt.results(5).png = true();
+opt.results(5).csv = true();
+opt.results(5).p = 0.001;
+opt.results(5).MC = 'none';
+opt.results(5).k = 0;
+% those don't change across contrasts, try to put only once
+opt.results(5).binary = true();
+opt.results(5).montage.do = true();
+opt.results(5).montage.background = struct('suffix', 'T1w', 'desc', 'preproc', 'modality', 'anat');
+opt.results(5).montage.slices = -20:2:0;
+opt.results(5).montage.orientation = 'axial'; % also 'sagittal', 'coronal'
+opt.results(5).nidm = true();
+opt.results(5).threshSpm = true();
 
 % Specify how you want your output (all the following are on false by default)
-opt.result.Nodes(1).Output.png = true();
-opt.result.Nodes(1).Output.csv = true();
-opt.result.Nodes(1).Output.thresh_spm = true();
-opt.result.Nodes(1).Output.binary = true();
 
-% MONTAGE FIGURE OPTIONS
-opt.result.Nodes(1).Output.montage.do = true();
-opt.result.Nodes(1).Output.montage.slices = -20:2:0; % in mm
-% axial is default 'sagittal', 'coronal'
-opt.result.Nodes(1).Output.montage.orientation = 'axial';
-% will use the MNI T1 template by default but the underlay image can be changed.
-opt.result.Nodes(1).Output.montage.background = ...
-    fullfile(spm('dir'), 'canonical', 'avg152T1.nii');
-
-opt.result.Nodes(1).Output.NIDM_results = true();
 
 %% DO NOT TOUCH
 opt = checkOptions(opt);

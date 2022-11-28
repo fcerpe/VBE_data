@@ -12,12 +12,16 @@ opt.taskName = 'wordsDecoding';
 % opt.taskName = 'visualLocalizer';
 
 % who will be preprocessed?
-opt.subjects = {'004', '006', '007', '008', '009'}; % ,'002','004','005'
+opt.subjects = {'006','007','008','009'}; % any number from 001 to 013 is a praticipant
 
 % space is not important now, if not specified, do it for both individual and MNI
 opt.space = 'MNI';
 
 opt.pipeline.type = 'preproc';
+
+% The functional smoothing 
+opt.fwhm.func = 6;
+opt.fwhm.contrast = 0;
 
 % The directory where the data are located
 opt.dir.root = fullfile(fileparts(mfilename('fullpath')), '..', '..');
