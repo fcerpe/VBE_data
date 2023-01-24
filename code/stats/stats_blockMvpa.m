@@ -12,9 +12,9 @@ clc;
 warning('off');
 
 % add spm to the path
-addpath(fullfile(pwd, '..', 'lib', 'CPP_SPM'));
+addpath(fullfile(pwd, '..', 'lib', 'bidspm'));
 addpath(fullfile(pwd, '..', 'lib', 'CPP_BIDS'));
-initCppSpm;
+bidspm;
 
 % check inside if everything is ok before starting the pipeline
 opt = stats_blockMvpa_option();
@@ -28,7 +28,7 @@ bidsFFX('specifyAndEstimate', opt);
 bidsFFX('contrasts', opt);
 
 % 
-% bidsResults(opt);
+bidsResults(opt);
 
 % At the end, also extract concatenate betas and t-maps for later mvpa
 bidsConcatBetaTmaps(opt, 0);

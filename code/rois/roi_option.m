@@ -50,10 +50,10 @@ opt.dir.root = fullfile(fileparts(mfilename('fullpath')), '..', '..');
 
 opt.dir.raw = fullfile(opt.dir.root, 'inputs', 'raw');
 opt.dir.derivatives = fullfile(opt.dir.root, 'outputs', 'derivatives');
-opt.dir.preproc = fullfile(opt.dir.root, 'outputs', 'derivatives', 'cpp_spm-preproc');
+opt.dir.preproc = fullfile(opt.dir.root, 'outputs', 'derivatives', 'bidspm-preproc');
 opt.dir.input = opt.dir.preproc;
 opt.dir.rois = fullfile(opt.dir.root, 'outputs', 'derivatives', 'cpp_spm-rois');
-opt.dir.stats = fullfile(opt.dir.root, 'outputs', 'derivatives', 'cpp_spm-stats');
+opt.dir.stats = fullfile(opt.dir.root, 'outputs', 'derivatives', 'bidspm-stats');
 opt.dir.cosmo = fullfile(opt.dir.root, 'outputs', 'derivatives', 'CoSMoMVPA');
 
 % Suffix output directory for the saved jobs

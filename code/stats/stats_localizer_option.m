@@ -7,7 +7,7 @@ function opt = stats_localizer_option()
 
 opt = [];
 
-opt.subjects = {'007','008','009'}; % 002 003 004 005
+opt.subjects = {'010','011','013'}; % 002 003 004 005
 
 % Task to analyze - change accordingly
 opt.taskName = 'visualLocalizer';
@@ -30,10 +30,10 @@ opt.dir.root = fullfile(fileparts(mfilename('fullpath')), '..', '..');
 
 opt.dir.raw = fullfile(opt.dir.root, 'inputs', 'raw');
 opt.dir.derivatives = fullfile(opt.dir.root, 'outputs', 'derivatives');
-opt.dir.preproc = fullfile(opt.dir.root, 'outputs', 'derivatives', 'cpp_spm-preproc');
+opt.dir.preproc = fullfile(opt.dir.root, 'outputs', 'derivatives', 'bidspm-preproc');
 opt.dir.input = opt.dir.preproc;
 opt.dir.roi = fullfile(opt.dir.root, 'outputs', 'derivatives', 'cpp_spm-roi');
-opt.dir.stats = fullfile(opt.dir.root, 'outputs', 'derivatives', 'cpp_spm-stats');
+opt.dir.stats = fullfile(opt.dir.root, 'outputs', 'derivatives', 'bidspm-stats');
 
 % Model specifies all the contrasts
 opt.model.file = fullfile(opt.dir.root, 'code', ...

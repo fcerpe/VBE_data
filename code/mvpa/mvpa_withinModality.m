@@ -9,16 +9,21 @@ function accu = mvpa_withinModality(opt)
 % choose masks to be used
 opt = mvpa_chooseMask(opt);
 
-% because apparently I do not say it's a cell but the checks decide
-% otherwise
-%     opt.taskName = opt.taskName{1};
+% switch method in a more readable name
+switch opt.roiMethod
+    case 'general_coords_10mm',    opt.methodName = 'neurosynth-sphere-10mm';
+    case 'individual_coords_10mm', opt.methodName = 'individual-sphere-10mm';
+    case 'individual_coords_8mm',  opt.methodName = 'individual-sphere-8mm';
+    case 'individual_coords_50vx', opt.methodName = 'individual-expand-50vx';
+    case 'anatomical_intersection_8mm', opt.methodName = 'anatomy-sphere-8mm';
+end
 
 % set output folder/name
 savefileMat = fullfile(opt.dir.cosmo, ...
-    ['task-', opt.taskName{1}, '_condition-', opt.decodingCondition{1}, '_nbvoxels-', num2str(opt.mvpa.ratioToKeep), '.mat']);
+    ['task-', opt.taskName{1},'_method-', opt.methodName, '_condition-', opt.decodingCondition{1}, '_nbvoxels-', num2str(opt.mvpa.ratioToKeep), '.mat']);
 
 savefileCsv = fullfile(opt.dir.cosmo, ...
-    ['task-', opt.taskName{1}, '_condition-', opt.decodingCondition{1}, '_nbvoxels-', num2str(opt.mvpa.ratioToKeep), '.csv']);
+    ['task-', opt.taskName{1},'_method-', opt.methodName, '_condition-', opt.decodingCondition{1}, '_nbvoxels-', num2str(opt.mvpa.ratioToKeep), '.csv']);
 
 %% MVPA options
 
@@ -53,7 +58,7 @@ for iSub = 1:numel(opt.subjects)
 
     for iImage = 1:length(opt.mvpa.map4D)
 
-        subMasks = opt.maskName(startsWith(opt.maskName, strcat('sub-', subID)));
+        subMasks = opt.maskName(startsWith(opt.maskName, strcat('rsub-', subID)));
 
         for iMask = 1:length(subMasks)
 
@@ -185,6 +190,11 @@ for iSub = 1:numel(opt.subjects)
                     fprintf(['Sub'  subID ': ' condLabelName{decodingPairs(pair,1)} ' v. ' condLabelName{decodingPairs(pair,2)} ...
                         ' in ' opt.maskLabel{iMask} ' - accuracy: ' num2str(accuracy) '\n\n\n']);
                 end
+
+                % map in nii file the voxels used
+                cosmo_map2fmri(ds, ['cosmo_datasets/data_' subMasks{iMask}]);
+
+
             end
         end
     end

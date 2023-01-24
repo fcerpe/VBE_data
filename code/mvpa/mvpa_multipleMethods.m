@@ -22,7 +22,7 @@ addpath(genpath(libsvm));
 cosmo_check_external('libsvm'); % should not give an error
 
 % add cpp repo
-initCppSpm;
+bidspm;
 
 % load options
 opt = mvpa_option();
@@ -31,32 +31,50 @@ opt = mvpa_option();
 
 % opt = mvpa_prepareMasks(opt);
 
-methods = {'general_coords_10mm','individual_coords_10mm','individual_coord_8mm','individual_coords_50vx'};
+methods = {'anatomical_intersection_8mm','general_coords_10mm','individual_coords_10mm','individual_coords_8mm','individual_coords_50vx'};
 
+allRatios = [];
+opt.mvpa.minMasks = [];
 % DO IT FOR EVERY METHOD
 
-% for i = 1:length(methods)
-    opt.roiMethod = 'individual_coords_marsbar';
+for i = 1:length(methods)
+    opt.roiMethod = methods{i};
 
     % get how many voxels are active / significant in each ROI
     maskVoxel = mvpa_calculateMaskSize(opt);
 
     % keep the minimun value of voxels in a ROI as ratio to keep (must be constant)
-    opt.mvpa.ratioToKeep = 50;
+    opt.mvpa.minMasks = [opt.mvpa.minMasks, min(maskVoxel)];
+    allRatios = [allRatios; maskVoxel'];
 
-% end
+end
 
 
 %% GO GET THAT ACCURACY!
 
-% Within modality
-% training set and test set both contain RW, PW, NW, FS stimuli.
-% Learn to distinguish them
-mvpaWithin = mvpa_withinModality(opt);
+opt.mvpa.nbRun = 12;
+
+for i = 1:length(methods)
+    
+        opt.roiMethod = methods{i};
+    
+        % use maximum 50 voxels, less if we don't have enough
+        if opt.mvpa.minMasks(i) < 50
+            opt.mvpa.ratioToKeep = opt.mvpa.minMasks(i);
+        else
+            opt.mvpa.ratioToKeep = 50;
+        end
+    
+        % Within modality
+        % training set and test set both contain RW, PW, NW, FS stimuli.
+        % Learn to distinguish them
+        mvpaWithin = mvpa_withinModality(opt);
+    
+end
 
 %% Visualize nicely
 
-mvpa_readableMatrix;
+% mvpa_readableMatrix;
 
 %%
 % "Cross-modal" decoding

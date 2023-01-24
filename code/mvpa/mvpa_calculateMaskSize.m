@@ -26,7 +26,7 @@ for iSub = 1:numel(opt.subjects)
 
     for iImage = 1:length(opt.mvpa.map4D)
 
-        subMasks = opt.maskName(startsWith(opt.maskName, strcat('sub-', subID)));
+        subMasks = opt.maskName(startsWith(opt.maskName, strcat('rsub-', subID)));
 
         for iMask = 1:length(subMasks)
 
@@ -66,6 +66,7 @@ for iSub = 1:numel(opt.subjects)
 
                 % calculate the mask size
                 thisVoxel = size(ds.samples, 2);
+%                 cosmo_map2fmri(ds, ['cosmo_datasets/data_' subMasks{iMask}]);
                 % display the mask size
                 disp(thisVoxel);
                 maskVoxel = [maskVoxel, thisVoxel];

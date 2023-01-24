@@ -38,7 +38,7 @@ opt.space = 'MNI'; % 'individual', 'MNI'
 opt.desc = 'MVPA';
 
 % I like chatty outputs
-opt.verbosity = 1;
+opt.verbosity = 2;
 
 % task to analyze
 opt.taskName = 'wordsDecoding';
@@ -49,10 +49,10 @@ opt.dir.root = fullfile(fileparts(mfilename('fullpath')), '..', '..');
 
 opt.dir.raw = fullfile(opt.dir.root, 'inputs', 'raw');
 opt.dir.derivatives = fullfile(opt.dir.root, 'outputs', 'derivatives');
-opt.dir.preproc = fullfile(opt.dir.root, 'outputs', 'derivatives', 'cpp_spm-preproc');
+opt.dir.preproc = fullfile(opt.dir.root, 'outputs', 'derivatives', 'bidspm-preproc');
 opt.dir.input = opt.dir.preproc;
 opt.dir.rois = fullfile(opt.dir.root, 'outputs', 'derivatives', 'cpp_spm-rois');
-opt.dir.stats = fullfile(opt.dir.root, 'outputs', 'derivatives', 'cpp_spm-stats');
+opt.dir.stats = fullfile(opt.dir.root, 'outputs', 'derivatives', 'bidspm-stats');
 opt.dir.cosmo = fullfile(opt.dir.root, 'outputs', 'derivatives', 'CoSMoMVPA');
 
 % Suffix output directory for the saved jobs
@@ -62,8 +62,10 @@ opt.glm.QA.do = false;
 % multivariate
 opt.pipeline.type = 'stats';
 
-opt.model.file = fullfile(opt.dir.root, 'code', ...
+% Model specifies all the contrasts
+opt.model.file = fullfile(fileparts(mfilename('fullpath')), '..', ...
     'models', 'model-wordsDecoding_fourConditions_smdl.json');
+
 
 % Options for normalization (in case they're needed)
 opt.funcVoxelDims = [2.6 2.6 2.6];
@@ -72,7 +74,7 @@ opt.parallelize.nbWorkers = 1;
 opt.parallelize.killOnExit = true;
 
 % ROI method (empty will be 10mm sphere around individual peaks)
-opt.roiMethod = [];
+opt.roiMethod = 'individual_coords_8mm';
 
 %% DO NOT TOUCH
 opt = checkOptions(opt);
@@ -83,16 +85,16 @@ saveOptions(opt);
 
 % define the 4D maps to be used
 opt.fwhm.func = 2;
-opt.fwhm.contrast = 2;
+opt.fwhm.contrast = 0;
 
 % take the most responsive xx nb of voxels
 % opt.mvpa.ratioToKeep = 300; % 100 150 250 350 420
 
 % set which type of ffx results you want to use
-opt.mvpa.map4D = {'beta', 'tmap'};
+opt.mvpa.map4D = {'beta','tmap'};
 
 % design info
-opt.mvpa.nbRun = 12;
+opt.mvpa.nbRun = 6;
 opt.mvpa.nbTrialRepetition = 1;
 
 % cosmo options

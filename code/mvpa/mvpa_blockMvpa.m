@@ -22,7 +22,7 @@ addpath(genpath(libsvm));
 cosmo_check_external('libsvm'); % should not give an error
 
 % add cpp repo
-initCppSpm;
+bidspm;
 
 % load options
 opt = mvpa_option();
@@ -33,7 +33,7 @@ opt = mvpa_option();
 maskVoxel = mvpa_calculateMaskSize(opt);
 
 % keep the minimun value of voxels in a ROI as ratio to keep (must be constant)
-opt.mvpa.ratioToKeep = min(maskVoxel); 
+opt.mvpa.ratioToKeep = 50; 
 
 %% GO GET THAT ACCURACY!
 

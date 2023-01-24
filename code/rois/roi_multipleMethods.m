@@ -25,8 +25,9 @@ clc;
 
 %% Method #1 - Take everything that is where the area is supposed to be
 
-% add cpp repo
-initCppSpm;
+% add bidspm and init it
+addpath '/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/code/lib/bidspm'
+bidspm;
 
 % marsbar;
 % options > edit options > base space for ROIs > get your spmT.nii > accept
@@ -94,7 +95,7 @@ for iSub = 1:length(opt.subjects)
             nativeName = ['label-',mask.label,'_mask'];
             movefile([path, subName, '/', nativeName,'.nii'], [path, subName, '/', bidslikeName,'.nii'],'f')
             movefile([path, subName, '/', nativeName,'.json'], [path, subName, '/', bidslikeName,'.json'],'f')
-   
+
             % reslice
             roiPath = fullfile(opt.dir.rois, subName, [bidslikeName, '.nii']);
             mask = resliceRoiImages(betaReference,roiPath);
@@ -104,6 +105,7 @@ for iSub = 1:length(opt.subjects)
 end
 
 %% Method #2 and #3 - 8mm and 10mm spheres around individual coordinates (one script for efficiency)
+% Technically intersections between sphere and brain mask
 
 % get individual coordinates
 mni = roi_getMNIcoords(opt.subjects);
@@ -143,24 +145,34 @@ for iSub = 1:length(opt.subjects)
                 bidslikeName = [subName,'_','space-MNI','_', 'trial-IndividualCoords_' , ...
                     'label-',regName,'_','radius-',num2str(rad),'mm','_mask'];
 
-                betaReference = fullfile(opt.dir.stats, subName, ...
-                    'task-wordsDecoding_space-IXI549Space_FWHM-2', ...
-                    'beta_0001.nii');
+                betaReference = fullfile(opt.dir.stats, subName, 'task-wordsDecoding_space-IXI549Space_FWHM-2', 'beta_0001.nii');
+
+                % anatomical mask is brain mask, make sure that the sphere
+                % doesn't excedd the limits of what makes sense
+                brainMask = fullfile(opt.dir.stats, subName, 'task-wordsDecoding_space-IXI549Space_FWHM-2', 'mask.nii'); 
 
                 % specify the sphere characteristics for each of them
                 sphereParams = struct;
                 sphereParams.location = ROI_center;
                 sphereParams.radius = rad;
 
+                % % specify the object to pass: mask + sphere
+                specification = struct('mask1', brainMask, ...
+                                       'mask2', sphereParams);
+
                 % specify the path for each subject
                 outputPath = [opt.dir.rois,'/',subName];
 
-                mask = createRoi('sphere', sphereParams, betaReference, outputPath, opt.saveROI);
+                mask = createRoi('intersection', specification, betaReference, outputPath, opt.saveROI);
 
                 path = '../../outputs/derivatives/cpp_spm-rois/';
                 nativeName = ['label-',mask.label,'_mask'];
                 movefile([path, subName, '/', nativeName,'.nii'], [path, subName, '/', bidslikeName,'.nii'],'f')
                 movefile([path, subName, '/', nativeName,'.json'], [path, subName, '/', bidslikeName,'.json'],'f')
+
+                % reslice
+                roiPath = fullfile(opt.dir.rois, subName, [bidslikeName, '.nii']);
+                mask = resliceRoiImages(betaReference,roiPath);
             end
         end
     end
@@ -186,7 +198,7 @@ for iSub = 1:length(opt.subjects)
     % Get subject number
     subName = ['sub-', num2str(opt.subjects{iSub})];
 
-    switch subName 
+    switch subName
         case{'sub-007','sub-008'}
             roiDesc = roiDescriptions(2,:); % response missing in only 2 subs
         otherwise
@@ -210,16 +222,15 @@ for iSub = 1:length(opt.subjects)
                 [subName, '_task-visualLocalizer_space-IXI549Space_desc-', roiChar ,'_p-0pt001_k-0_MC-none_mask.nii']);
 
             % all cases where the expansion sphere is over 15mm from the individual peak, suspicious
-            
+
             lowerThresConditions = (strcmp(subName, 'sub-009') && iReg == 2) || (strcmp(subName, 'sub-007') && iReg == 1) || ...
-               (strcmp(subName, 'sub-006') && iReg == 1) || (strcmp(subName, 'sub-006') && iReg == 3) || ...
-               (strcmp(subName, 'sub-006') && iReg == 5);
+                (strcmp(subName, 'sub-006') && iReg == 1) || (strcmp(subName, 'sub-006') && iReg == 3) || ...
+                (strcmp(subName, 'sub-006') && iReg == 5);
 
             if lowerThresConditions
                 localizerMask = fullfile(opt.dir.stats, subName, 'task-visualLocalizer_space-IXI549Space_FWHM-6', ...
-                                [subName, '_task-visualLocalizer_space-IXI549Space_desc-', roiChar ,'_p-0pt05_k-0_MC-none_mask.nii']);
+                    [subName, '_task-visualLocalizer_space-IXI549Space_desc-', roiChar ,'_p-0pt05_k-0_MC-none_mask.nii']);
             end
-
 
             % specify the sphere characteristics for each of them
             sphereParams = struct;
@@ -228,7 +239,7 @@ for iSub = 1:length(opt.subjects)
             sphereParams.maxNbVoxels = opt.numVoxels;
 
             specification = struct('mask1', localizerMask, ...
-                                   'mask2', sphereParams);
+                'mask2', sphereParams);
 
             % specify the path for each subject
             outputPath = [opt.dir.rois,'/',subName];
@@ -237,16 +248,15 @@ for iSub = 1:length(opt.subjects)
 
             % just to know which is not right
             mask = createRoi('expand', specification, dataImage, outputPath, opt.saveROI);
-%             mask = resliceRoiImages(dataImage, mask);
 
             path = '../../outputs/derivatives/cpp_spm-rois/';
-            
+
             nativeName = [subName, '_task-visualLocalizer_space-IXI549Space_label-', ...
-                          roiChar(end-3:end),'E',mask.label(2:end),'_desc-', roiChar(1:end-11), localizerMask(end-29:end-4)]; % p-0pt001_k-0_MC-none_mask
-            
+                roiChar(end-3:end),'E',mask.label(2:end),'_desc-', roiChar(1:end-11), localizerMask(end-29:end-4)]; % p-0pt001_k-0_MC-none_mask
+
             if lowerThresConditions
                 nativeName = [subName, '_task-visualLocalizer_space-IXI549Space_label-', ...
-                              roiChar(end-3:end),'E',mask.label(2:end),'_desc-', roiChar(1:end-11), localizerMask(end-28:end-4)]; % p-0pt05_k-0_MC-none_mask
+                    roiChar(end-3:end),'E',mask.label(2:end),'_desc-', roiChar(1:end-11), localizerMask(end-28:end-4)]; % p-0pt05_k-0_MC-none_mask
             end
 
             finalVoxs = mask.label;
@@ -254,24 +264,116 @@ for iSub = 1:length(opt.subjects)
 
             % Set up bids-like name
             bidslikeName = [subName,'_','space-MNI','_', 'trial-IndividualCoords_' , ...
-                            'label-',char(regName(iReg)),'_','voxels-',finalVoxs,'vx','_mask'];
+                'label-',char(regName(iReg)),'_','voxels-',finalVoxs,'vx','_mask'];
 
             movefile([path, subName, '/', nativeName,'.nii'], [path, subName, '/', bidslikeName,'.nii'],'f')
             movefile([path, subName, '/', nativeName,'.json'], [path, subName, '/', bidslikeName,'.json'],'f')
+
+            % reslice
+            roiPath = fullfile(opt.dir.rois, subName, [bidslikeName, '.nii']);
+            mask = resliceRoiImages(dataImage, roiPath);
         end
     end
 end
 
 %% #5 Anatomically-defined ROIs
-% Speak with Elahe', she is the one doing them right now
-% 23/11 SKIP FOR NOW
+% ROIs created using SPM Anatomy toolbox
+% (https://github.com/inm7/jubrain-anatomy-toolbox)
+%
+% CPP_ROI has 'getDataFromIntersection' to extract an ROI from a mask and a
+% sphere
 
-%             % create the sphere with marsbar (OLD WAY) and save it
-%             params = struct('centre', ROI_center, 'radius', opt.radius);
-%             roi = maroi_sphere(params);
-%             saveroi(roi, [ROI_save_name, '.mat']);
-%             mars_rois2img([ROI_save_name, '.mat'], [ROI_save_name, '.nii']);
-%             % Delete .mat files, not necessary
-%             delete([ROI_save_name, '_labels.mat']);
-%             delete([ROI_save_name, '.mat']);
+% which name to assign: 1 to 6 based on the region
+regName = {'VWFAfr','VWFAbr','lLO','lpFS','rLO','rpFS'};
+
+mni = roi_getMNIcoords(opt.subjects);
+
+roiNames = opt.roiList;
+save('ROI-trial_indivudal-coords.mat', 'roiNames', 'mni');
+
+% Get the ROIs (actually just the spheres)
+for iSub = 1:length(opt.subjects)
+
+    % Get subject number
+    subName = ['sub-', num2str(opt.subjects{iSub})];
+
+    specificRegions = [1 2 4 6];
+
+    % for each region this subject has
+    for iReg = 1:length(mni{1}(:,1))
+
+        % if the region is defined (vwfa-br for all, but in some is not present)
+        % and if there is a definitve anatomical mask: applicable to 
+        % VWFAs and lpFS
+        if ismember(iReg,specificRegions) && not(all(isnan(mni{iSub}(iReg, :))))
+
+            % Sphere data: get the center, radius is fixed
+            ROI_center = mni{iSub}(iReg, :);
+            opt.radius = 10;
+
+            % Set up bids-like name to save ROI
+            bidslikeName = [subName,'_','space-MNI','_','trial-AnatIntersection_', ...
+                            'label-',regName{iReg},'_','radius-',num2str(opt.radius),'mm','_mask'];
+
+            % Get the reference, a random beta
+            betaReference = fullfile(opt.dir.stats, subName, 'task-wordsDecoding_space-IXI549Space_FWHM-2', 'beta_0001.nii');
+
+            % Get the anatomical mask based on the contrast
+            % left fg for vwfa
+            if ismember(iReg,[1 2 4])
+                anatomicalMask = 'JuBrain_ROIs/sub-none_space-MNI_desc-leftFG_label-0000_mask.nii'; 
+            else % right hemisphere
+                anatomicalMask = 'JuBrain_ROIs/sub-none_space-MNI_desc-rightFG_label-0000_mask.nii';
+            end
+
+            % Reslice it for compatibility with our 2.6mm voxel size
+            anatomicalMask = resliceRoiImages(betaReference,anatomicalMask);
+
+            % convert the data-type of the nii file from 'single' to
+            % 'uint8', otherwise isBinaryMask does not work
+            thisMask = load_nii(anatomicalMask);
+            thisMask.img = cast(thisMask.img,'uint8');
+            save_nii(thisMask,anatomicalMask);
+
+            % specify the sphere characteristics for each of them
+            sphereParams = struct;
+            sphereParams.location = ROI_center;
+            sphereParams.radius = opt.radius;
+
+            % specify the object to pass: mask + sphere
+            specification = struct('mask1', anatomicalMask, ...
+                                   'mask2', sphereParams);
+
+            % specify the path for each subject
+            outputPath = [opt.dir.rois,'/',subName];
+
+            mask = createRoi('intersection', specification, betaReference, outputPath, opt.saveROI);
+
+            path = '../../outputs/derivatives/cpp_spm-rois/';
+            if iReg == 6
+                nativeName = 'rsub-none_space-MNI_label-0000Intersection_desc-rightFG_mask';                
+            else
+                nativeName = 'rsub-none_space-MNI_label-0000Intersection_desc-leftFG_mask';
+            end
+            movefile([path, subName, '/', nativeName,'.nii'], [path, subName, '/', bidslikeName,'.nii'],'f')
+            movefile([path, subName, '/', nativeName,'.json'], [path, subName, '/', bidslikeName,'.json'],'f')
+
+            % reslice
+            roiPath = fullfile(opt.dir.rois, subName, [bidslikeName, '.nii']);
+            mask = resliceRoiImages(betaReference,roiPath);
+
+        end
+    end
+end
+
+%% NOT NEEDED ANYMORE - OLD MARSBAR WAY
+
+% % create the sphere with marsbar (OLD WAY) and save it
+% params = struct('centre', ROI_center, 'radius', opt.radius);
+% roi = maroi_sphere(params);
+% saveroi(roi, [ROI_save_name, '.mat']);
+% mars_rois2img([ROI_save_name, '.mat'], [ROI_save_name, '.nii']);
+% % Delete .mat files, not necessary
+% delete([ROI_save_name, '_labels.mat']);
+% delete([ROI_save_name, '.mat']);
 
