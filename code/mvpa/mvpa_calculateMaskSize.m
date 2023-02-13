@@ -70,6 +70,24 @@ for iSub = 1:numel(opt.subjects)
                 % display the mask size
                 disp(thisVoxel);
                 maskVoxel = [maskVoxel, thisVoxel];
+
+                % add everything to a report of how big the ROIs are
+                parts = split(mask,{'-','_'});
+                reportSub = ['sub-', subID];
+                if strcmp(parts{9},'atlas')
+                    if strcmp(parts{10},'Broadmann'), reportThreshold = '/';
+                    else, reportThreshold = '0';
+                    end
+                    reportMethod = parts{10};
+                    reportFormat = parts{12};
+                else
+                    reportMethod = 'expansion';
+                    reportThreshold = '/';
+                    reportFormat = '50vx';
+                end
+                reportSize = thisVoxel;
+                reportMask = opt.mvpa.map4D{iImage};
+                opt.report = vertcat(opt.report,{reportSub, reportMethod, reportThreshold, reportFormat, reportSize, reportMask});
             end
         end
 

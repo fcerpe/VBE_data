@@ -16,6 +16,7 @@ switch opt.roiMethod
     case 'individual_coords_8mm',  opt.methodName = 'individual-sphere-8mm';
     case 'individual_coords_50vx', opt.methodName = 'individual-expand-50vx';
     case 'anatomical_intersection_8mm', opt.methodName = 'anatomy-sphere-8mm';
+    case 'atlases', opt.methodName = 'ns-mask-10mm';
 end
 
 % set output folder/name

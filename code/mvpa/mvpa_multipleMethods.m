@@ -1,5 +1,4 @@
 %% VISual BRAille DECODING ANALYSIS
-%
 
 clear;
 clc;
@@ -31,7 +30,12 @@ opt = mvpa_option();
 
 % opt = mvpa_prepareMasks(opt);
 
-methods = {'anatomical_intersection_8mm','general_coords_10mm','individual_coords_10mm','individual_coords_8mm','individual_coords_50vx'};
+% old methods tried: 
+% 'anatomical_intersection_8mm','general_coords_10mm','individual_coords_10mm'
+% 'individual_coords_8mm','individual_coords_50vx'
+
+methods = {'atlases', 'individual_coords_50vx'};
+opt.report = [];
 
 allRatios = [];
 opt.mvpa.minMasks = [];
@@ -41,7 +45,7 @@ for i = 1:length(methods)
     opt.roiMethod = methods{i};
 
     % get how many voxels are active / significant in each ROI
-    maskVoxel = mvpa_calculateMaskSize(opt);
+    [maskVoxel, opt] = mvpa_checkMaskSize(opt);
 
     % keep the minimun value of voxels in a ROI as ratio to keep (must be constant)
     opt.mvpa.minMasks = [opt.mvpa.minMasks, min(maskVoxel)];
@@ -59,17 +63,20 @@ for i = 1:length(methods)
         opt.roiMethod = methods{i};
     
         % use maximum 50 voxels, less if we don't have enough
-        if opt.mvpa.minMasks(i) < 50
-            opt.mvpa.ratioToKeep = opt.mvpa.minMasks(i);
-        else
-            opt.mvpa.ratioToKeep = 50;
+        for iRatio = 1:4
+            switch iRatio
+                case 1, opt.mvpa.ratioToKeep = 50;
+                case 2, opt.mvpa.ratioToKeep = 75;
+                case 3, opt.mvpa.ratioToKeep = 100;
+                case 4, opt.mvpa.ratioToKeep = 121; % minimum ratio for now 
+            end
+
+            % Within modality
+            % training set and test set both contain RW, PW, NW, FS stimuli.
+            % Learn to distinguish them
+            mvpaWithin = mvpa_withinModality(opt);
+
         end
-    
-        % Within modality
-        % training set and test set both contain RW, PW, NW, FS stimuli.
-        % Learn to distinguish them
-        mvpaWithin = mvpa_withinModality(opt);
-    
 end
 
 %% Visualize nicely

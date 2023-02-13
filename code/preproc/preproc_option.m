@@ -8,12 +8,12 @@ function opt = preproc_option()
 opt = [];
 
 % task to analyze: alternate
-opt.taskName = 'wordsDecoding';
-% opt.taskName = 'visualLocalizer';
+% opt.taskName = 'wordsDecoding';
+opt.taskName = 'visualLocalizer';
 % opt.taskName = 'visualEventRelated';
 
 % who will be preprocessed?
-opt.subjects = {'010', '011', '013'}; % any number from 001 to 013 is a praticipant
+opt.subjects = {'012', '013'}; % any number from 001 to 013 is a praticipant
 
 % space is not important now, if not specified, do it for both individual and MNI
 opt.space = 'MNI';

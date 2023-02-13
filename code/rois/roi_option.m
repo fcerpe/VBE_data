@@ -7,9 +7,9 @@ if nargin < 1
 end
 
 % suject to run in each group
-opt.subjects = {'006','007','008','009'}; % 004
+opt.subjects = {'006','007','008','009', '012', '013'}; % every participant after 006 is included in the final study
 
-opt.roiList = {'VWFA-Fr', 'VWFA-Br', 'LOC-Left', 'PFS-Left', 'LOC-Right', 'PFS-Right'};
+opt.roiList = {'VWFA-Fr', 'VWFA-Br', 'LOC-Left', 'LOC-Right'}; % , 'PFS-Left', 'PFS-Right'};
 
 % Radius of the sphere around the peak
 opt.radius = 10; %mm

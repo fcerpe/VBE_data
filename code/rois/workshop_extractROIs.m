@@ -20,3 +20,21 @@ bidspm(bids_dir, output_dir, 'subject', ...
        'roi_name', {'OTS', 'ITG', 'MTG', 'LOS', 'pOTS', 'IOS'}, ...
        'space', {'IXI549Space', 'individual'}, ...
        'preproc_dir', preproc_dir);
+
+opt = roi_option();
+opt.roi.atlas = 'visfatlas';
+opt.roi.name = {'OTS', 'ITG', 'MTG', 'LOS', 'pOTS', 'IOS'};
+opt.roi.space = {'IXI549Space', 'individual'};
+opt.dir.stats = fullfile(opt.dir.raw, '..', 'derivatives', 'bidspm-stats');
+opt.subjects = {'008'};
+
+roiImage = extractRoiFromAtlas(output_dir, opt.roi.atlas, 'OTS', 'L');
+roiImage = extractRoiFromAtlas(output_dir, opt.roi.atlas, 'ITG', 'L');
+roiImage = extractRoiFromAtlas(output_dir, opt.roi.atlas, 'MTG', 'L');
+roiImage = extractRoiFromAtlas(output_dir, opt.roi.atlas, 'LOS', 'L');
+roiImage = extractRoiFromAtlas(output_dir, opt.roi.atlas, 'pOTS', 'L');
+roiImage = extractRoiFromAtlas(output_dir, opt.roi.atlas, 'IOS', 'L');
+
+
+
+

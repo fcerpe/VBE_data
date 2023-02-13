@@ -7,7 +7,7 @@ if nargin < 1
 end
 
 % suject to run in each group
-opt.subjects = {'006','007','008','009'}; % 004
+opt.subjects = {'006','007','008','009','012','013'};
 
 % specify the order of the runs where we can find the following conditions
 % French - Braille: 003 006 008
@@ -16,7 +16,9 @@ opt.subjects = {'006','007','008','009'}; % 004
 opt.subsCondition = {'006', [1  3  5  7  9 11  2  4  6  8 10 12];
                      '007', [2  4  6  8 10 12  1  3  5  7  9 11];
                      '008', [1  3  5  7  9 11  2  4  6  8 10 12];
-                     '009', [2  4  6  8 10 12  1  3  5  7  9 11]};
+                     '009', [2  4  6  8 10 12  1  3  5  7  9 11];
+                     '012', [1  3  5  7  9 11  2  4  6  8 10 12];
+                     '013', [2  4  6  8 10 12  1  3  5  7  9 11]};
 
 % assign the condition to decode, changes based on our aims
 % - french_v_braille: simple script decoding

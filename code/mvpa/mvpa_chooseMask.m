@@ -19,6 +19,11 @@ for iSub = 1:numel(opt.subjects)
 
     % based on the method we're using, pick the ROIs
     switch opt.roiMethod
+        case 'atlases' % get neurosynth threshold 7
+            atlas_filename = [opt.dir.rois, '/sub-',num2str(subID),'/rsub-',num2str(subID),'_space-MNI_atlas-*.nii'];
+            atlas_files = dir(atlas_filename);
+            opt.maskName = horzcat(opt.maskName, {atlas_files.name});
+
         case 'general_coords_10mm'
             opt.maskName = horzcat(opt.maskName, ...
                 { ...
@@ -77,28 +82,28 @@ for iSub = 1:numel(opt.subjects)
         case 'individual_coords_50vx'
 
             % name contains final voxel size, unpredictable. So go fetch whatever name it has
-            vwfafr_str = ['../../outputs/derivatives/cpp_spm-rois/sub-',num2str(subID),'/rsub-',num2str(subID),'_space-MNI_trial-IndividualCoords_label-VWFAfr_voxels-*.nii'];
+            vwfafr_str = ['../../outputs/derivatives/cpp_spm-rois/sub-',num2str(subID),'/rsub-',num2str(subID),'_space-MNI_trial-Expansion_label-VWFAfr_voxels-*.nii'];
             vwfafr = dir(vwfafr_str);
-            vwfabr_str = ['../../outputs/derivatives/cpp_spm-rois/sub-',num2str(subID),'/rsub-',num2str(subID),'_space-MNI_trial-IndividualCoords_label-VWFAbr_voxels-*.nii'];
-            vwfabr = dir(vwfabr_str);
-            llo_str = ['../../outputs/derivatives/cpp_spm-rois/sub-',num2str(subID),'/rsub-',num2str(subID),'_space-MNI_trial-IndividualCoords_label-lLO_voxels-*.nii'];
-            llo = dir(llo_str);
-            lpfs_str = ['../../outputs/derivatives/cpp_spm-rois/sub-',num2str(subID),'/rsub-',num2str(subID),'_space-MNI_trial-IndividualCoords_label-lpFS_voxels-*.nii'];
-            lpfs = dir(lpfs_str);
-            rlo_str = ['../../outputs/derivatives/cpp_spm-rois/sub-',num2str(subID),'/rsub-',num2str(subID),'_space-MNI_trial-IndividualCoords_label-rLO_voxels-*.nii'];
-            rlo = dir(rlo_str);
-            rpfs_str = ['../../outputs/derivatives/cpp_spm-rois/sub-',num2str(subID),'/rsub-',num2str(subID),'_space-MNI_trial-IndividualCoords_label-rpFS_voxels-*.nii'];
-            rpfs = dir(rpfs_str);
+%             vwfabr_str = ['../../outputs/derivatives/cpp_spm-rois/sub-',num2str(subID),'/rsub-',num2str(subID),'_space-MNI_trial-Expansion_label-VWFAbr_voxels-*.nii'];
+%             vwfabr = dir(vwfabr_str);
+%             llo_str = ['../../outputs/derivatives/cpp_spm-rois/sub-',num2str(subID),'/rsub-',num2str(subID),'_space-MNI_trial-Expansion_label-lLO_voxels-*.nii'];
+%             llo = dir(llo_str);
+%             lpfs_str = ['../../outputs/derivatives/cpp_spm-rois/sub-',num2str(subID),'/rsub-',num2str(subID),'_space-MNI_trial-Expansion_label-lpFS_voxels-*.nii'];
+%             lpfs = dir(lpfs_str);
+%             rlo_str = ['../../outputs/derivatives/cpp_spm-rois/sub-',num2str(subID),'/rsub-',num2str(subID),'_space-MNI_trial-Expansion_label-rLO_voxels-*.nii'];
+%             rlo = dir(rlo_str);
+%             rpfs_str = ['../../outputs/derivatives/cpp_spm-rois/sub-',num2str(subID),'/rsub-',num2str(subID),'_space-MNI_trial-Expansion_label-rpFS_voxels-*.nii'];
+%             rpfs = dir(rpfs_str);
 
             % add the names to the list
             opt.maskName = horzcat(opt.maskName, ...
                 { ...
                 vwfafr.name, ...
-                vwfabr.name, ...
-                llo.name, ...
-                lpfs.name, ...
-                rlo.name, ...
-                rpfs.name ...
+%                 vwfabr.name, ...
+%                 llo.name, ...
+%                 lpfs.name, ...
+%                 rlo.name, ...
+%                 rpfs.name ...
                 });
     end
 

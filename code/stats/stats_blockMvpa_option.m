@@ -7,7 +7,7 @@ function opt = stats_blockMvpa_option()
 
 opt = [];
 
-opt.subjects = {'010','011','013'}; 
+opt.subjects = {'012'}; 
 
 % Task to analyze - change accordingly
 opt.taskName = 'wordsDecoding';
@@ -38,7 +38,7 @@ opt.dir.stats = fullfile(opt.dir.root, 'outputs', 'derivatives', 'bidspm-stats')
 
 % Model specifies all the contrasts
 opt.model.file = fullfile(fileparts(mfilename('fullpath')), '..', ...
-    'models', 'model-wordsDecoding_fourConditions_smdl.json');
+    'models', 'model-wordsDecoding_smdl.json');
 
 opt.pipeline.type = 'stats';
 

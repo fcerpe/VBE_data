@@ -7,7 +7,7 @@ function opt = stats_localizer_option()
 
 opt = [];
 
-opt.subjects = {'010','011','013'}; % 002 003 004 005
+opt.subjects = {'012'}; % 002 003 004 005
 
 % Task to analyze - change accordingly
 opt.taskName = 'visualLocalizer';
@@ -137,8 +137,7 @@ opt.results(5).montage.orientation = 'axial'; % also 'sagittal', 'coronal'
 opt.results(5).nidm = true();
 opt.results(5).threshSpm = true();
 
-% Specify how you want your output (all the following are on false by default)
-
+% % Specify how you want your output (all the following are on false by default)
 
 %% DO NOT TOUCH
 opt = checkOptions(opt);
