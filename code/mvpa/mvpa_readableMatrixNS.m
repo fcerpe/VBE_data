@@ -16,9 +16,10 @@ bidspm;
 opt = mvpa_option();
 
 % go into derivatives/CoSMoMVPA to see how many decodings we have
-filesToProcess = dir('../../outputs/derivatives/CoSMoMVPA/task-wordsDecoding_method-ns-mask*.mat');
+filesToProcess = dir('../../outputs/derivatives/CoSMoMVPA/mvpa-pairwiseDecoding_task-wordsDecoding_method-ns-expansionIntersection_condition-pairwise_within_nbvoxels-*.mat');
 
 %%
+% 3 files: 85vx, 70vx, 50 vx
 for ftp = 1:1 % :length(filesToProcess)
 
     load(fullfile(filesToProcess(ftp).folder, filesToProcess(ftp).name));
@@ -26,8 +27,13 @@ for ftp = 1:1 % :length(filesToProcess)
     filename = filename(1:end-4);
 
     % initialize everything to avoid they get cast as something else
-    mvpa_results = [];    mvpa_results = struct;    mvpa_results.raw = struct;
-    mvpa_results.raw.together_VWFAfr_beta = []; mvpa_results.raw.together_VWFAfr_tmap = [];
+    mvpa_results = [];    
+    mvpa_results = struct;    
+    mvpa_results.raw = struct;
+    mvpa_results.raw.combined_VWFAfr_beta = []; 
+    mvpa_results.raw.combined_VWFAfr_tmap = [];
+    mvpa_results.raw.mean_VWFAfr_beta = []; 
+    mvpa_results.raw.mean_VWFAfr_tmap = [];
     
     % create the directory where to store figures, need to do that manually
     mkdir(fullfile(filesToProcess(ftp).folder,'figures', filename))
@@ -80,6 +86,9 @@ for ftp = 1:1 % :length(filesToProcess)
         % save rdm
         eval([pathString ' = mvpaMat;']);
 
+        % Store the single subject in the average group, according to the relative area and the image
+        eval(['mvpa_results.raw.combined_' thisMask '_' thisImage ' = horzcat(mvpa_results.raw.combined_' thisMask '_' thisImage ', thisChunk);']);
+
     end
 
     %% Get averages for area/image
@@ -88,32 +97,53 @@ for ftp = 1:1 % :length(filesToProcess)
 
     decodingsToSample = fieldnames(mvpa_results.raw);
 
+    eval(['templateStructure = [mvpa_results.raw.' decodingsToSample{end} '];']);
+    fieldsToRemove = {'prediction','maskVoxNb','ffxSmooth','roiSource','decodingCondition','permutation','imagePath'};
+    templateStructure = rmfield(templateStructure, fieldsToRemove);
+
     for j = 1:numel(decodingsToSample)
         % split the name to identify which decoding are we working with
         thisVar = decodingsToSample{j};
         splitVar = split(thisVar,'_');
         thisSub = splitVar{1}; thisMask = splitVar{2}; thisImage = splitVar{3};
 
-        if startsWith(thisSub, 'together') 
+        if startsWith(thisSub, 'combined') 
+
             eval(['currentAccuracies = [mvpa_results.raw.' decodingsToSample{j} '.accuracy];']);
             nbSubs = size(currentAccuracies,2)/12;
             currentAccuracies = reshape(currentAccuracies,12,nbSubs);
             meanAccuracies = mean(currentAccuracies,2);
 
             eval(['tempStruct = rmfield(mvpa_results.raw.sub006_' thisMask '_' thisImage ', "subID");']);
-            for k = 1:12
-                [tempStruct(k).accuracy] = deal([meanAccuracies(k)]);
+            for k = 1:12, [tempStruct(k).accuracy] = deal([meanAccuracies(k)]);
             end
 
-            eval(['mvpa_results.raw.average_' thisMask '_' thisImage ' = tempStruct;']);
+            eval(['mvpa_results.raw.mean_' thisMask '_' thisImage ' = tempStruct;']);
 
             % get matrix and save it
             tempMat = mvpa_getMatrix(tempStruct, 0);
             tempMatTri = mvpa_getMatrix(tempStruct, 1);
-            eval(['mvpa_results.mat.average_' thisMask '_' thisImage ' = tempMat;']);
+            eval(['mvpa_results.mat.mean_' thisMask '_' thisImage ' = tempMat;']);
+
+        else
+
+            % 'mean' is before 'subXXX', we can do this in one single loop
+            % take info from decodingsToSample and put them in templateStructure
+            eval(['tempStruct = [mvpa_results.raw.' decodingsToSample{j} '];']);
+            
+            templateStructure(j-2).subID = thisSub;
+            templateStructure(j-2).mask = tempStruct(1).mask;
+            templateStructure(j-2).accuracy = mean([tempStruct.accuracy]);
+            templateStructure(j-2).choosenVoxNb = tempStruct(1).choosenVoxNb;
+            templateStructure(j-2).image = tempStruct(1).image;
 
         end
+
+
     end
+
+    % save new means to the matrix
+    mvpa_results.means = templateStructure;
 
     % SAVE SET with original and modified
     save([opt.dir.cosmo, '/', filename,'.mat'],'accu','mvpa_results');

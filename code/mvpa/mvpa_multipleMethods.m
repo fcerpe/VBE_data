@@ -34,7 +34,7 @@ opt = mvpa_option();
 % 'anatomical_intersection_8mm','general_coords_10mm','individual_coords_10mm'
 % 'individual_coords_8mm','individual_coords_50vx'
 
-methods = {'atlases', 'individual_coords_50vx'};
+methods = {'atlases'};
 opt.report = [];
 
 allRatios = [];
@@ -53,7 +53,6 @@ for i = 1:length(methods)
 
 end
 
-
 %% GO GET THAT ACCURACY!
 
 opt.mvpa.nbRun = 12;
@@ -62,26 +61,30 @@ for i = 1:length(methods)
     
         opt.roiMethod = methods{i};
     
-        % use maximum 50 voxels, less if we don't have enough
-        for iRatio = 1:4
+        % use different numbers of voxels, to compare different methods in
+        % terms of mean decoding accuracy
+        for iRatio = 1:3
             switch iRatio
                 case 1, opt.mvpa.ratioToKeep = 50;
-                case 2, opt.mvpa.ratioToKeep = 75;
-                case 3, opt.mvpa.ratioToKeep = 100;
-                case 4, opt.mvpa.ratioToKeep = 121; % minimum ratio for now 
+                case 2, opt.mvpa.ratioToKeep = 70;
+                case 3, opt.mvpa.ratioToKeep = 85; % minimum ratio for now 
             end
 
             % Within modality
-            % training set and test set both contain RW, PW, NW, FS stimuli.
-            % Learn to distinguish them
-            mvpaWithin = mvpa_withinModality(opt);
+            % training set and test set both contain RW, PW, NW, FS stimuli
+
+            % PAIRWISE DECODING
+            opt.decodingCondition = {'pairwise_within'};
+            mvpaPairwise = mvpa_pairwiseDecoding(opt);
+
+            % COMING SOON: FOUR-WAY CLASSIFICATION (within script)
+%             opt.decodingCondition = {'four_way'};
+%             mvpaFourWay = mvpa_fourWayClassification(opt);
+
+            % COMING SOON: MULTI-SCRIPT CLASSIFICATION
 
         end
 end
-
-%% Visualize nicely
-
-% mvpa_readableMatrix;
 
 %%
 % "Cross-modal" decoding

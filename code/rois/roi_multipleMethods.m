@@ -287,7 +287,7 @@ for iSub = 1:length(opt.subjects)
                 outputPath = [opt.dir.rois,'/',subName];
 
                 % make the mask - masks
-                [intersectedMask, intersectedName] = roi_createMasksOverlap(specMasks, betaReference, outputPath, opt.saveROI);
+                [intersectedMask, intersectedName] = roi_createMasksOverlap(specMasks, dataImage, outputPath, opt.saveROI);
              
                 % Rename .json and .nii files of both masks to have 
                 % something more readable
@@ -302,7 +302,7 @@ for iSub = 1:length(opt.subjects)
                 movefile([intersectedJustTheName,'.json'], [intersectedNewName,'.json'],'f')
 
                 % reslice the masks
-                intersectedMask = resliceRoiImages(betaReference, [intersectedNewName, '.nii']);
+                intersectedMask = resliceRoiImages(dataImage, [intersectedNewName, '.nii']);
             end
 
         end
