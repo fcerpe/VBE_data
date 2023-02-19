@@ -26,7 +26,7 @@ opt.subsCondition = {'006', [1  3  5  7  9 11  2  4  6  8 10 12];
 %                  brw v. bpw v. bnw v. bfs
 % - all: frw, fpw, fnw, ffs, brw, bpw, bnw, bfs all against each other,
 %        RDM-style
-opt.decodingCondition = {'within_script'};
+opt.decodingCondition = {'pairwise_within'};
 
 % Uncomment the lines below to run preprocessing
 % - don't use realign and unwarp

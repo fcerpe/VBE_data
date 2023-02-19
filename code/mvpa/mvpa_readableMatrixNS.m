@@ -97,9 +97,26 @@ for ftp = 1:1 % :length(filesToProcess)
 
     decodingsToSample = fieldnames(mvpa_results.raw);
 
-    eval(['templateStructure = [mvpa_results.raw.' decodingsToSample{end} '];']);
-    fieldsToRemove = {'prediction','maskVoxNb','ffxSmooth','roiSource','decodingCondition','permutation','imagePath'};
-    templateStructure = rmfield(templateStructure, fieldsToRemove);
+    % Create the template of the summary table:
+
+    % - rows: decoding conditions (how many?)
+    deco = mvpa_assignDecodingConditions(opt);
+
+    % - columns: subjects 
+    howManySubs = repmat("double",1,size(opt.subjects,2));
+    whichSubs = [];
+    for iSub = 1:numel(opt.subjects), whichSubs = horzcat(whichSubs, string(['sub' opt.subjects{iSub}]));
+    end
+
+    % Create the table
+    summaryTable = table('Size',[length(deco), size(opt.subjects,2)+2], ...
+        'VariableTypes',["char", howManySubs, "double"],'VariableNames',["decodingCondition", whichSubs, "mean"]);
+    summaryTable.decodingCondition = deco(:);
+
+    % Assign it to every area, image we deal with
+    mvpa_results.summary.VWFAfr_beta = summaryTable;    mvpa_results.summary.VWFAfr_tmap = summaryTable;
+    mvpa_results.summary.lLO_beta = [];               mvpa_results.summary.lLO_tmap = [];
+    mvpa_results.summary.rLO_beta = [];               mvpa_results.summary.rLO_tmap = [];
 
     for j = 1:numel(decodingsToSample)
         % split the name to identify which decoding are we working with
@@ -125,25 +142,62 @@ for ftp = 1:1 % :length(filesToProcess)
             tempMatTri = mvpa_getMatrix(tempStruct, 1);
             eval(['mvpa_results.mat.mean_' thisMask '_' thisImage ' = tempMat;']);
 
-        else
+        elseif not(startsWith(thisSub, 'mean'))
 
             % 'mean' is before 'subXXX', we can do this in one single loop
             % take info from decodingsToSample and put them in templateStructure
-            eval(['tempStruct = [mvpa_results.raw.' decodingsToSample{j} '];']);
-            
-            templateStructure(j-2).subID = thisSub;
-            templateStructure(j-2).mask = tempStruct(1).mask;
-            templateStructure(j-2).accuracy = mean([tempStruct.accuracy]);
-            templateStructure(j-2).choosenVoxNb = tempStruct(1).choosenVoxNb;
-            templateStructure(j-2).image = tempStruct(1).image;
+
+            % Output of this part is a ordered table featuring deocoding
+            % accuracy for each condition, subject, area, image.
+            % Goal is to get information in order to then do averages and
+            % plot mean decoding accuracies
+
+            % Convoluted line:
+            % assigns the decoding accuracies from this current sub, mask, images
+            % to the corresponding mask, image summary table, in the
+            % columns corresponding to that sub
+            eval(['mvpa_results.summary.' thisMask '_' thisImage '.' thisSub ' = ' ...
+                  '[mvpa_results.raw.' decodingsToSample{j} '.accuracy]'';']);
 
         end
 
-
     end
 
-    % save new means to the matrix
-    mvpa_results.means = templateStructure;
+    % Calculate means across subjects, across script, across both
+    
+    tablesToSurvey = fieldnames(mvpa_results.summary);
+
+    for tts = 1:length(tablesToSurvey)
+        % get the current table 
+        eval(['currentTable = mvpa_results.summary.' tablesToSurvey{tts} ';']);
+
+        if not(isempty(currentTable))
+
+            % calculate average across scripts: what is the mean decoding
+            % for a subject in french? and in braille?
+            
+            % create new fields
+            currentTable(13,1) = {'french'};
+            currentTable(14,1) = {'braille'};
+
+            % go through the subjects, through the columns (skipping the
+            % first one)
+            for iSub = 2:numel(opt.subjects)+1
+                % particular case: I know they're the first 6 conditions
+                currentTable{13, iSub} = mean(currentTable{1:6, iSub}); % french
+                currentTable{14, iSub} = mean(currentTable{7:13, iSub}); % braille
+            end
+
+            % calculate average across subjects: what's the mean decoding
+            % for a single condition (e.g. FRW v. FPW)?
+            for iCond = 1:size(currentTable,1)
+                currentTable{iCond,end} = mean(currentTable{iCond,2:end-1});
+            end
+
+            eval(['mvpa_results.summary.' tablesToSurvey{tts} ' = currentTable;']);
+
+        end
+    end
 
     % SAVE SET with original and modified
     save([opt.dir.cosmo, '/', filename,'.mat'],'accu','mvpa_results');
