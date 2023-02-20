@@ -165,11 +165,14 @@ for iSub = 1:length(opt.subjects)
     end
 end
 
-%% Method #4 - expanding volume of 150vx starting from individual peaks
+%% Method #4 - expanding volume of 100vx starting from individual peaks
 
-neurosynthMasks = {'rhemi-L_space-MNI_atlas-neurosynth_label-visualWords_thresh-5_voxels-2557_mask.nii', ...
-                   'rhemi-L_space-MNI_atlas-neurosynth_label-visualWords_thresh-6_voxels-1768_mask.nii', ...
-                   'rhemi-L_space-MNI_atlas-neurosynth_label-visualWords_thresh-7_voxels-1222_mask.nii'};
+% start with a new report
+delete expansionReport.txt
+
+% get the resliced masks in the folder. Only 'visualWords' and 'objects'
+% fit the criterium
+neurosynthMasks = dir("masks/r*");
 
 mni = roi_getMNIcoords(opt.subjects);
 
@@ -177,11 +180,12 @@ roiNames = opt.roiList;
 save('ROI_trial-expansion.mat', 'roiNames', 'mni');
 
 % which name to assign: 1 to 6 based on the region
-regName = {'VWFAfr','lLO','rLO'};
+regName = {'VWFAfr','VWFAbr','lLO','rLO'};
+contrastName = {'frenchGtScrambled', 'brailleGtScrambled', 'drawingGtScrambled', 'drawingGtScrambled'};
+hemiName = {'L','L','L','R'};
 
 % specify th number of voxels to keep
-opt.numVoxels = 100;
-expansionReport = [];
+opt.numVoxels = 108;
 
 for iSub = 1:length(opt.subjects)
 
@@ -189,30 +193,31 @@ for iSub = 1:length(opt.subjects)
     subName = ['sub-', num2str(opt.subjects{iSub})];
 
     % for each region this subject has
-    for iReg = 1:1 % length(mni{1}(:,1))
+    for iReg = 1:length(mni{1}(:,1))
 
-        % if the region is defined (vwfa-br in some is not present)
-        if not(isnan(mni{iSub}(iReg, :)))
+        % if the region is defined (a subject does not have a
+        % braille-defined VWFA at all)
+        % AND if the region is not the braille-defined VWFA (not useful for
+        % analysis at this stage)
+        if all(not(isnan(mni{iSub}(iReg, :)))) && iReg ~= 2 
 
-            switch iReg
-                case {1,2}, contrastToUse = 'frenchGtScrambled';
-                otherwise, contrastToUse = 'drawingGtScrambled';
-            end
+            % STEP 1 : expansion around peak coordinates
 
             % Get the center
             ROI_center = mni{iSub}(iReg, :);
+            
+            % Get the reference image
+            dataImage = fullfile(opt.dir.stats, subName, 'task-wordsDecoding_space-IXI549Space_FWHM-2', 'beta_0001.nii');
 
-            dataImage = fullfile(opt.dir.stats, subName, 'task-wordsDecoding_space-IXI549Space_FWHM-2', ...
-                'beta_0001.nii');
             % Get the filename of the corresponding contrast
             mask001InDir = dir(fullfile(opt.dir.stats, subName, 'task-visualLocalizer_space-IXI549Space_FWHM-6', ...
-                [subName, '_task-visualLocalizer_space-IXI549Space_desc-', contrastToUse ,'_*_p-0pt001_k-0_MC-none_mask.nii']));
+                [subName, '_task-visualLocalizer_space-IXI549Space_desc-', contrastName{iReg} ,'_*_p-0pt001_k-0_MC-none_mask.nii']));
             mask01InDir = dir(fullfile(opt.dir.stats, subName, 'task-visualLocalizer_space-IXI549Space_FWHM-6', ...
-                [subName, '_task-visualLocalizer_space-IXI549Space_desc-', contrastToUse ,'_*_p-0pt010_k-0_MC-none_mask.nii']));
+                [subName, '_task-visualLocalizer_space-IXI549Space_desc-', contrastName{iReg} ,'_*_p-0pt010_k-0_MC-none_mask.nii']));
             mask05InDir = dir(fullfile(opt.dir.stats, subName, 'task-visualLocalizer_space-IXI549Space_FWHM-6', ...
-                [subName, '_task-visualLocalizer_space-IXI549Space_desc-', contrastToUse ,'_*_p-0pt050_k-0_MC-none_mask.nii']));
+                [subName, '_task-visualLocalizer_space-IXI549Space_desc-', contrastName{iReg} ,'_*_p-0pt050_k-0_MC-none_mask.nii']));
             mask1InDir = dir(fullfile(opt.dir.stats, subName, 'task-visualLocalizer_space-IXI549Space_FWHM-6', ...
-                [subName, '_task-visualLocalizer_space-IXI549Space_desc-', contrastToUse ,'_*_p-0pt100_k-0_MC-none_mask.nii']));
+                [subName, '_task-visualLocalizer_space-IXI549Space_desc-', contrastName{iReg} ,'_*_p-0pt100_k-0_MC-none_mask.nii']));
             
             % Get the full path: folder + name
             localizer001Mask = fullfile(mask001InDir.folder, mask001InDir.name);
@@ -231,14 +236,12 @@ for iSub = 1:length(opt.subjects)
 
             specification = struct('mask1', localizer001Mask, 'maskSphere', sphereParams);
 
-            if not(isempty(mask01InDir))
-                specification.mask2 = localizer01Mask;
+            % add other masks, if not empty
+            if not(isempty(mask01InDir)),   specification.mask2 = localizer01Mask;
             end
-            if not(isempty(mask05InDir))
-                specification.mask3 = localizer05Mask;
+            if not(isempty(mask05InDir)),   specification.mask3 = localizer05Mask;
             end
-            if not(isempty(mask1InDir))
-                specification.mask4 = localizer1Mask;
+            if not(isempty(mask1InDir)),    specification.mask4 = localizer1Mask;
             else
 
             end
@@ -246,64 +249,75 @@ for iSub = 1:length(opt.subjects)
             outputPath = [opt.dir.rois,'/',subName];
 
             fprintf('\nWorking on %s, area %s \n',subName, char(regName{iReg}));
-
-            % just to know which is not right
-            sp = struct('attempt', 1, 'thresh', '0.001');
            
-            [sphereMask, sphMaskName] = roi_createCustomexpansion(specification, dataImage, outputPath, opt.saveROI, 1, sp);
+            % expansion based on localizer mask(s): 
+            % - draw progressively larger spheres around the peak
+            %   coordinates and take only the active voxels in the mask
+            % - if the sphere expands without including other voxels, means
+            %   the cluster is finished: use a more lax threshold and try
+            %   again until we reach our number of voxels
+            [sphereMask, sphMaskName] = roi_createCustomexpansion(specification, dataImage, outputPath, opt.saveROI, 1);
 
+            % manipulations on the filename to make it more readable
             sphMaskJustTheName = sphMaskName(1:end-4);
             findVox = split(sphMaskJustTheName, {'Vox','_desc'});
 
-            % Set up bids-like name
+            % Set up a custom bids-like name
             bidslikeName = fullfile(opt.dir.rois, subName, [subName,'_','space-MNI','_', 'trial-Expansion_' , ...
                 'label-',char(regName{iReg}),'_','voxels-',findVox{2},'vx','_mask']);
 
+            % rename both the .nii and the .json files to the new name
             movefile(sphMaskName, [bidslikeName,'.nii'],'f')
             movefile([sphMaskJustTheName,'.json'], [bidslikeName,'.json'],'f')
 
-            % reslice
+            % reslice the mask to make sure fits our voxel size and voxel
+            % space
             sphereMask = resliceRoiImages(dataImage, [bidslikeName, '.nii']);
 
-            % INTERSECT EXPANSION WITH NEUROSYNTH MASK
 
-            % Get the neurosynth masks: loop through the options and make a lot of ROIs
-            for iNS = 1:size(neurosynthMasks,2)
-    
-                % Get mask - already resliced to 
-                nsMask = fullfile('masks', neurosynthMasks{iNS});
+            % STEP 2 : intersection with neurosynth mask
+            % (could be written to be more efficient, at the moment
+            % (20/02/23) it's a WIP)
 
-                % Open the image to make sure it's uint8
-                % otherwise it's not read properly
-                temp = load_nii(nsMask);
-                temp.img = cast(temp.img, 'uint8');
-                save_nii(temp, nsMask);
-
-                % specify the objects to pass: mask + sphere or mask + mask
-                specMasks = struct('mask1', nsMask, ...
-                                    'mask2', sphereMask);
-    
-                % specify the path for each subject
-                outputPath = [opt.dir.rois,'/',subName];
-
-                % make the mask - masks
-                [intersectedMask, intersectedName] = roi_createMasksOverlap(specMasks, dataImage, outputPath, opt.saveROI);
-             
-                % Rename .json and .nii files of both masks to have 
-                % something more readable
-                intersectedJustTheName = intersectedName(1:end-4);
-
-                % New names
-                intersectedNewName = fullfile(opt.dir.rois, subName, [subName, '_space-MNI_atlas-neurosynth_thresh-' ...
-                                        num2str(iNS+4) '_method-expansionIntersection_label-VWFAfr_mask']);
-                
-                % Rename intersection
-                movefile(intersectedName, [intersectedNewName,'.nii'],'f')
-                movefile([intersectedJustTheName,'.json'], [intersectedNewName,'.json'],'f')
-
-                % reslice the masks
-                intersectedMask = resliceRoiImages(dataImage, [intersectedNewName, '.nii']);
+            % Get the neurosynth masks
+            % 'objects' is first because of [B]ilateral hemisphere 
+            % 'visualWords' has only [L]eft hemisphere
+            switch iReg
+                case {1,2}, nsMask = fullfile(neurosynthMasks(2).folder, neurosynthMasks(2).name);
+                case {3,4}, nsMask = fullfile(neurosynthMasks(1).folder, neurosynthMasks(1).name);
             end
+
+            % Open the image to make sure it's uint8
+            % otherwise it's not read properly
+            temp = load_nii(nsMask);
+            temp.img = cast(temp.img, 'uint8');
+            save_nii(temp, nsMask);
+
+            % specify the objects to pass: mask + sphere or mask + mask
+            specMasks = struct('mask1', nsMask, ...
+                               'mask2', sphereMask);
+
+            % specify the path for each subject
+            outputPath = [opt.dir.rois,'/',subName];
+
+            % intersection between expansion and neurosynth mask: 
+            [intersectedMask, intersectedName] = roi_createMasksOverlap(specMasks, dataImage, outputPath, opt.saveROI);
+
+            % Rename .json and .nii files of both masks to have more readable names
+            % Remove file extension from name
+            intersectedJustTheName = intersectedName(1:end-4);
+
+            % New names
+            intersectedNewName = fullfile(opt.dir.rois, subName, ...
+                                [subName, '_hemi-' hemiName{iReg} ...
+                                '_space-MNI_atlas-neurosynth_method-expansionIntersection_label-' regName{iReg} '_mask']);
+ 
+            % Rename intersection
+            movefile(intersectedName, [intersectedNewName,'.nii'],'f')
+            movefile([intersectedJustTheName,'.json'], [intersectedNewName,'.json'],'f')
+
+            % reslice the masks
+            intersectedMask = resliceRoiImages(dataImage, [intersectedNewName, '.nii']);
 
         end
     end

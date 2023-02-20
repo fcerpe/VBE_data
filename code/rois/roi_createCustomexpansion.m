@@ -1,4 +1,4 @@
-function [mask, outputFile, report] = roi_createCustomexpansion(specification, VolumeDefiningImage, OutputDir, saveImg, attempt, sp)
+function [mask, outputFile, report] = roi_createCustomexpansion(specification, VolumeDefiningImage, OutputDir, saveImg, attempt)
 %
 % Returns a mask to be used as a ROI by ``spm_summarize``.
 % Can also save the ROI as binary image.
@@ -9,9 +9,6 @@ function [mask, outputFile, report] = roi_createCustomexpansion(specification, V
 % fixed
 type = 'expand';
 reDo = false;
-
-
-sp.attempt = max(sp.attempt, attempt);
 
 switch type
 
@@ -155,7 +152,7 @@ switch type
         end
 
         if reDo
-            mask = roi_createCustomexpansion(specification, VolumeDefiningImage, OutputDir, saveImg, attempt, sp);
+            mask = roi_createCustomexpansion(specification, VolumeDefiningImage, OutputDir, saveImg, attempt);
         end
 
         fprintf(1, '\n');
@@ -187,16 +184,20 @@ if not(reDo)
 
     % add line
     reportMethod = mask.def;
-    switch sp.attempt
+    splitLoca = split(specification.mask1,{'desc-','_label'});
+    if startsWith(splitLoca{2},'french'), reportArea = 'VWFA';
+    else, reportArea = 'LO';
+    end
+    switch attempt
         case 1, reportPvalue = '0.001';
         case 2, reportPvalue = '0.01';
         case 3, reportPvalue = '0.05';
         case 4, reportPvalue = '0.1';
     end
-    reportAttempt = sp.attempt;
+    reportAttempt = attempt;
     reportRadius = mask.roi.radius;
     reportVoxels = mask.roi.size;
-    report = vertcat(report, {reportMethod, reportAttempt, reportPvalue, reportRadius, reportVoxels});
+    report = vertcat(report, {reportArea, reportMethod, reportAttempt, reportPvalue, reportRadius, reportVoxels});
 
     % save report
     writecell(report,'expansionReport.txt')

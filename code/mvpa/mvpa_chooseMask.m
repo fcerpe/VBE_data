@@ -8,7 +8,7 @@ for iSub = 1:numel(opt.subjects)
 
     % default one is the old way
     if isempty(opt.roiMethod)
-        opt.roiMethod = 'individual_coords_8mm';
+        opt.roiMethod = 'atlases';
     end
 
     % different subfolders for different methods
@@ -20,7 +20,7 @@ for iSub = 1:numel(opt.subjects)
     % based on the method we're using, pick the ROIs
     switch opt.roiMethod
         case 'atlases' % get neurosynth threshold 7
-            atlas_filename = [opt.dir.rois, '/sub-',num2str(subID),'/rsub-',num2str(subID),'_space-MNI_atlas-*.nii'];
+            atlas_filename = [opt.dir.rois, '/sub-',num2str(subID),'/rsub-',num2str(subID),'_hemi-*_space-MNI_atlas-*.nii'];
             atlas_files = dir(atlas_filename);
             opt.maskName = horzcat(opt.maskName, {atlas_files.name});
 
