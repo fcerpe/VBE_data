@@ -117,15 +117,14 @@ for ftp = 1:length(filesToProcess)
 
     % Modified after running R visualizations, the only columns we need are:
     % nbVoxels, area, image, decodingCondition,	subject, accuracy, script
-    mvpa_results.report = table('Size',[1, 7], ...
-        'VariableTypes',["char", "char", "char", "char", "char", "double", "char"],...
-        'VariableNames',["nbVoxels", "area", "image", "decodingCondition", "subject", "accuracy", "script"]);
-
-    mvpa_results.report_means = table('Size',[1, 7], ...
+    reportTable = table('Size',[1, 7], ...
         'VariableTypes',["char", "char", "char", "char", "char", "double", "char"],...
         'VariableNames',["nbVoxels", "area", "image", "decodingCondition", "subject", "accuracy", "script"]);
 
     % Assign it to every area, image we deal with
+    mvpa_results.summary = struct('VWFAfr_beta', summaryTable, 'VWFAfr_tmap', summaryTable, ...
+                                  'lLO_beta', summaryTable,    'lLO_tmap', summaryTable, ...
+                                  'rLO_beta', summaryTable,    'rLO_tmap', summaryTable);
     mvpa_results.summary = struct('VWFAfr_beta', summaryTable, 'VWFAfr_tmap', summaryTable, ...
                                   'lLO_beta', summaryTable,    'lLO_tmap', summaryTable, ...
                                   'rLO_beta', summaryTable,    'rLO_tmap', summaryTable);
@@ -172,43 +171,31 @@ for ftp = 1:length(filesToProcess)
                   '[mvpa_results.raw.' decodingsToSample{j} '.accuracy]'';']);
 
             % R report table
-            if size(mvpa_results.report,1) == 1
+            if size(reportTable,1) == 1
                 lengthReport = 0;
-                lengthMeans = 0;
             else
-                lengthReport = size(mvpa_results.report,1);
-                lengthMeans = size(mvpa_results.report_means,1);
+                lengthReport = size(reportTable,1);
             end
             % add nbVoxels
-            mvpa_results.report{lengthReport+1:lengthReport+12,1} = repmat(splitVoxels(3),12,1);
-            mvpa_results.report_means{lengthMeans+1:lengthMeans+2,1} = repmat(splitVoxels(3),2,1);
+            reportTable{lengthReport+1:lengthReport+12,1} = repmat(splitVoxels(3),12,1);
             % add area
-            mvpa_results.report{lengthReport+1:lengthReport+12,2} = repmat({thisMask},12,1);
-            mvpa_results.report_means{lengthMeans+1:lengthMeans+2,2} = repmat({thisMask},2,1);
+            reportTable{lengthReport+1:lengthReport+12,2} = repmat({thisMask},12,1);
             % add image
-            mvpa_results.report{lengthReport+1:lengthReport+12,3} = repmat({thisImage},12,1);
-            mvpa_results.report_means{lengthMeans+1:lengthMeans+2,3} = repmat({thisImage},2,1);
+            reportTable{lengthReport+1:lengthReport+12,3} = repmat({thisImage},12,1);
             % add decodingCondition
-            mvpa_results.report{lengthReport+1:lengthReport+12,4} = deco(:);
-            mvpa_results.report_means{lengthMeans+1,4} = {'french'}; 
-            mvpa_results.report_means{lengthMeans+2,4} = {'braille'}; 
+            reportTable{lengthReport+1:lengthReport+12,4} = deco(:);
             % add subject
-            mvpa_results.report{lengthReport+1:lengthReport+12,5} = repmat({thisSub},12,1);
-            mvpa_results.report_means{lengthMeans+1:lengthMeans+2,5} = repmat({thisSub},2,1);
+            reportTable{lengthReport+1:lengthReport+12,5} = repmat({thisSub},12,1);
             % add accuracy
-            eval(['theseAccuracies = [mvpa_results.raw.' decodingsToSample{j} '.accuracy]'';']);  
-            mvpa_results.report{lengthReport+1:lengthReport+12,6} = theseAccuracies;
-            mvpa_results.report_means{lengthMeans+1,6} = mean(theseAccuracies(1:6));
-            mvpa_results.report_means{lengthMeans+2,6} = mean(theseAccuracies(7:12));
+            eval(['reportTable{lengthReport+1:lengthReport+12,6} = [mvpa_results.raw.' decodingsToSample{j} '.accuracy]'';']);            
             % add script
             for line = 1:6
-                mvpa_results.report{lengthReport+line,7} = {'french'}; 
-                mvpa_results.report{lengthReport+line+6,7} = {'braille'}; 
+                reportTable{lengthReport+line,7} = {'french'}; 
+                reportTable{lengthReport+line+6,7} = {'braille'}; 
             end
-
-            mvpa_results.report_means{lengthMeans+1,7} = {'french'}; 
-            mvpa_results.report_means{lengthMeans+2,7} = {'braille'}; 
             
+            eval(['mvpa_results.report.' thisMask '_' thisImage ' = vertcat(mvpa_results.report.' thisMask '_' thisImage ', reportTable);']);
+
         end
 
     end
@@ -273,26 +260,82 @@ clearvars -except results_* opt
 
 results = who('results_*');
 
+% Model of matrix
+%   decoding    sub-1   sub-2   ...     avg
+%   dec1        0.666   0.666   ...     0.777
+%   dec2        0.666   0.666   ...     0.777
+%   ...         ...     ...     ...     ...
+%   script1     0.888   0.888   ...     0.999
+%   script2     0.888   0.888   ...     0.999
+% (mock matrix, your results should be more realistic)
+%
+% decodingScores: 
+% - decoding scores (group 0.666): decoding accuracies for each subject in each decoding condition
+% - decoding means (group 0.777): decoding accuracies for each condition averaged accross subjects
+%
+% decodingMeans:
+% - script scores (group 0.888): decoding accuracies for each subject, averaged across conditions
+% - script means (group 0.999): decoding accuracies averaged across condition and across subejcts
+
 % initialize tables to avoid confusion
 nbDoubleFields = repmat("double",1,size(opt.subjects,2)+1);
 whichSubs = [];
 for iSub = 1:numel(opt.subjects), whichSubs = horzcat(whichSubs, string(['sub' opt.subjects{iSub}]));
 end
 
-decodingScores = [];
+decodingScores = table('Size',[1, 7], ...
+                       'VariableTypes',["char", "char", "char", "char", "char", "double", "char"],...
+                       'VariableNames',["nbVoxels", "area", "image", "decodingCondition", "subject", "accuracy", "script"]);
 
-decodingMeans = [];
+decodingMeans = table('Size',[1, size(opt.subjects,2)+5], 'VariableTypes',["char", "char", "char", "char", nbDoubleFields],...
+                      'VariableNames',["nbVoxels", "area", "image", "decodingCondition", whichSubs, "meanAccuracy"]);
 
 for r = 1:numel(results)
+    
+    % open each summary
+    eval(['summaries = fieldnames(' results{r} '.summary)']);  
 
-    eval(['report = ' results{r} '.report;']);
-    eval(['report_means = ' results{r} '.report_means;']);
+    % save the number of voxels
+    nbVoxString = split(results{r}, '_');
+    nbVox = nbVoxString(2);
 
-    decodingScores = vertcat(decodingScores, report);
-    decodingMeans = vertcat(decodingMeans, report_means);
+    for s = 1:numel(summaries)
+        % in each summary, split the parts where they need to go
+        eval(['summary = ' results{r} '.summary.' summaries{s} ';']);
+        eval(['report = ' results{r} '.report.' summaries{s} ';']);
+        
+        % split the name to add 'area' and 'image' to the table
+        decodingDetails = split(summaries{s},'_');
+        if size(decodingScores,1) == 1 
+            lengthScores = 0;
+            lengthMeans = 0;
+        else
+            lengthScores = size(decodingScores,1);
+            lengthMeans = size(decodingMeans,1);
+        end
+        % add 'nbVoxels', 'area' and 'image' to all the tables, minding the different
+        % number of columns they have
+        decodingScores{lengthScores+1:lengthScores+12,1} = report{:,1};
+        decodingScores{lengthScores+1:lengthScores+12,2} = report{:,2};
+        decodingScores{lengthScores+1:lengthScores+12,3} = report{:,3};
+        decodingScores{lengthScores+1:lengthScores+12,4} = report{:,4};
+        decodingScores{lengthScores+1:lengthScores+12,5} = report{:,5};
+        decodingScores{lengthScores+1:lengthScores+12,6} = report{:,6};
+        decodingScores{lengthScores+1:lengthScores+12,7} = report{:,7};
+
+        decodingMeans{lengthMeans+1:lengthMeans+2,1} = repmat(nbVox,2,1);
+        decodingMeans{lengthMeans+1:lengthMeans+2,2} = repmat(decodingDetails(1),2,1);
+        decodingMeans{lengthMeans+1:lengthMeans+2,3} = repmat(decodingDetails(2),2,1);
+
+        % sort each part of the summary in the corresponding matrix
+        decodingMeans(lengthMeans+1:lengthMeans+2,4:end) = summary(end-1:end,:);
+
+    end
 
 end
 
+% tidy-up
+decodingMeans = sortrows(decodingMeans,{'image','nbVoxels','area','decodingCondition'},'ascend');
 
 %% Plot bars - in R
 
@@ -300,4 +343,4 @@ end
 writetable(decodingMeans,'comparison_experts_means.xlsx');
 writetable(decodingScores,'comparison_experts_scores.xlsx');
 
-% R code can be found in ../visualization
+

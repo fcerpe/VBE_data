@@ -1,7 +1,7 @@
 % extractMeanAccuracies
 clear
 
-load("visbra_expertise-decodingWithinScript.mat");
+load(load('/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives/CoSMoMVPA/comparison_method-ns-expansionIntersection_condition-pairwise_within.mat');
 
 accuFR = accu;
 accuBR = accu;

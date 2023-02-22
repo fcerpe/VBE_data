@@ -66,7 +66,7 @@ for i = 1:length(methods)
         for iRatio = 1:3
             switch iRatio
                 case 1, opt.mvpa.ratioToKeep = 50;
-                case 2, opt.mvpa.ratioToKeep = 75;
+                case 2, opt.mvpa.ratioToKeep = 65;
                 case 3, opt.mvpa.ratioToKeep = 81; % minimum ratio for now 
             end
 
