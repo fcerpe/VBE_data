@@ -37,7 +37,7 @@ plotBeta50 + geom_boxplot(outlier.shape = NA, aes(colour = script)) +
                    labels = c("FRW - FPW", "FRW - FNW", "FRW - FFS", "FPW - FNW",
                               "FPW - FFS", "FNW - FFS", "BRW - BPW", "BRW - BNW",
                               "BRW - BFS", "BPW - BNW", "BPW - BFS", "BNW - BFS")) +
-  labs(x = "nbVoxels x Area", y = "Accuracy", title = "Mean decoding acccuracy - beta")
+  labs(x = "nbVoxels x Area", y = "Accuracy", title = "Mean decoding - single conditions - beta")
 
 ggsave("nbVox-50_decoding-accuracy_beta.png", width = 2600, height = 1600, dpi = 320, units = "px")
 
@@ -55,7 +55,7 @@ plotBeta65 + geom_boxplot(outlier.shape = NA, aes(colour = script)) +
                    labels = c("FRW - FPW", "FRW - FNW", "FRW - FFS", "FPW - FNW",
                               "FPW - FFS", "FNW - FFS", "BRW - BPW", "BRW - BNW",
                               "BRW - BFS", "BPW - BNW", "BPW - BFS", "BNW - BFS")) +
-  labs(x = "nbVoxels x Area", y = "Accuracy", title = "Mean decoding acccuracy - beta")
+  labs(x = "nbVoxels x Area", y = "Accuracy", title = "Mean decoding - single conditions - beta")
 
 ggsave("nbVox-65_decoding-accuracy_beta.png", width = 2600, height = 1600, dpi = 320, units = "px")
 
@@ -73,7 +73,7 @@ plotBeta81 + geom_boxplot(outlier.shape = NA, aes(colour = script)) +
                    labels = c("FRW - FPW", "FRW - FNW", "FRW - FFS", "FPW - FNW",
                               "FPW - FFS", "FNW - FFS", "BRW - BPW", "BRW - BNW",
                               "BRW - BFS", "BPW - BNW", "BPW - BFS", "BNW - BFS")) +
-  labs(x = "nbVoxels x Area", y = "Accuracy", title = "Mean decoding acccuracy - beta")
+  labs(x = "nbVoxels x Area", y = "Accuracy", title = "Mean decoding - single conditions - beta")
 
 ggsave("nbVox-81_decoding-accuracy_beta.png", width = 2600, height = 1600, dpi = 320, units = "px")
 
@@ -97,7 +97,7 @@ plotTmap50 + geom_boxplot(outlier.shape = NA, aes(colour = script)) +
                    labels = c("FRW - FPW", "FRW - FNW", "FRW - FFS", "FPW - FNW",
                               "FPW - FFS", "FNW - FFS", "BRW - BPW", "BRW - BNW",
                               "BRW - BFS", "BPW - BNW", "BPW - BFS", "BNW - BFS")) +
-  labs(x = "nbVoxels x Area", y = "Accuracy", title = "Mean decoding acccuracy - tmap")
+  labs(x = "nbVoxels x Area", y = "Accuracy", title = "Mean decoding - single conditions - tmap")
 
 ggsave("nbVox-50_decoding-accuracy_tmap.png", width = 2600, height = 1600, dpi = 320, units = "px")
 
@@ -115,7 +115,7 @@ plotTmap65 + geom_boxplot(outlier.shape = NA, aes(colour = script)) +
                    labels = c("FRW - FPW", "FRW - FNW", "FRW - FFS", "FPW - FNW",
                               "FPW - FFS", "FNW - FFS", "BRW - BPW", "BRW - BNW",
                               "BRW - BFS", "BPW - BNW", "BPW - BFS", "BNW - BFS")) +
-  labs(x = "nbVoxels x Area", y = "Accuracy", title = "Mean decoding acccuracy - tmap")
+  labs(x = "nbVoxels x Area", y = "Accuracy", title = "Mean decoding - single conditions - tmap")
 
 ggsave("nbVox-65_decoding-accuracy_tmap.png", width = 2600, height = 1600, dpi = 320, units = "px")
 
@@ -133,6 +133,6 @@ plotTmap81 + geom_boxplot(outlier.shape = NA, aes(colour = script)) +
                    labels = c("FRW - FPW", "FRW - FNW", "FRW - FFS", "FPW - FNW",
                               "FPW - FFS", "FNW - FFS", "BRW - BPW", "BRW - BNW",
                               "BRW - BFS", "BPW - BNW", "BPW - BFS", "BNW - BFS")) +
-  labs(x = "nbVoxels x Area", y = "Accuracy", title = "Mean decoding acccuracy - tmap")
+  labs(x = "nbVoxels x Area", y = "Accuracy", title = "Mean decoding - single conditions - tmap")
 
 ggsave("nbVox-81_decoding-accuracy_tmap.png", width = 2600, height = 1600, dpi = 320, units = "px")
