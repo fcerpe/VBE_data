@@ -1,4 +1,4 @@
-function [mask, outputFile, report] = roi_createCustomexpansion(specification, VolumeDefiningImage, OutputDir, saveImg, attempt)
+function [mask, outputFile, report] = roi_createCustomExpansion(specification, VolumeDefiningImage, OutputDir, saveImg, attempt)
 %
 % Returns a mask to be used as a ROI by ``spm_summarize``.
 % Can also save the ROI as binary image.
@@ -88,6 +88,11 @@ switch type
             case 4, roiImage = specification.mask4; % p = 0.1
         end
 
+        if attempt == 5
+            error(['Even with progressively lax thresholds, there are not enough voxels meeting our criteria.\n',...
+                   'Check the previous steps of the pipeline for possible errors.']);
+        end
+
         sphere = specification.maskSphere;
 
         isBinaryMask(roiImage);
@@ -96,63 +101,66 @@ switch type
         maskVol = spm_read_vols(spm_vol(roiImage));
         totalNbVoxels = sum(maskVol(:));
         if sphere.maxNbVoxels > totalNbVoxels
-            error('Number of voxels requested greater than the total number of voxels in this mask');
+            fprintf('\nNumber of voxels requested greater than the total number of voxels in this mask\n');
+            reDo = true;
+            attempt = attempt+1;
+        else
+
+            spec  = struct('mask1', roiImage, ...
+                           'mask2', sphere);
+    
+            % take as radius step the smallest voxel dimension of the roi image
+            hdr = spm_vol(roiImage);
+            dim = diag(hdr.mat);
+            radiusStep = min(abs(dim(1:3)));
+    
+            % determine maximum radius to expand to
+            maxRadius = hdr.dim .* dim(1:3)';
+            maxRadius = max(abs(maxRadius));
+    
+            fprintf(1, '\n Expansion:');
+    
+            previousSize = 0;
+    
+            while  true
+                mask = createRoi('intersection', spec);
+                mask.roi.radius = spec.mask2.radius;
+    
+                fprintf(1, '\n radius: %0.2f mm; roi size: %i voxels', ...
+                    mask.roi.radius, ...
+                    mask.roi.size);
+    
+                if mask.roi.size == previousSize
+                    fprintf(['\n An increase in the size did not increase the number of voxels. This cluster''s size is not sufficient.\n' ...
+                             'Will use lower threshold\n']);
+                    reDo = true;
+                    attempt = attempt+1;
+                    break
+                end
+    
+                if mask.roi.radius >= 15
+                    fprintf(['\n Radius too large\nIt would not make sense for our area to be this large and still not have enough voxels.\n' ...
+                             'Will use lower threshold\n']);
+                    reDo = true;
+                    attempt = attempt+1;
+                    break
+                end    
+    
+                if mask.roi.size > sphere.maxNbVoxels
+                    break
+                end
+    
+                if mask.roi.radius > maxRadius
+                    error('sphere expanded beyond the dimension of the mask.');
+                end
+    
+                spec.mask2.radius = spec.mask2.radius + radiusStep;
+                previousSize = mask.roi.size;
+            end
         end
-
-        spec  = struct('mask1', roiImage, ...
-                       'mask2', sphere);
-
-        % take as radius step the smallest voxel dimension of the roi image
-        hdr = spm_vol(roiImage);
-        dim = diag(hdr.mat);
-        radiusStep = min(abs(dim(1:3)));
-
-        % determine maximum radius to expand to
-        maxRadius = hdr.dim .* dim(1:3)';
-        maxRadius = max(abs(maxRadius));
-
-        fprintf(1, '\n Expansion:');
-
-        previousSize = 0;
-
-        while  true
-            mask = createRoi('intersection', spec);
-            mask.roi.radius = spec.mask2.radius;
-
-            fprintf(1, '\n radius: %0.2f mm; roi size: %i voxels', ...
-                mask.roi.radius, ...
-                mask.roi.size);
-
-            if mask.roi.size == previousSize
-                fprintf(['\n An increase in the size did not increase the number of voxels. This cluster''s size is not sufficient.\n' ...
-                         'Will use lower threshold\n']);
-                reDo = true;
-                attempt = attempt+1;
-                break
-            end
-
-            if mask.roi.radius >= 15
-                fprintf(['\n Radius too large\nIt would not make sense for our area to be this large and still not have enough voxels.\n' ...
-                         'Will use lower threshold\n']);
-                reDo = true;
-                attempt = attempt+1;
-                break
-            end    
-
-            if mask.roi.size > sphere.maxNbVoxels
-                break
-            end
-
-            if mask.roi.radius > maxRadius
-                error('sphere expanded beyond the dimension of the mask.');
-            end
-
-            spec.mask2.radius = spec.mask2.radius + radiusStep;
-            previousSize = mask.roi.size;
-        end
-
+        
         if reDo
-            mask = roi_createCustomexpansion(specification, VolumeDefiningImage, OutputDir, saveImg, attempt);
+            mask = roi_createCustomExpansion(specification, VolumeDefiningImage, OutputDir, saveImg, attempt);
         end
 
         fprintf(1, '\n');
@@ -174,8 +182,8 @@ end
 if not(reDo)
 
     % Directly write the document
-    % open report 
-    repFile = dir('expansionReport.txt');
+    % open report - with date notation to have a new one each time we try
+    repFile = dir(['expansionReport_' date '.txt']);
     if not(isempty(repFile))
         report = readcell(repFile.name);
     else
@@ -200,7 +208,7 @@ if not(reDo)
     report = vertcat(report, {reportArea, reportMethod, reportAttempt, reportPvalue, reportRadius, reportVoxels});
 
     % save report
-    writecell(report,'expansionReport.txt')
+    writecell(report,['expansionReport_' date '.txt'])
 end
 
 end

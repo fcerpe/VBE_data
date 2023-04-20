@@ -19,15 +19,13 @@ bidspm;
 % check inside if everything is ok before starting the pipeline
 opt = stats_localizer_option();
 
-%% GO GO GO
+%% Stats based on .json model file
+% check stats_localizer_option for details
 
-% 
 bidsFFX('specifyAndEstimate', opt);
-
-% 
+ 
 bidsFFX('contrasts', opt);
 
-% 
 bidsResults(opt);
 
 %% Group analysis

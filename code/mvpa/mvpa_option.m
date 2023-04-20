@@ -7,26 +7,50 @@ if nargin < 1
 end
 
 % suject to run in each group
+
+% All available subjects
+% opt.subjects = {'006','007','008','009','010','011','012','013','018','019','020','021'};
+
+% Only experts
 opt.subjects = {'006','007','008','009','012','013'};
 
+% Only controls
+opt.subjects = {'010','011','018','019','020','021'};
+
+
 % specify the order of the runs where we can find the following conditions
-% French - Braille: 003 006 008
-% Braille - French: 002 004 007 009
-%                            f  f  f  f  f  f  b  b  b  b  b  b
+%                            F  F  F  F  F  F  B  B  B  B  B  B
 opt.subsCondition = {'006', [1  3  5  7  9 11  2  4  6  8 10 12];
                      '007', [2  4  6  8 10 12  1  3  5  7  9 11];
                      '008', [1  3  5  7  9 11  2  4  6  8 10 12];
                      '009', [2  4  6  8 10 12  1  3  5  7  9 11];
+                     '010', [1  3  5  7  9 11  2  4  6  8 10 12];
+                     '011', [2  4  6  8 10 12  1  3  5  7  9 11];
                      '012', [1  3  5  7  9 11  2  4  6  8 10 12];
-                     '013', [2  4  6  8 10 12  1  3  5  7  9 11]};
+                     '013', [2  4  6  8 10 12  1  3  5  7  9 11];
+                     '018', [1  3  5  7  9 11  2  4  6  8 10 12];
+                     '019', [2  4  6  8 10 12  1  3  5  7  9 11];
+                     '020', [1  3  5  7  9 11  2  4  6  8 10 12];
+                     '021', [2  4  6  8 10 12  1  3  5  7  9 11]};
 
-% assign the condition to decode, changes based on our aims
-% - french_v_braille: simple script decoding
-% - within_script: frw v. fpw v. fnw v. ffs; 
-%                  brw v. bpw v. bnw v. bfs
-% - all: frw, fpw, fnw, ffs, brw, bpw, bnw, bfs all against each other,
-%        RDM-style
-opt.decodingCondition = {'pairwise_within'};
+% assign the condition to decode, changes based on our aims.
+% Will influence mvpa_assignDecodingConditions
+%
+% - french-braille: simple script decoding
+%
+% - pairwise-within-script: frw v. fpw, frw v. fnw, frw v. ffs, fpw v. fnw, fpw v. ffs, fnw v. ffs 
+%                           brw v. bpw, brw v. bnw, brw v. bfs, bpw v. bnw, bpw v. bfs, bnw v. bfs
+%
+% - four-way-classification-within: frw v. fpw v. fnw v. ffs
+%                                   brw v. bpw v. bnw v. bfs
+%
+% - linguistic-conditions: frw+brw v. fpw+bpw v. fnw+bnw v. ffs+bfs
+%
+% - crossmodal: not yet implemented
+%
+% - all: frw v. fpw v. fnw v. ffs v. brw v. bpw v. bnw v. bfs 
+
+opt.decodingCondition = {'pairwise-within-script'};
 
 % Uncomment the lines below to run preprocessing
 % - don't use realign and unwarp
@@ -68,15 +92,14 @@ opt.pipeline.type = 'stats';
 opt.model.file = fullfile(fileparts(mfilename('fullpath')), '..', ...
     'models', 'model-wordsDecoding_fourConditions_smdl.json');
 
-
 % Options for normalization (in case they're needed)
 opt.funcVoxelDims = [2.6 2.6 2.6];
 opt.parallelize.do = false;
 opt.parallelize.nbWorkers = 1;
 opt.parallelize.killOnExit = true;
 
-% ROI method (empty will be 10mm sphere around individual peaks)
-opt.roiMethod = 'individual_coords_8mm';
+% ROI method (empty = default = intersection between expansion and neurosynth, 'expansionIntersection' for short)
+opt.roiMethod = 'expansionIntersection';
 
 %% DO NOT TOUCH
 opt = checkOptions(opt);
@@ -96,7 +119,7 @@ opt.fwhm.contrast = 0;
 opt.mvpa.map4D = {'beta','tmap'};
 
 % design info
-opt.mvpa.nbRun = 6;
+opt.mvpa.nbRun = 12;
 opt.mvpa.nbTrialRepetition = 1;
 
 % cosmo options

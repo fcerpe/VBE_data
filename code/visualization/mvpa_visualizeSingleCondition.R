@@ -1,3 +1,6 @@
+
+setwd("~/Desktop/GitHub/VisualBraille_data/code/visualization")
+
 library("readxl")
 library("tidyverse")
 library("reshape2")

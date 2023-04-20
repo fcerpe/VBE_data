@@ -7,15 +7,15 @@ if nargin < 1
 end
 
 % suject to run in each group
-opt.subjects = {'006','007','008','009', '012', '013'}; % every participant after 006 is included in the final study
+opt.subjects = {'010','011','018','019','020','021'}; % every participant after 006 is included in the final study
 
-opt.roiList = {'VWFA-Fr', 'VWFA-Br', 'LOC-Left', 'LOC-Right'}; % , 'PFS-Left', 'PFS-Right'};
+opt.roiList = {'VWFA-Fr', 'LOC-Left', 'LOC-Right'}; % , 'PFS-Left', 'PFS-Right'};
 
 % Radius of the sphere around the peak
 opt.radius = 10; %mm
 
 % Number of voxels in the case of expanding ROI
-opt.numVoxels = 50;
+opt.numVoxels = 115;
 
 % Save the ROI?
 opt.saveROI = true;
@@ -26,9 +26,8 @@ opt.saveROI = true;
 %                            f  f  f  f  f  f  b  b  b  b  b  b
 opt.subsCondition = {'006', [1  3  5  7  9 11  2  4  6  8 10 12];
                      '007', [2  4  6  8 10 12  1  3  5  7  9 11];
-                     };
-%                     '008', [1  3  5  7  9 11  2  4  6  8 10 12];
-%                     '009', [2  4  6  8 10 12  1  3  5  7  9 11]
+                     '008', [1  3  5  7  9 11  2  4  6  8 10 12];
+                     '009', [2  4  6  8 10 12  1  3  5  7  9 11]};
 
 
 % we stay in native space (that of the T1)
@@ -36,7 +35,7 @@ opt.space = 'MNI'; % 'individual', 'MNI'
 
 % description to add to folder name, to distinguish from GLM (see other
 % script)
-opt.desc = 'MVPA';
+opt.desc = 'ROI';
 
 % I like chatty outputs
 opt.verbosity = 2;
@@ -84,7 +83,7 @@ opt.fwhm.contrast = 0;
 % opt.mvpa.ratioToKeep = 300; % 100 150 250 350 420
 
 % set which type of ffx results you want to use
-opt.mvpa.map4D = {'beta', 'tMaps'};
+opt.mvpa.map4D = {'beta'};
 
 % design info
 opt.mvpa.nbRun = 12;

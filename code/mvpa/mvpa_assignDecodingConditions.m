@@ -20,18 +20,18 @@ function [deco, condNb, decoNbs] = mvpa_assignDecodingConditions(opt)
     
     switch opt.decodingCondition{1}
 
-        case 'french_v_braille'
+        case 'french-braille'
             deco = {'french_v_braille'};
             condNb = [1 1 1 1 2 2 2 2];
             decoNbs = [1 2];
 
-        case 'pairwise_within'
+        case 'pairwise-within-script'
             deco = {'frw_v_fpw', 'frw_v_fnw', 'frw_v_ffs', 'fpw_v_fnw', 'fpw_v_ffs', 'fnw_v_ffs', ...
                     'brw_v_bpw', 'brw_v_bnw', 'brw_v_bfs', 'bpw_v_bnw', 'bpw_v_bfs', 'bnw_v_bfs'};           
             condNb = [1 2 3 4 5 6 7 8];
             decoNbs = [1 2; 1 3; 1 4; 2 3; 2 4; 3 4; 5 6; 5 7; 5 8; 6 7; 6 8; 7 8];
 
-        case 'four_way'
+        case 'four-way-classification-within'
             deco = {'frw_v_fpw_v_fnw_v_ffs', 'brw_v_bpw_v_bnw_v_bfs'};           
             condNb = [1 2 3 4 5 6 7 8];
             decoNbs = [1 2 3 4; 5 6 7 8];

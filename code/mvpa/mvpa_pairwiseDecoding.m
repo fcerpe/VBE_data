@@ -9,23 +9,13 @@ function accu = mvpa_pairwiseDecoding(opt)
 % choose masks to be used
 opt = mvpa_chooseMask(opt);
 
-% switch method in a more readable name
-switch opt.roiMethod
-    case 'general_coords_10mm',    opt.methodName = 'neurosynth-sphere-10mm';
-    case 'individual_coords_10mm', opt.methodName = 'individual-sphere-10mm';
-    case 'individual_coords_8mm',  opt.methodName = 'individual-sphere-8mm';
-    case 'individual_coords_50vx', opt.methodName = 'individual-expand-50vx';
-    case 'anatomical_intersection_8mm', opt.methodName = 'anatomy-sphere-8mm';
-    case 'atlases', opt.methodName = 'ns-expansionIntersection';
-end
-
 % set output folder/name
 savefileMat = fullfile(opt.dir.cosmo, ...
-    ['mvpa-pairwiseDecoding_task-', opt.taskName{1},'_method-', opt.methodName, '_condition-', ...
+    ['mvpa-pairwiseDecoding_task-', opt.taskName{1},'_method-', opt.roiMethod, '_condition-', ...
      opt.decodingCondition{1}, '_nbvoxels-', num2str(opt.mvpa.ratioToKeep), '.mat']);
 
 savefileCsv = fullfile(opt.dir.cosmo, ...
-    ['mvpa-pairwiseDecoding_task-', opt.taskName{1},'_method-', opt.methodName, '_condition-', ...
+    ['mvpa-pairwiseDecoding_task-', opt.taskName{1},'_method-', opt.roiMethod, '_condition-', ...
      opt.decodingCondition{1}, '_nbvoxels-', num2str(opt.mvpa.ratioToKeep), '.csv']);
 
 %% MVPA options
@@ -42,11 +32,11 @@ condLabelName = {'frw','fpw','fnw','ffs','brw','bpw','bnw','bfs'};
 
 % set structure array for keeping the results
 accu = struct('subID', [],       'mask', [], ...
-    'accuracy', [],    'prediction', [], ...
-    'maskVoxNb', [],   'choosenVoxNb', [], ...
-    'image', [],       'ffxSmooth', [], ...
-    'roiSource', [],   'decodingCondition', [], ...
-    'permutation', [], 'imagePath', []);
+              'accuracy', [],    'prediction', [], ...
+              'maskVoxNb', [],   'choosenVoxNb', [], ...
+              'image', [],       'ffxSmooth', [], ...
+              'roiSource', [],   'decodingCondition', [], ...
+              'permutation', [], 'imagePath', []);
 
 count = 1;
 
@@ -74,7 +64,6 @@ for iSub = 1:numel(opt.subjects)
             % check which mask are we dealing with
             maskSplit = split(mask,{'_','-'});
             maskLabel = maskSplit{find(strcmp(maskSplit,'label'))+1};
-
 
             % check if the mask we want to use is actually present,
             % if so do the mask calculation
@@ -134,7 +123,6 @@ for iSub = 1:numel(opt.subjects)
                         partitions, opt.mvpa);
 
                     %%
-
                     %         ratios_to_keep = .05:.05:.95;
                     %         nratios = numel(ratios_to_keep);
                     %

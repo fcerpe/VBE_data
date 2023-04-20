@@ -1,4 +1,4 @@
-function maskVoxel = mvpa_calculateMaskSize(opt)
+function [maskVoxel, opt] = mvpa_calculateMaskSize(opt)
 
 % choose masks to be used
 opt = mvpa_chooseMask(opt);
@@ -8,10 +8,10 @@ maskVoxel = [];
 
 %% MVPA options
 
-% set cosmo mvpa structure
+% set cosmo mvpa structure, simple one to just get the number of voxels
+% available in each ROI
 condLabelNb = [1 1 1 1 2 2 2 2];
 condLabelName = {'frw', 'fpw', 'fnw', 'ffs', 'brw', 'bpw', 'bnw', 'bfs'};
-%   decodingCondition = 'visual_vertical_vs_visual_horizontal';%'tactile_vertical_vs_tactile_horizontal';
 
 count = 1;
 
@@ -74,20 +74,10 @@ for iSub = 1:numel(opt.subjects)
                 % add everything to a report of how big the ROIs are
                 parts = split(mask,{'-','_'});
                 reportSub = ['sub-', subID];
-                if strcmp(parts{9},'atlas')
-                    if strcmp(parts{10},'Broadmann'), reportThreshold = '/';
-                    else, reportThreshold = '0';
-                    end
-                    reportMethod = parts{10};
-                    reportFormat = parts{12};
-                else
-                    reportMethod = 'expansion';
-                    reportThreshold = '/';
-                    reportFormat = '50vx';
-                end
+                reportMethod = opt.roiMethod;
                 reportSize = thisVoxel;
                 reportMask = opt.mvpa.map4D{iImage};
-                opt.report = vertcat(opt.report,{reportSub, reportMethod, reportThreshold, reportFormat, reportSize, reportMask});
+                opt.roiSizesReport = vertcat(opt.roiSizesReport,{reportSub, reportMethod, reportSize, reportMask});
             end
         end
 
