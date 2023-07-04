@@ -7,16 +7,18 @@ if nargin < 1
 end
 
 % suject to run in each group
+% Specifiy which group is being analysed, to ease comprehension 
 
 % All available subjects
 % opt.subjects = {'006','007','008','009','010','011','012','013','018','019','020','021'};
 
 % Only experts
 opt.subjects = {'006','007','008','009','012','013'};
+opt.groupName = {'experts'};
 
 % Only controls
-opt.subjects = {'010','011','018','019','020','021'};
-
+% opt.subjects = {'010','011','018','019','020','021'};
+% opt.groupName = {'controls'};
 
 % specify the order of the runs where we can find the following conditions
 %                            F  F  F  F  F  F  B  B  B  B  B  B
@@ -44,13 +46,16 @@ opt.subsCondition = {'006', [1  3  5  7  9 11  2  4  6  8 10 12];
 % - four-way-classification-within: frw v. fpw v. fnw v. ffs
 %                                   brw v. bpw v. bnw v. bfs
 %
-% - linguistic-conditions: frw+brw v. fpw+bpw v. fnw+bnw v. ffs+bfs
+% - linguistic-condition: frw+brw v. fpw+bpw v. fnw+bnw v. ffs+bfs
 %
 % - crossmodal: not yet implemented
 %
 % - all: frw v. fpw v. fnw v. ffs v. brw v. bpw v. bnw v. bfs 
+%
+% - cross-script: [ONLY FOR mvpa_crossScriptDecoding] train on f/b, test on
+%                  b/f
 
-opt.decodingCondition = {'pairwise-within-script'};
+opt.decodingCondition = {'linguistic-condition'};
 
 % Uncomment the lines below to run preprocessing
 % - don't use realign and unwarp

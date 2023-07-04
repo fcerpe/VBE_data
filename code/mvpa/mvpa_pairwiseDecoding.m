@@ -11,22 +11,23 @@ opt = mvpa_chooseMask(opt);
 
 % set output folder/name
 savefileMat = fullfile(opt.dir.cosmo, ...
-    ['mvpa-pairwiseDecoding_task-', opt.taskName{1},'_method-', opt.roiMethod, '_condition-', ...
+    ['mvpa-decoding_grp-', opt.groupName{1}, '_task-', opt.taskName{1},'_condition-', ...
      opt.decodingCondition{1}, '_nbvoxels-', num2str(opt.mvpa.ratioToKeep), '.mat']);
 
 savefileCsv = fullfile(opt.dir.cosmo, ...
-    ['mvpa-pairwiseDecoding_task-', opt.taskName{1},'_method-', opt.roiMethod, '_condition-', ...
+    ['mvpa-decoding_grp-', opt.groupName{1}, '_task-', opt.taskName{1},'_condition-', ...
      opt.decodingCondition{1}, '_nbvoxels-', num2str(opt.mvpa.ratioToKeep), '.csv']);
 
 %% MVPA options
 
 % set cosmo mvpa structure
-% get labels, always the same
-condLabelName = {'frw','fpw','fnw','ffs','brw','bpw','bnw','bfs'};
-
-% get decoding condition, indices and pairs, they change based on our
-% analyses
-[decodingCondition, condLabelNb, decodingPairs] = mvpa_assignDecodingConditions(opt);
+% get:
+% - labels,
+% - decoding condition, 
+% - indices,
+% - pairs, 
+% they change based on our analyses
+[condLabelName, decodingCondition, condLabelNb, decodingPairs] = mvpa_assignDecodingConditions(opt);
 
 %% let's get going!
 
@@ -217,8 +218,10 @@ function ds = setCosmoStructure(opt, ds, condLabelNb, condLabelName, iSub)
 % sets up the target, chunk, labels by stimuli condition labels, runs,
 % number labels.
 
-% Modified on 10/06/2022 to accomodate for different design
+% Modified to accomodate for different design
 % Now, one run contains half of the conditions
+% To understand which order the scrpts have in each subject, refer to 
+% opt.subsCondition.
 
 % design info from opt
 nbRun = opt.mvpa.nbRun;
@@ -229,8 +232,8 @@ conditionPerRun = length(condLabelNb);
 betasPerRun = betasPerCondition * conditionPerRun;
 
 %     chunks = repmat((1:nbRun)', 1, betasPerRun);
-firstChunk = opt.subsCondition{iSub,2}(1:6);
-secondChunk = opt.subsCondition{iSub,2}(7:end);
+firstChunk = opt.subsCondition{strcmp(opt.subsCondition(:,1),opt.subjects{iSub}),2}(1:6);
+secondChunk = opt.subsCondition{strcmp(opt.subsCondition(:,1),opt.subjects{iSub}),2}(7:end);
 chunks = horzcat(repmat(firstChunk', 1, betasPerRun/2), repmat(secondChunk', 1, betasPerRun/2));
 chunks = chunks(:);
 

@@ -41,6 +41,9 @@ bidspm;
 % get options
 opt = roi_option();
 
+% If not done previously, extract PPA, FFA, and V1 ROIs from visfatlas
+
+
 %% Get the ROIs (actually just the spheres)
 
 % get the resliced masks in the folder. Only 'visualWords' and 'objects'
