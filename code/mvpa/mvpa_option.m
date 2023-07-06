@@ -55,7 +55,7 @@ opt.subsCondition = {'006', [1  3  5  7  9 11  2  4  6  8 10 12];
 % - cross-script: [ONLY FOR mvpa_crossScriptDecoding] train on f/b, test on
 %                  b/f
 
-opt.decodingCondition = {'linguistic-condition'};
+opt.decodingCondition = {'pairwise-within-script'};
 
 % Uncomment the lines below to run preprocessing
 % - don't use realign and unwarp

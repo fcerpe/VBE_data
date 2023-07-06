@@ -42,7 +42,33 @@ bidspm;
 opt = roi_option();
 
 % If not done previously, extract PPA, FFA, and V1 ROIs from visfatlas
+if isempty(dir('*atlas-visfatlas*'))
+    % PPA
+    lh_ppa = extractRoiFromAtlas('masks/', 'visfatlas', 'CoS','L'); 
+    
+    % FFA
+    lh_ffa1 = extractRoiFromAtlas('masks/', 'visfatlas', 'mFus','L'); % FFA-1 - left hemisphere
+    lh_ffa2 = extractRoiFromAtlas('masks/', 'visfatlas', 'pFus','L'); % FFA-2 - left hemisphere
+    % Join ROIs
+    roi_mergeMasks(lh_ffa1, lh_ffa2, 'masks/hemi-L_space-MNI_atlas-visfatlas_label-FFA_mask');
+    
+    % V1
+    lh_v1d = extractRoiFromAtlas('masks/', 'visfatlas', 'v1d','L'); % V1d - left hemisphere
+    lh_v1v = extractRoiFromAtlas('masks/', 'visfatlas', 'v1v','L'); % V1v - left hemisphere
+    rh_v1d = extractRoiFromAtlas('masks/', 'visfatlas', 'v1d','R'); % V1d - right hemisphere
+    rh_v1v = extractRoiFromAtlas('masks/', 'visfatlas', 'v1v','R'); % V1v - right hemisphere
+    % Join ROIs
+    roi_mergeMasks(lh_v1d, lh_v1v, 'masks/hemi-L_space-MNI_atlas-visfatlas_label-V1_mask');
+    roi_mergeMasks(rh_v1d, rh_v1v, 'masks/hemi-R_space-MNI_atlas-visfatlas_label-V1_mask');
+    roi_mergeMasks('masks/hemi-L_space-MNI_atlas-visfatlas_label-V1_mask.nii', 'masks/hemi-R_space-MNI_atlas-visfatlas_label-V1_mask.nii', ...
+                   'masks/hemi-B_space-MNI_atlas-visfatlas_label-V1_mask');
 
+    % reslice everything to be in the same dimensional space
+    dataImage = fullfile(opt.dir.stats, 'sub-007', 'task-wordsDecoding_space-IXI549Space_FWHM-2', 'beta_0001.nii');
+    resliceRoiImages(dataImage, 'masks/hemi-L_space-MNI_atlas-visfatlas_label-CoS_mask.nii');
+    resliceRoiImages(dataImage, 'masks/hemi-L_space-MNI_atlas-visfatlas_label-FFA_mask.nii');
+    resliceRoiImages(dataImage, 'masks/hemi-B_space-MNI_atlas-visfatlas_label-V1_mask.nii');
+end
 
 %% Get the ROIs (actually just the spheres)
 

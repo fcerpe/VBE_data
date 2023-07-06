@@ -8,11 +8,11 @@ opt = mvpa_chooseMask(opt);
 
 % set output folder/name
 savefileMat = fullfile(opt.dir.cosmo, ...
-    ['mvpa-decoding_grp-', opt.groupName{1}, '_task-', opt.taskName{1},'_condition-', ...
+    ['attempt-0704_mvpa-decoding_grp-', opt.groupName{1}, '_task-', opt.taskName{1},'_condition-', ...
     opt.decodingCondition{1}, '_nbvoxels-', num2str(opt.mvpa.ratioToKeep), '.mat']);
 
 savefileCsv = fullfile(opt.dir.cosmo, ...
-    ['mvpa-decoding_grp-', opt.groupName{1}, '_task-', opt.taskName{1},'_condition-', ...
+    ['attempt-0704_mvpa-decoding_grp-', opt.groupName{1}, '_task-', opt.taskName{1},'_condition-', ...
     opt.decodingCondition{1}, '_nbvoxels-', num2str(opt.mvpa.ratioToKeep), '.csv']);
 
 
@@ -21,7 +21,7 @@ savefileCsv = fullfile(opt.dir.cosmo, ...
 % set cosmo mvpa structure
 condLabelNb = [1 2 3 4 1 2 3 4];
 condLabelName = {'frw','fpw','fnw','ffs','brw','bpw','bnw','bfs'};
-decodingConditionList = {'tr-french_te-braille', 'tr-braille_te-french', 'both'};
+decodingConditionList = {'tr-braille_te-french', 'tr-french_te-braille', 'both'};
 modalityLabelNb = [1 1 1 1 2 2 2 2];
 modalityLabelName = {'french','french','french','french','braille','braille','braille','braille'};
 decodingPairs = [1 2; 1 3; 1 4; 2 3; 2 4; 3 4];
@@ -107,14 +107,14 @@ for iSub = 1:numel(opt.subjects)
                         % set cosmo structure
                         ds = setCosmoStructure(opt, ds, condLabelNb, condLabelName, modalityLabelNb, modalityLabelName, iSub);
 
-                        % Demean  every pattern to remove univariate effect differences
+                        % Demean every pattern to remove univariate effect differences
                         meanPattern = mean(ds.samples,2);  % get the mean for every pattern
                         meanPattern = repmat(meanPattern,1,size(ds.samples,2)); % make a matrix with repmat
                         ds.samples  = ds.samples - meanPattern; % remove the mean from every every point in each pattern
 
                         % Slice the dataset accroding to modality
-                        modIdx = (ds.sa.modality == 1) | (ds.sa.modality == 2) ;
-                        ds = cosmo_slice(ds,modIdx);
+%                         modIdx = (ds.sa.modality == 1) | (ds.sa.modality == 2) ;
+%                         ds = cosmo_slice(ds,modIdx);
 
                         % slice the ds according to your targets
                         ds = cosmo_slice(ds, ds.sa.targets == decodingPairs(iPair,1) | ds.sa.targets == decodingPairs(iPair,2));
@@ -240,12 +240,12 @@ nbRun = opt.mvpa.nbRun;
 betasPerCondition = opt.mvpa.nbTrialRepetition;
 
 % chunk (runs), target (condition), labels (condition names)
-conditionPerRun = length(condLabelNb);
+conditionPerRun = length(condLabelNb)/2;
 betasPerRun = betasPerCondition * conditionPerRun;
 
 firstChunk = opt.subsCondition{strcmp(opt.subsCondition(:,1),opt.subjects{iSub}),2}(1:6);
 secondChunk = opt.subsCondition{strcmp(opt.subsCondition(:,1),opt.subjects{iSub}),2}(7:end);
-chunks = horzcat(repmat(firstChunk', 1, betasPerRun/2), repmat(secondChunk', 1, betasPerRun/2));
+chunks = horzcat(repmat(firstChunk', 1, betasPerRun), repmat(secondChunk', 1, betasPerRun));
 chunks = chunks(:);
 
 targets = repmat(condLabelNb', 1, nbRun/2)';
