@@ -5,6 +5,7 @@ library("readxl")
 library("tidyverse")
 library("reshape2")
 library("gridExtra")
+library("pracma")
 
 ### Load matrices of decoding accuracies for both groups 
 
@@ -14,7 +15,7 @@ ctrl_accuracies <-
 
 # Experts
 exp_accuracies <- 
-  read.csv("../../outputs/derivatives/CoSMoMVPA/mvpa-decoding_grp-experts_task-wordsDecoding_condition-pairwise-within-script_nbvoxels-73.csv")
+  read.csv("../../outputs/derivatives/CoSMoMVPA/0706_mvpa-decoding_grp-experts_task-wordsDecoding_condition-pairwise-within-script_nbvoxels-73.csv")
 
 
 

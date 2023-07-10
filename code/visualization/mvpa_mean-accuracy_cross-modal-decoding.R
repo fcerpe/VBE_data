@@ -5,12 +5,16 @@ library("readxl")
 library("tidyverse")
 library("reshape2")
 library("gridExtra")
+library("pracma")
 
 ### Load matrices of decoding accuracies, only for experts. Pointless in controls 
 
 # Experts
 exp_accuracies <- 
   read.csv("../../outputs/derivatives/CoSMoMVPA/mvpa-decoding_grp-experts_task-wordsDecoding_condition-cross-script_nbvoxels-73.csv")
+
+exp_attempt <-
+  read.csv("../../outputs/derivatives/CoSMoMVPA/attempt-0704_mvpa-decoding_grp-experts_task-wordsDecoding_condition-cross-script_nbvoxels-73.csv")
 
 
 
@@ -33,13 +37,21 @@ accu_both <- group_split(exp_accuracies, modality)[[1]]
 accu_trBR_teFR <- group_split(exp_accuracies, modality)[[2]]
 accu_trFR_teBR <- group_split(exp_accuracies, modality)[[3]]
 
+exp_attempt <- as.data.frame(exp_attempt)
+exp_attempt$mask <- ifelse(exp_attempt$mask == "VWFAfr", "VWFA", exp_attempt$mask)
+exp_attempt <- subset(exp_attempt, select = -c(4,7,8))
+exp_attempt <- group_split(exp_attempt, image)[[1]]
+exp_attempt <- subset(exp_attempt, select = -c(4,5))
+att_both <- group_split(exp_attempt, modality)[[1]]
+att_trBR_teFR <- group_split(exp_attempt, modality)[[2]]
+att_trFR_teBR <- group_split(exp_attempt, modality)[[3]]
 
 
 
 ### Plots
 
 # Train on Braille, test on French
-plot_trBR_teFR <- ggplot(accu_trBR_teFR, aes(x = decodingCondition, y = accuracy), middle = mean(accuracy))
+plot_trBR_teFR <- ggplot(att_trBR_teFR, aes(x = decodingCondition, y = accuracy), middle = mean(accuracy))
 plot_trBR_teFR + geom_boxplot(outlier.shape = NA, colour = "#0000ff") + 
   theme_classic() +
   geom_hline(aes(yintercept = 0.5), size = .25, linetype = "dashed") +
@@ -50,11 +62,11 @@ plot_trBR_teFR + geom_boxplot(outlier.shape = NA, colour = "#0000ff") +
   scale_x_discrete(limits=rev, labels = c("RW - PW", "RW - NW", "RW - FS", "PW - NW", "PW - FS", "NW - FS")) +
   labs(x = "Area", y = "Accuracy", title = "Mean decoding acccuracy - train on BRAILLE, test on FRENCH")
 
-ggsave("figures/cross-script_mean-accuracy_tr-braille-te-french.png", width = 3000, height = 1800, dpi = 320, units = "px")
+# ggsave("figures/cross-script_mean-accuracy_tr-braille-te-french.png", width = 3000, height = 1800, dpi = 320, units = "px")
 
 
 # Train on French, test on Braille
-plot_trFR_teBR <- ggplot(accu_trFR_teBR, aes(x = decodingCondition, y = accuracy), middle = mean(accuracy))
+plot_trFR_teBR <- ggplot(att_trFR_teBR, aes(x = decodingCondition, y = accuracy), middle = mean(accuracy))
 plot_trFR_teBR + geom_boxplot(outlier.shape = NA, colour = "#0000ff") + 
   theme_classic() +
   geom_hline(aes(yintercept = 0.5), size = .25, linetype = "dashed") +
@@ -65,4 +77,16 @@ plot_trFR_teBR + geom_boxplot(outlier.shape = NA, colour = "#0000ff") +
   scale_x_discrete(limits=rev, labels = c("RW - PW", "RW - NW", "RW - FS", "PW - NW", "PW - FS", "NW - FS")) +
   labs(x = "Area", y = "Accuracy", title = "Mean decoding acccuracy - train on FRENCH, test on BRAILLE")
 
-ggsave("figures/cross-script_mean-accuracy_tr-french-te-braille.png", width = 3000, height = 1800, dpi = 320, units = "px")
+# ggsave("figures/cross-script_mean-accuracy_tr-french-te-braille.png", width = 3000, height = 1800, dpi = 320, units = "px")
+
+# both 
+plot_both <- ggplot(att_both, aes(x = decodingCondition, y = accuracy), middle = mean(accuracy))
+plot_both + geom_boxplot(outlier.shape = NA, colour = "#0000ff") + 
+  theme_classic() +
+  geom_hline(aes(yintercept = 0.5), size = .25, linetype = "dashed") +
+  ylim(0,1) +
+  geom_jitter(colour = "#0000ff", width = 0.3, alpha = 0.7) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  facet_grid(~factor(mask, levels = c("VWFA", "lLO", "rLO")), labeller = label_value) + 
+  scale_x_discrete(limits=rev, labels = c("RW - PW", "RW - NW", "RW - FS", "PW - NW", "PW - FS", "NW - FS")) +
+  labs(x = "Area", y = "Accuracy", title = "Mean decoding acccuracy - train on FRENCH, test on BRAILLE")
