@@ -7,7 +7,7 @@ function opt = stats_localizer_option()
 
 opt = [];
 
-opt.subjects = {'017'}; % 002 003 004 005
+opt.subjects = {['020']}; % 002 003 004 005
 
 % Task to analyze - change accordingly
 opt.taskName = 'visualLocalizer';

@@ -33,7 +33,8 @@ opt.subsCondition = {'006', [1  3  5  7  9 11  2  4  6  8 10 12];
                      '018', [1  3  5  7  9 11  2  4  6  8 10 12];
                      '019', [2  4  6  8 10 12  1  3  5  7  9 11];
                      '020', [1  3  5  7  9 11  2  4  6  8 10 12];
-                     '021', [2  4  6  8 10 12  1  3  5  7  9 11]};
+                     '021', [2  4  6  8 10 12  1  3  5  7  9 11];
+                     '022', [2  4  6  8 10 12  1  3  5  7  9 11]};
 
 % assign the condition to decode, changes based on our aims.
 % Will influence mvpa_assignDecodingConditions

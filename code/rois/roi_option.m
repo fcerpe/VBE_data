@@ -7,7 +7,7 @@ if nargin < 1
 end
 
 % suject to run in each group
-opt.subjects = {'010','011','018','019','020','021'}; % every participant after 006 is included in the final study
+opt.subjects = {'022'}; % every participant after 006 is included in the final study
 
 opt.roiList = {'VWFA-Fr', 'LOC-Left', 'LOC-Right'}; % , 'PFS-Left', 'PFS-Right'};
 
@@ -19,16 +19,6 @@ opt.numVoxels = 115;
 
 % Save the ROI?
 opt.saveROI = true;
-
-% specify the order of the runs where we can find the following conditions
-% French - Braille: 003 006 008
-% Braille - French: 002 004 007 009
-%                            f  f  f  f  f  f  b  b  b  b  b  b
-opt.subsCondition = {'006', [1  3  5  7  9 11  2  4  6  8 10 12];
-                     '007', [2  4  6  8 10 12  1  3  5  7  9 11];
-                     '008', [1  3  5  7  9 11  2  4  6  8 10 12];
-                     '009', [2  4  6  8 10 12  1  3  5  7  9 11]};
-
 
 % we stay in native space (that of the T1)
 opt.space = 'MNI'; % 'individual', 'MNI'

@@ -10,58 +10,111 @@ library("pracma")
 ### Load matrices of decoding accuracies for both groups 
 
 # Controls
-ctrl_accuracies <- 
-  read.csv("../../outputs/derivatives/CoSMoMVPA/mvpa-decoding_grp-controls_task-wordsDecoding_condition-pairwise-within-script_nbvoxels-73.csv")
+controls <- read.csv("../../outputs/derivatives/CoSMoMVPA/mvpa-decoding_grp-controls_task-wordsDecoding_condition-pairwise-within-script_nbvoxels-73.csv")
 
 # Experts
-exp_accuracies <- 
-  read.csv("../../outputs/derivatives/CoSMoMVPA/0706_mvpa-decoding_grp-experts_task-wordsDecoding_condition-pairwise-within-script_nbvoxels-73.csv")
+experts <- read.csv("../../outputs/derivatives/CoSMoMVPA/mvpa-decoding_grp-experts_task-wordsDecoding_condition-pairwise-within-script_nbvoxels-73.csv")
 
 
 
 ### Manipulate the matrix to get something readable by ggplot
-
-ctrl_accuracies <- as.data.frame(ctrl_accuracies)
-exp_accuracies <- as.data.frame(exp_accuracies)
+controls <- as.data.frame(controls)
+experts <- as.data.frame(experts)
 
 # Assign the script, to ease splitting the original accuracy matrix: 1 = French, 2 = Braille
 extraCol <- repmat(c(1,1,1,1,1,1,2,2,2,2,2,2), 1,36)
 extraCol <- t(extraCol)
-ctrl_accuracies$script <- extraCol
-exp_accuracies$script <- extraCol
+controls$script <- extraCol
+experts$script <- extraCol
 
 # Assign group, to keep track once merged
-ctrl_accuracies$group <- rep("control", 432)
-exp_accuracies$group <- rep("expert", 432)
-
-# Join matrices and specify who's control and who's expert
-# accuracies <- rbind(exp_accuracies, ctrl_accuracies)
-
-# Drop unnecessary columns
-# accuracies <- subset(accuracies, select = -c(4,7,8))
-ctrl_accuracies <- subset(ctrl_accuracies, select = -c(4,7,8))
-exp_accuracies <- subset(exp_accuracies, select = -c(4,7,8))
+controls$group <- rep("control", 432)
+experts$group <- rep("expert", 432)
 
 # remove tmaps, remove voxNb and image columns
-# accu_div <- group_split(accuracies, image)[[1]]
-ctrl_accuracies <- group_split(ctrl_accuracies, image)[[1]]
-exp_accuracies <- group_split(exp_accuracies, image)[[1]]
-# accuracies <- subset(accuracies, select = -c(4,5))
-ctrl_accuracies <- subset(ctrl_accuracies, select = -c(4,5))
-exp_accuracies <- subset(exp_accuracies, select = -c(4,5))
+controls <- group_split(controls, image)[[1]]
+controls <- subset(controls, select = -c(4,5,6,7,8))
+
+experts <- group_split(experts, image)[[1]]
+experts <- subset(experts, select = -c(4,5,6,7,8))
 
 # rename 1 and 2 with french and braille
-ctrl_accuracies$script <- ifelse(ctrl_accuracies$script == 1, "french", "braille")
-ctrl_accuracies$mask <- ifelse(ctrl_accuracies$mask == "VWFAfr", "VWFA", ctrl_accuracies$mask)
-exp_accuracies$script <- ifelse(exp_accuracies$script == 1, "french", "braille")
-exp_accuracies$mask <- ifelse(exp_accuracies$mask == "VWFAfr", "VWFA", exp_accuracies$mask)
+controls$script <- ifelse(controls$script == 1, "french", "braille")
+controls$mask <- ifelse(controls$mask == "VWFAfr", "VWFA", controls$mask)
+
+experts$script <- ifelse(experts$script == 1, "french", "braille")
+experts$mask <- ifelse(experts$mask == "VWFAfr", "VWFA", experts$mask)
 
 
 
-### Plots
+# calculate stats for error bars
+stats_controls <- controls %>% group_by(mask, decodingCondition, script) %>% 
+  summarize(mean_accuracy = mean(accuracy), sd_accuracy = sd(accuracy), se_accuracy = sd(accuracy)/sqrt(6), .groups = 'keep') 
+
+stats_experts <-experts %>% group_by(mask, decodingCondition, script) %>% 
+  summarize(mean_accuracy = mean(accuracy), sd_accuracy = sd(accuracy), se_accuracy = sd(accuracy)/sqrt(6), .groups = 'keep') 
+
+
+
+### Plots - new way
 
 # Experts 
-accu_exp_plot <- ggplot(exp_accuracies, aes(x = decodingCondition, y = accuracy), middle = mean(accuracy))
+ggplot(stats_experts, aes(x = decodingCondition, y = mean_accuracy)) + 
+  scale_color_manual(name = "script", values = c("french" = "#69B5A2", "braille" = "#FF9E4A")) +
+  # Mean dot - to be changed
+  geom_dotplot(binaxis = "y", binwidth = 0.015, stackdir = "center", aes(colour = script, fill = script), legend = F) + 
+  # SE bars 
+  geom_errorbar(data = stats_experts, 
+                aes(x = decodingCondition, y = mean_accuracy, ymin = mean_accuracy - se_accuracy, ymax = mean_accuracy + se_accuracy, colour = script),
+                width = .15, position = position_dodge(1), size = 1, alpha = .8) +
+  # Individual data clouds 
+  geom_dotplot(data = experts, aes(x = reorder(decodingCondition, script), y = accuracy, colour = script, fill = script), 
+               binaxis = "y", binwidth = 0.015, stackdir = "center", alpha = 0.3, legend = F) +
+  geom_hline(yintercept = 0.5, size = .25, linetype = "dashed") +                # .50 line
+  theme_classic() +                                                              # white background, simple theme
+  ylim(0,1) +                                                                    # proper y axis length
+  theme(axis.text.x = element_text(angle = 90)) +                                # vertical text for x axis
+  facet_grid(~factor(mask, levels = c("VWFA", "lLO", "rLO")), 
+             labeller = label_value) +                                           # split the decodings according to group = area
+  scale_x_discrete(limits=rev,                                                   # customize x axis labels
+                   labels = c("FRW - FPW", "FRW - FNW", "FRW - FFS", "FPW - FNW", "FPW - FFS", "FNW - FFS",
+                              "BRW - BPW", "BRW - BNW", "BRW - BFS", "BPW - BNW", "BPW - BFS", "BNW - BFS")) +
+  labs(x = "Area", y = "Accuracy", title = "Pairwise decoding - expert group")      
+
+ggsave("figures/pairwise-decoding_mean-accuracy_experts.png", width = 3000, height = 1800, dpi = 320, units = "px")
+
+
+# Controls
+ggplot(stats_controls, aes(x = decodingCondition, y = mean_accuracy)) + 
+  scale_color_manual(name = "script", values = c("braille" = "#da5F49", "french" = "#699ae5")) +
+  # Mean dot - to be changed
+  geom_dotplot(binaxis = "y", binwidth = 0.015, stackdir = "center", aes(colour = script, fill = script), legend = F) + 
+  # SE bars 
+  geom_errorbar(data = stats_controls, 
+                aes(x = decodingCondition, y = mean_accuracy, ymin = mean_accuracy - se_accuracy, ymax = mean_accuracy + se_accuracy, colour = script),
+                width = .15, position = position_dodge(1), size = 1, alpha = .8) +
+  # Individual data clouds 
+  geom_dotplot(data = controls, aes(x = reorder(decodingCondition, script), y = accuracy, colour = script, fill = script), 
+               binaxis = "y", binwidth = 0.015, stackdir = "center", alpha = 0.3, legend = F) +
+  geom_hline(yintercept = 0.5, size = .25, linetype = "dashed") +                # .50 line
+  theme_classic() +                                                              # white background, simple theme
+  ylim(0,1) +                                                                    # proper y axis length
+  theme(axis.text.x = element_text(angle = 90)) +                                # vertical text for x axis
+  facet_grid(~factor(mask, levels = c("VWFA", "lLO", "rLO")), 
+             labeller = label_value) +                                           # split the decodings according to group = area
+  scale_x_discrete(limits=rev,                                                   # customize x axis labels
+                   labels = c("FRW - FPW", "FRW - FNW", "FRW - FFS", "FPW - FNW", "FPW - FFS", "FNW - FFS",
+                              "BRW - BPW", "BRW - BNW", "BRW - BFS", "BPW - BNW", "BPW - BFS", "BNW - BFS")) +
+  labs(x = "Area", y = "Accuracy", title = "Pairwise decoding - control group")      
+
+ggsave("figures/pairwise-decoding_mean-accuracy_controls.png", width = 3000, height = 1800, dpi = 320, units = "px")
+
+
+
+### Plots - old way
+
+# Experts 
+accu_exp_plot <- ggplot(experts, aes(x = decodingCondition, y = accuracy), middle = mean(accuracy))
 accu_exp_plot + geom_boxplot(outlier.shape = NA, aes(colour = script)) + 
   theme_classic() +
   geom_hline(aes(yintercept = 0.5), size = .25, linetype = "dashed") +
@@ -78,7 +131,7 @@ ggsave("figures/pairwise-decoding_mean-accuracy_experts.png", width = 3000, heig
 
 
 # Controls
-accu_ctrl_plot <- ggplot(ctrl_accuracies, aes(x = decodingCondition, y = accuracy), middle = mean(accuracy))
+accu_ctrl_plot <- ggplot(controls, aes(x = decodingCondition, y = accuracy), middle = mean(accuracy))
 accu_ctrl_plot + geom_boxplot(outlier.shape = NA, aes(colour = script)) + 
   theme_classic() +
   geom_hline(aes(yintercept = 0.5), size = .25, linetype = "dashed") +
