@@ -3,17 +3,6 @@
 %
 % (C) Copyright 2019 Remi Gau
 
-clear;
-
-% warning('off')
-
-% add bidspm to the path
-addpath(fullfile(pwd,'..', 'lib', 'bidspm'));
-bidspm;
-
-% check inside if everything is ok before starting the pipeline
-opt = preproc_option();
-
 %% GO FOR IT
 
 bidsCopyInputFolder(opt);

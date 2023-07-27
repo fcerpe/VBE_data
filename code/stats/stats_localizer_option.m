@@ -7,7 +7,9 @@ function opt = stats_localizer_option()
 
 opt = [];
 
-opt.subjects = {['020']}; % 002 003 004 005
+opt.subjects = {'006', '007', '008', '009', '010', '011', '012', '013', '017', '018', '019', '020', '021', '022', '023'}; 
+% participants: '006', '007', '008', '009', '010', '011', '012', '013', '017', '018', '019', '020',
+% '021', '022', '023'
 
 % Task to analyze - change accordingly
 opt.taskName = 'visualLocalizer';
@@ -23,7 +25,7 @@ opt.glm.QA.do = false;
 
 % The functional smoothing 
 opt.fwhm.func = 6;
-opt.fwhm.contrast = 6;
+opt.fwhm.contrast = 0;
 
 % The directory where the data are located
 opt.dir.root = fullfile(fileparts(mfilename('fullpath')), '..', '..');

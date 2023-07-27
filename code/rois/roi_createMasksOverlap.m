@@ -55,8 +55,6 @@ function outputFile = saveRoi(mask, volumeDefiningImage, outputDir)
   end
 
   roiName = createRoiName(mask, volumeDefiningImage);
-  % space-MNI_atlas-neurosynth_label-visualWordsIntersection_rhemi-L_thresh-7_voxels-1222_mask.nii
-  roiName = ['space-MNI_atlas-neurosynth_label-LCNSIntersection_rhemi-L_thresh-7_voxels-1222_mask.nii'];
 
   % use the marsbar toolbox
   roiObject = maroi_pointlist(struct('XYZ', mask.roi.XYZmm, ...

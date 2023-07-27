@@ -51,7 +51,7 @@ stats_combined <- cmd_combined %>% group_by(mask, decodingCondition, modality) %
 # train on Braille, test on French 
 ggplot(stats_trBR_teFR, aes(x = decodingCondition, y = mean_accuracy)) + 
   # Mean dot - to be changed
-  geom_dotplot(binaxis = "y", binwidth = 0.015, stackdir = "center", colour = "blue") + 
+  geom_dotplot(binaxis = "y", binwidth = 0.03, stackdir = "center", colour = "blue") + 
   # SE bars 
   geom_errorbar(data = stats_trBR_teFR, 
                 aes(x = decodingCondition, y = mean_accuracy, ymin = mean_accuracy - se_accuracy, ymax = mean_accuracy + se_accuracy),
@@ -74,7 +74,7 @@ ggsave("figures/cross-script_mean-accuracy_tr-braille-te-french.png", width = 30
 
 # train on French, test on Braille 
 ggplot(stats_trFR_teBR, aes(x = decodingCondition, y = mean_accuracy)) + 
-  geom_dotplot(binaxis = "y", binwidth = 0.015, stackdir = "center", colour = "blue") + 
+  geom_dotplot(binaxis = "y", binwidth = 0.03, stackdir = "center", colour = "blue") + 
   geom_errorbar(data = stats_trFR_teBR, 
                 aes(x = decodingCondition, y = mean_accuracy, ymin = mean_accuracy - se_accuracy, ymax = mean_accuracy + se_accuracy),
                 width = .15, position = position_dodge(1), size = 1, alpha = .8, colour = "blue") +

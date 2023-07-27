@@ -5,6 +5,7 @@
 %   peaks, where there ties, how many, how were they resolved
 
 clear;
+clc;
 
 %% Preparations
 
@@ -23,8 +24,6 @@ iPeak = 1;
 % under the accumption that, if we find a similar activation pattern in an
 % area not defined by the BR contrast, it's better
 opt.overlapsToCheck = {'VWFAfr-lLO'};
-
-opt.roiMethods = {'atlases'};
 
 for iSub = 1:numel(opt.subjects)
 

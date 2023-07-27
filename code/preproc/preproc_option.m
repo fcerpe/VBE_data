@@ -9,17 +9,21 @@ opt = [];
 
 % task to analyze: alternate
 % opt.taskName = 'wordsDecoding';
-opt.taskName = 'visualLocalizer';
+opt.taskName = {'visualLocalizer'};
 % opt.taskName = 'visualEventRelated';
 
 % who will be preprocessed?
-opt.subjects = {'022'}; 
-% participants: 006, 007, 008, 009, 010, 011, 012, 013, 017, 018, 019, 020, 021, 022
+opt.subjects = {'006', '007', '008', '009', '010', '011', '012'}; %, '013', '017', '018', '019', '020', '021', '022', '023'}; 
+% participants: '006', '007', '008', '009', '010', '011', '012', '013', '017', '018', '019', '020',
+% '021', '022', '023'
 
 % space is not important now, if not specified, do it for both individual and MNI
 opt.space = 'MNI';
 
 opt.pipeline.type = 'preproc';
+
+% Define how to reslice the images and the resolution
+opt.funcVoxelDims = [2.600 2.600 2.600];
 
 % The functional smoothing 
 opt.fwhm.func = 6;

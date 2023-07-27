@@ -7,12 +7,16 @@ if nargin < 1
 end
 
 % suject to run in each group
-opt.subjects = {'022'}; % every participant after 006 is included in the final study
+opt.subjects = {'022'}; 
+% Participants: '006', '007', '008', '009', '010', '011', '012', '013', '018', '019', '020', '021', '022', '023'
 
+
+% ROIs to consider for the expansion intersection
+% (18/07/2023) only few areas for MVPA
 opt.roiList = {'VWFA-Fr', 'LOC-Left', 'LOC-Right'}; % , 'PFS-Left', 'PFS-Right'};
 
 % Radius of the sphere around the peak
-opt.radius = 10; %mm
+opt.radius = 10; % standard, will probably change in the individual scripts
 
 % Number of voxels in the case of expanding ROI
 opt.numVoxels = 115;
@@ -31,7 +35,7 @@ opt.desc = 'ROI';
 opt.verbosity = 2;
 
 % task to analyze
-opt.taskName = 'wordsDecoding';
+opt.taskName = 'visualLocalizer';
 
 % PATHS
 % The directory where the data are located
@@ -52,40 +56,8 @@ opt.glm.QA.do = false;
 % multivariate
 opt.pipeline.type = 'roi';
 
-opt.model.file = fullfile(opt.dir.root, 'code', ...
-    'models', 'model-wordsDecoding_fourConditions_smdl.json');
-
-
 %% DO NOT TOUCH
 opt = checkOptions(opt);
 saveOptions(opt);
-% we cannot save opt with opt.mvpa, it crashes
-
-%% univariate options to specify contrasts etc.
-
-%% multivariate options
-
-% define the 4D maps to be used
-opt.fwhm.func = 2;
-opt.fwhm.contrast = 0;
-
-% take the most responsive xx nb of voxels
-% opt.mvpa.ratioToKeep = 300; % 100 150 250 350 420
-
-% set which type of ffx results you want to use
-opt.mvpa.map4D = {'beta'};
-
-% design info
-opt.mvpa.nbRun = 12;
-opt.mvpa.nbTrialRepetition = 1;
-
-% cosmo options
-opt.mvpa.tool = 'cosmo';
-% opt.mvpa.normalization = 'zscore';
-opt.mvpa.child_classifier = @cosmo_classify_libsvm;
-opt.mvpa.feature_selector = @cosmo_anova_feature_selector;
-
-% permute the accuracies ?
-opt.mvpa.permutate = 0;
 
 end

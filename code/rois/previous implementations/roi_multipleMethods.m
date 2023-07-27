@@ -256,7 +256,7 @@ for iSub = 1:length(opt.subjects)
             % - if the sphere expands without including other voxels, means
             %   the cluster is finished: use a more lax threshold and try
             %   again until we reach our number of voxels
-            [sphereMask, sphMaskName] = roi_createCustomexpansion(specification, dataImage, outputPath, opt.saveROI, 1);
+            [sphereMask, sphMaskName] = roi_createCustomExpansion(specification, dataImage, outputPath, opt.saveROI, 1);
 
             % manipulations on the filename to make it more readable
             sphMaskJustTheName = sphMaskName(1:end-4);

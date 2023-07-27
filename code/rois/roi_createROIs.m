@@ -30,51 +30,52 @@
 %     in two steps?
 %   - can it resolve the overlaps in the same script? 
 
-%% Initialize bidspm and the options we need
-clear;
-clc;
+% The following is not neccessary anymore, as this function is called by
+% roi_main. Left in case of changes later on
+%
+% clear;
+% clc;
+% addpath '../lib/bidspm'
+% bidspm;
+% opt = roi_option();
 
-% add bidspm and init it
-addpath '../lib/bidspm'
-bidspm;
+% If not done previously, extract PPA, FFA, and V1 ROIs from visfatlas
+if isempty(dir('masks/*atlas-visfatlas*'))
+    % PPA
+    lh_ppa = extractRoiFromAtlas('masks/', 'visfatlas', 'CoS','L'); 
+    
+    % FFA
+    lh_ffa1 = extractRoiFromAtlas('masks/', 'visfatlas', 'mFus','L'); % FFA-1 - left hemisphere
+    lh_ffa2 = extractRoiFromAtlas('masks/', 'visfatlas', 'pFus','L'); % FFA-2 - left hemisphere
+    % Join ROIs
+    roi_mergeMasks(lh_ffa1, lh_ffa2, 'masks/hemi-L_space-MNI_atlas-visfatlas_label-FFA_mask');
+    
+    % V1
+    lh_v1d = extractRoiFromAtlas('masks/', 'visfatlas', 'v1d','L'); % V1d - left hemisphere
+    lh_v1v = extractRoiFromAtlas('masks/', 'visfatlas', 'v1v','L'); % V1v - left hemisphere
+    rh_v1d = extractRoiFromAtlas('masks/', 'visfatlas', 'v1d','R'); % V1d - right hemisphere
+    rh_v1v = extractRoiFromAtlas('masks/', 'visfatlas', 'v1v','R'); % V1v - right hemisphere
+    % Join ROIs
+    roi_mergeMasks(lh_v1d, lh_v1v, 'masks/hemi-L_space-MNI_atlas-visfatlas_label-V1_mask');
+    roi_mergeMasks(rh_v1d, rh_v1v, 'masks/hemi-R_space-MNI_atlas-visfatlas_label-V1_mask');
+    roi_mergeMasks('masks/hemi-L_space-MNI_atlas-visfatlas_label-V1_mask.nii', 'masks/hemi-R_space-MNI_atlas-visfatlas_label-V1_mask.nii', ...
+                   'masks/hemi-B_space-MNI_atlas-visfatlas_label-V1_mask');
 
-% get options
-opt = roi_option();
+    % reslice everything to be in the same dimensional space
+    dI = fullfile(opt.dir.stats, 'sub-007', 'task-wordsDecoding_space-IXI549Space_FWHM-2', 'beta_0001.nii');
+    resliceRoiImages(dI, 'masks/hemi-L_space-MNI_atlas-visfatlas_label-CoS_mask.nii');
+    resliceRoiImages(dI, 'masks/hemi-L_space-MNI_atlas-visfatlas_label-FFA_mask.nii');
+    resliceRoiImages(dI, 'masks/hemi-B_space-MNI_atlas-visfatlas_label-V1_mask.nii');
 
-% % If not done previously, extract PPA, FFA, and V1 ROIs from visfatlas
-% if isempty(dir('*atlas-visfatlas*'))
-%     % PPA
-%     lh_ppa = extractRoiFromAtlas('masks/', 'visfatlas', 'CoS','L'); 
-%     
-%     % FFA
-%     lh_ffa1 = extractRoiFromAtlas('masks/', 'visfatlas', 'mFus','L'); % FFA-1 - left hemisphere
-%     lh_ffa2 = extractRoiFromAtlas('masks/', 'visfatlas', 'pFus','L'); % FFA-2 - left hemisphere
-%     % Join ROIs
-%     roi_mergeMasks(lh_ffa1, lh_ffa2, 'masks/hemi-L_space-MNI_atlas-visfatlas_label-FFA_mask');
-%     
-%     % V1
-%     lh_v1d = extractRoiFromAtlas('masks/', 'visfatlas', 'v1d','L'); % V1d - left hemisphere
-%     lh_v1v = extractRoiFromAtlas('masks/', 'visfatlas', 'v1v','L'); % V1v - left hemisphere
-%     rh_v1d = extractRoiFromAtlas('masks/', 'visfatlas', 'v1d','R'); % V1d - right hemisphere
-%     rh_v1v = extractRoiFromAtlas('masks/', 'visfatlas', 'v1v','R'); % V1v - right hemisphere
-%     % Join ROIs
-%     roi_mergeMasks(lh_v1d, lh_v1v, 'masks/hemi-L_space-MNI_atlas-visfatlas_label-V1_mask');
-%     roi_mergeMasks(rh_v1d, rh_v1v, 'masks/hemi-R_space-MNI_atlas-visfatlas_label-V1_mask');
-%     roi_mergeMasks('masks/hemi-L_space-MNI_atlas-visfatlas_label-V1_mask.nii', 'masks/hemi-R_space-MNI_atlas-visfatlas_label-V1_mask.nii', ...
-%                    'masks/hemi-B_space-MNI_atlas-visfatlas_label-V1_mask');
-% 
-%     % reslice everything to be in the same dimensional space
-%     dataImage = fullfile(opt.dir.stats, 'sub-007', 'task-wordsDecoding_space-IXI549Space_FWHM-2', 'beta_0001.nii');
-%     resliceRoiImages(dataImage, 'masks/hemi-L_space-MNI_atlas-visfatlas_label-CoS_mask.nii');
-%     resliceRoiImages(dataImage, 'masks/hemi-L_space-MNI_atlas-visfatlas_label-FFA_mask.nii');
-%     resliceRoiImages(dataImage, 'masks/hemi-B_space-MNI_atlas-visfatlas_label-V1_mask.nii');
-% end
+    % Intersect v1 mask with activity from a contrast
+    % 
+end
 
 %% Get the ROIs (actually just the spheres)
 
 % get the resliced masks in the folder. Only 'visualWords' and 'objects'
 % fit the criterium
-neurosynthMasks = dir("masks/r*");
+neurosynthMasks = dir("masks/r*_atlas-neurosynth*");
 
 mni = roi_getMNIcoords(opt.subjects);
 
@@ -109,9 +110,9 @@ for iSub = 1:length(opt.subjects)
             ROI_center = mni{iSub}(iReg, :);
             
             % Get the reference image
-            dataImage = fullfile(opt.dir.stats, subName, 'task-wordsDecoding_space-IXI549Space_FWHM-2', 'beta_0001.nii');
+            dataImage = fullfile(opt.dir.stats, subName, 'task-visualLocalizer_space-IXI549Space_FWHM-6', 'beta_0001.nii');
 
-            % Get the filename of the corresponding contrast
+            % Get the filename of the corresponding contrasts
             mask001InDir = dir(fullfile(opt.dir.stats, subName, 'task-visualLocalizer_space-IXI549Space_FWHM-6', ...
                 [subName, '_task-visualLocalizer_space-IXI549Space_desc-', contrastName{iReg} ,'_*_p-0pt001_k-0_MC-none_mask.nii']));
             mask01InDir = dir(fullfile(opt.dir.stats, subName, 'task-visualLocalizer_space-IXI549Space_FWHM-6', ...
@@ -144,9 +145,8 @@ for iSub = 1:length(opt.subjects)
             if not(isempty(mask05InDir)),   specification.mask3 = localizer05Mask;
             end
             if not(isempty(mask1InDir)),    specification.mask4 = localizer1Mask;
-            else
-
             end
+
             % specify the path for each subject
             outputPath = [opt.dir.rois,'/',subName];
 

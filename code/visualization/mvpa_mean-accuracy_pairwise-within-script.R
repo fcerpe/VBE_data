@@ -38,20 +38,24 @@ controls <- subset(controls, select = -c(4,5,6,7,8))
 experts <- group_split(experts, image)[[1]]
 experts <- subset(experts, select = -c(4,5,6,7,8))
 
-# rename 1 and 2 with french and braille
+# rename scripts 1 and 2 with french and braille
 controls$script <- ifelse(controls$script == 1, "french", "braille")
 controls$mask <- ifelse(controls$mask == "VWFAfr", "VWFA", controls$mask)
 
 experts$script <- ifelse(experts$script == 1, "french", "braille")
 experts$mask <- ifelse(experts$mask == "VWFAfr", "VWFA", experts$mask)
 
+# Add number of decoding pair, to place the horizontal lines 
+nDec <- repmat(c(1,2,3,4,5,6,7,8,9,10,11,12), 1,18)
+experts$numDecoding <- t(nDec)
+controls$numDecoding <- t(nDec)
 
 
 # calculate stats for error bars
-stats_controls <- controls %>% group_by(mask, decodingCondition, script) %>% 
+stats_controls <- controls %>% group_by(mask, decodingCondition, script, numDecoding) %>% 
   summarize(mean_accuracy = mean(accuracy), sd_accuracy = sd(accuracy), se_accuracy = sd(accuracy)/sqrt(6), .groups = 'keep') 
 
-stats_experts <-experts %>% group_by(mask, decodingCondition, script) %>% 
+stats_experts <-experts %>% group_by(mask, decodingCondition, script, numDecoding) %>% 
   summarize(mean_accuracy = mean(accuracy), sd_accuracy = sd(accuracy), se_accuracy = sd(accuracy)/sqrt(6), .groups = 'keep') 
 
 
@@ -88,15 +92,17 @@ ggsave("figures/pairwise-decoding_mean-accuracy_experts.png", width = 3000, heig
 ggplot(stats_controls, aes(x = decodingCondition, y = mean_accuracy)) + 
   scale_color_manual(name = "script", values = c("braille" = "#da5F49", "french" = "#699ae5")) +
   # Mean dot - to be changed
-  geom_dotplot(binaxis = "y", binwidth = 0.015, stackdir = "center", aes(colour = script, fill = script), legend = F) + 
+  geom_dotplot(binaxis = "y", binwidth = .02, stackdir = "center", aes(colour = script, fill = script)) +
   # SE bars 
   geom_errorbar(data = stats_controls, 
                 aes(x = decodingCondition, y = mean_accuracy, ymin = mean_accuracy - se_accuracy, ymax = mean_accuracy + se_accuracy, colour = script),
-                width = .15, position = position_dodge(1), size = 1, alpha = .8) +
+                width = .1, position = position_dodge(1), size = .9, alpha = .8) +
+  # Bar instead of dot
+  # geom_linerange(data = stats_controls, aes(x = decodingCondition, xmin = numDecoding - .4, xmax = numDecoding + .4, colour = script), size = 1.7) + 
   # Individual data clouds 
   geom_dotplot(data = controls, aes(x = reorder(decodingCondition, script), y = accuracy, colour = script, fill = script), 
-               binaxis = "y", binwidth = 0.015, stackdir = "center", alpha = 0.3, legend = F) +
-  geom_hline(yintercept = 0.5, size = .25, linetype = "dashed") +                # .50 line
+               binaxis = "y", binwidth = .015, stackdir = "center", alpha = .3, legend = F) +
+  geom_hline(yintercept = .5, size = .25, linetype = "dashed") +                # .50 line
   theme_classic() +                                                              # white background, simple theme
   ylim(0,1) +                                                                    # proper y axis length
   theme(axis.text.x = element_text(angle = 90)) +                                # vertical text for x axis
