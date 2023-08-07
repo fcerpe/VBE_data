@@ -4,17 +4,7 @@
 % - create small report: which ROIs had overlaps, how big, was it over the
 %   peaks, where there ties, how many, how were they resolved
 
-clear;
-clc;
-
 %% Preparations
-
-% add cpp repo
-addpath '/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/code/lib/bidspm'
-bidspm;
-
-% get options
-opt = roi_option();
 
 opt.peaks = struct('sub','001','method','center','area','none','coords',[0,0,0]);
 

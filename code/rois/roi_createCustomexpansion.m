@@ -89,7 +89,7 @@ switch type
         end
 
         if attempt == 5
-            error(['Even with progressively lax thresholds, there are not enough voxels meeting our criteria.\n',...
+            error(['Even with progressively lax thresholds, there are not enough voxels meeting our criteria.',...
                    'Check the previous steps of the pipeline for possible errors.']);
         end
 

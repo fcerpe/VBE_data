@@ -7,7 +7,7 @@ function opt = stats_blockMvpa_option()
 
 opt = [];
 
-opt.subjects = {'022'}; % 002 003 004 005
+opt.subjects = {'024'}; % 002 003 004 005
 
 % Task to analyze - change accordingly
 opt.taskName = 'wordsDecoding';

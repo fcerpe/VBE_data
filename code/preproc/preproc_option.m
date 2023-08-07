@@ -13,12 +13,12 @@ opt.taskName = {'visualLocalizer'};
 % opt.taskName = 'visualEventRelated';
 
 % who will be preprocessed?
-opt.subjects = {'006', '007', '008', '009', '010', '011', '012'}; %, '013', '017', '018', '019', '020', '021', '022', '023'}; 
+opt.subjects = {'013'}; % , '017', '018', '020', '021', '022', '023', '024'};  
 % participants: '006', '007', '008', '009', '010', '011', '012', '013', '017', '018', '019', '020',
-% '021', '022', '023'
+% '021', '022', '023', '024'
 
 % space is not important now, if not specified, do it for both individual and MNI
-opt.space = 'MNI';
+opt.space = {'MNI'};
 
 opt.pipeline.type = 'preproc';
 
@@ -33,6 +33,8 @@ opt.fwhm.contrast = 0;
 opt.dir.root = fullfile(fileparts(mfilename('fullpath')), '..', '..');
 opt.dir.raw = fullfile(opt.dir.root, 'inputs', 'raw');
 opt.dir.derivatives = fullfile(opt.dir.root, 'outputs', 'derivatives');
+
+opt.segment.force = true;
 
 
 %% DO NOT TOUCH

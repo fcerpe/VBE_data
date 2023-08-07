@@ -20,10 +20,10 @@ opt = roi_option();
 
 % Extract the following ROIs based contrasts coming from the functional localizers
 % - VWFAfr, [french words] - [scrambled french words]
-% - VWFAbr, [braille words] - [scrambled brialle words]
+% - VWFAbr, [braille words] - [scrambled braille words] * Skipped for now
 % - lLO,    [line drawings] - [scrambled line drawings]
 % - rLO,    [line drawings] - [scrambled line drawings]
-% - V1,     [all] - [rest]
+% - V1,     [all] - [rest] * To be implemented
 
 roi_createROIs; 
 
