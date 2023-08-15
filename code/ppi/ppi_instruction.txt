@@ -1,0 +1,197 @@
+% SPM MANUAL - Instructions to perform PPI on two areas and 2 conditions
+
+% GLM analysis - Design setup and estimation
+1. The analysis directory should include
+   (a) A directory named functional, which includes the preprocessed fMRI volumes.
+   (b) A directory named structural, which includes a T1 structural volume
+   (c) Files: factors.mat, block_regressors.mat, multi_condition.mat and
+       multi_block_regressors.mat.
+   (d) You will also need to make 2 empty directories called GLM and PPI for performing the
+       analyses.
+2. Go into spm-ppi/GLM and open SPM ('spm fmri')
+3. Start the Batch system by clicking the Batch button
+4. From the SPM menu in the Batch window, click Stats and then select the modules fMRI
+   Model Specification, Model Estimation and Contrast Manager
+
+Fill in the fMRI Model Specification
+
+5. Click Directory and choose the GLM directory that you made above.
+6. Units for design [scans]
+7. Interscan interval [3.22]
+8. Data & Design > New: Subject/Session
+9. Scans > all the functional scans snffM00587_xxxx.img. Should be 360 
+10. Define conditions using multiple condition and multiple regressor files
+21. load multi_condition.mat
+    The variables in a multiple condition file must always be named: ’names’, ’onsets’, and
+    ’durations’. Variables are cell arrays
+22. Multiple Conditions > Specify Files > multi_condition.mat
+23. load multi_block_regressor.mat
+    Number of rows is equal to the number of scans, and each regressor is in a separate column
+24. Multiple Regressors > multi_block_regressor.mat file.
+25. High-pass filter [192] 
+26. Factorial design is not used
+27. Basis function > canonical HRF 
+    Model derivatives [No derivatives]
+28. Model Interactions (Volterra): [Do not model interactions]
+29. Global normalisation [None]
+30. Explicit mask [None]
+31. Serial correlations [AR(1)]
+
+Model Estimation
+
+32. Select SPM.mat > Dependency > fMRI model specification: SPM.mat 
+
+Contrast Manager
+
+33. Select SPM.mat > Dependency > Model estimation: SPM.mat File
+34. Contrast Sessions > New: F-contrast and twice New: T-contrast
+35. F-contrast: Select Weights matrix > [eye(3), zeros(3,4)]
+    which will produce: [1 0 0 0 0 0 0; 0 1 0 0 0 0 0; 0 0 1 0 0 0 0]
+37. First T-contrast: 
+    Name > Attention, T weights vector > 0 -1 1 0 0 0 0
+38. Second T-contrast: 
+      Name > Motion, T weights vector >  -2 1 1 0 0 0 0
+39. Save batch file and run it
+
+
+% GLM analysis - Results
+1. Results > select the SPM.mat 
+2. Attention contrast
+3. Apply masking [None]
+4. p value adjustment to control [None]
+5. threshold T or p value [0.0001]
+6. & extent threshold voxels [10]
+8. To look at the Motion contrast where Attention is greater than No Attention, click Results,
+   choose the SPM.mat file and choose the Motion contrast.
+9. apply masking [Contrast]
+10. Select contrast for masking: Choose the Attention contrast
+11. Uncorrected mask p-value [0.01]
+12. Nature of Mask: [inclusive]
+13. p value adjustment to control [FWE]
+14. threshold T or p value [0.05]
+15. extent threshold voxels [3]
+
+
+% GLM analysis - Extracting VOIs
+1. First select the Motion contrast, but do not include masking. Use a p-value adjustment of
+   FWE with height threshold of 0.05 and a cluster threshold of 3.
+2. Go to point [15 -78 -9]
+3. Press eigenvariate
+4. Name of region [V2]
+5. Adjust data for [effects of interest]
+6. VOI definition [sphere]
+7. VOI radius(mm) [6]
+ 
+
+% PPI analysis - Create PPI variable
+1. PPIs can be calculated either by pressing the PPIs button in the SPM Menu window, or
+   by selecting the Physio/Psycho-Physiologic menu item from Batch > SPM > Stats menu
+2. Choose SPM.mat 
+3. Type of analysis: Choose Psycho-Physiologic interaction
+4. Select VOI: Choose VOI_V2_1.mat
+5. Input variables and contrast weights: 
+   Must be specified as an n x 3 matrix, where n = number of conditions included in the PPI. 
+   - first column indexes SPM.Sess.U(i)
+   - second column indexes SPM.Sess.U(i).name{ii}. It will be 1 unless there are parametric effects
+   - third column is the contrast weight
+   Therefore the matrix should be [2 1 -1; 3 1 1]
+6. Name of PPI [ V2x(Att-NoAtt) ]
+7. Display results: Yes
+
+PPI calculation will create 'PPI_V2x(Att-NoAtt).mat' in the working directory.
+It contains
+- PPI.ppi (the interaction term)
+- PPI.Y (the original VOI eigenvariate)
+- PPI.P (the Attention - No Attention task vector)
+You will use these vectors in setting up your psychophysiologic interaction GLM analysis. 
+See spm_peb_ppi for a full description of the PPI data structure
+
+
+% PPI GLM analysis - Design setup and estimation
+1. Copy PPI_V2x(Att-NoAtt) Mat-file in the PPI directory 
+2. cd ../PPI
+3. load PPI_V2x(Att-NoAtt)
+4. Batch > fMRI Model Specification, Model Estimation and Contrast Manager 
+5. Directory > PPI directory
+6. Units for design [scans]
+7. Interscan interval [3.22]
+8. Data & Design > New: Subject/Session under 
+9. Scans > snffM00587_xxxx.img. Should be 360 
+10. New: Regressor > add 6 regressors.
+11. Regressor 1: Name = PPI-interaction, Value = PPI.ppi
+12. Regressor 2: Name = V2-BOLD, Value = PPI.Y
+13. Regressor 3: Name = Psych_Att-NoAtt, Value = PPI.P
+14. Regressor 4: Name = Block 1, Value = block1
+15. Regressor 5: Name = Block 2, Value = block2
+16. Regressor 6: Name = Block 3, Value = block3
+17. High Pass Filter [192]
+
+Model Estimation
+
+18. Select SPM.mat > Dependency > fMRI model specification: SPM.mat 
+
+Contrast Manager
+
+19. Select SPM.mat > Dependency > Model estimation: SPM.mat 
+20. Contrast Sessions > New: T-contrast
+21. T-contrast, Name: PPI-Interaction, vector: 1 0 0 0 0 0 0
+22. Save the batch file
+23. Run
+
+% PPI analysis - Results
+1. Results > SPM.mat in the PPI directory.
+2. PPI-Interaction contrast
+3. apply masking [No]
+4. p value adjustment to control [None]
+5. threshold T or p value [0.01]
+6. & extent threshold voxels [10]
+
+% PPI analysis - Plotting
+1. V5region [-39 -72 0]. Extract a VOI from the V5 region from the original GLM analysis
+3. Results > GLM analysis SPM.mat > Motion contrast
+4. apply masking [No]
+5. p value adjustment to control [None]
+6. threshold T or p value [0.001]
+7. & extent threshold voxels [3]
+8. Go to [39 -72 0]
+9. eigenvariate
+10. Name of region [V5]
+11. Adjust data for [effects of interest]
+12. VOI definition [sphere]
+13. VOI radius(mm) [6]
+
+14. Create 4 PPIs
+    Same Select SPM.mat > GLM analysis SPM.mat
+15. Name > V2xNoAttention, VOI > VOI_V2_1.mat, contrast weights > [2, 1, 1]
+16. Name > V2xAttention,   VOI > VOI_V2_1.mat, contrast weights > [3, 1, 1]
+17. Name > V5xNoAttention, VOI > VOI_V5_1.mat, contrast weights > [2, 1, 1]
+18. Name > V5xAttention,   VOI > VOI_V5_1.mat, contrast weights > [3, 1, 1]
+19. Load PPIs:
+    v2noatt = load('PPI_V2xNoAttention')
+    v2att = load('PPI_V2xAttention.mat');
+    v5noatt = load('PPI_V5xNoAttention.mat');
+    v5att = load('PPI_V5xAttention.mat');
+20. Plot the PPI datapoints:
+    figure
+    plot(v2noatt.PPI.ppi,v5noatt.PPI.ppi,’k.’);
+    hold on
+    plot(v2att.PPI.ppi,v5att.PPI.ppi,’r.’);
+21. Plot the best fit lines type for NoAttention
+    x = v2noatt.PPI.ppi(:);
+    x = [x, ones(size(x))];
+    y = v5noatt.PPI.ppi(:);
+    B = x\y;
+    y1 = B(1)*x(:,1)+B(2);
+    plot(x(:,1),y1,’k-’);
+22. for Attention
+    x = v2att.PPI.ppi(:);
+    x = [x, ones(size(x))];
+    y = v5att.PPI.ppi(:);
+    B = x\y;
+    y1 = B(1)*x(:,1)+B(2);
+    plot(x(:,1),y1,’r-’);
+    legend(’No Attention’,’Attention’)
+    xlabel(’V2 activity’)
+    ylabel(’V5 response’)
+    title(’Psychophysiologic Interaction’)
+

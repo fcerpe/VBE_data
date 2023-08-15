@@ -225,5 +225,3 @@ for iSub = 1:length(opt.subjects)
     end
 end
 
-
-

@@ -24,8 +24,17 @@ locationsToSample = nsMask.global.XYZmm;
 intersectedMask = setRoiSizeAndType(nsMask, 'intersection');
 
 outputFile = [];
-if saveImg
-    outputFile = saveRoi(intersectedMask, volumeDefiningImage, outputDir);
+
+% Check that such intersection exists (i.e. there are voxels in the mask)
+% otherwise skip the saving and throw a warning
+if ~isempty(intersectedMask.roi.XYZmm)
+    if saveImg
+        outputFile = saveRoi(intersectedMask, volumeDefiningImage, outputDir);
+    end
+
+else
+    warning('Intersection is empty. Will skip it')
+
 end
 
 end

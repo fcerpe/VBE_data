@@ -27,9 +27,9 @@ opt = roi_option();
 
 roi_createROIs; 
 
-% Extract ROIs based on results from language localizer of Fedorenko et al.
+% Additionally, extract ROIs based on language localizer of Fedorenko et al.
 % (TBD)
-% roi_languageAreas;
+% roi_createLanguageROIs;
 
 %% Resolve possible overlaps between neighbouring areas
 
