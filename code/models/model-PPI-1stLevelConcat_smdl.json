@@ -1,5 +1,5 @@
 {
-  "Name": "localizer GLM",
+  "Name": "ppiConcatGLM",
   "BIDSModelVersion": "1.0.0",
   "Description": "default model for VisualBraille project - visualLocalizer",
   "Input": {
@@ -10,7 +10,7 @@
   "Nodes": [
     {
       "Level": "Run",
-      "Name": "run_level",
+      "Name": "ppiConcatGLM",
       "GroupBy": [
         "run",
         "subject"
@@ -56,7 +56,7 @@
       },
       "Contrasts": [
         {
-          "Name": "french_gt_scrambled",
+          "Name": "fw-sfw",
           "ConditionList": [
             "trial_type.fw",
             "trial_type.sfw"
@@ -68,7 +68,7 @@
           "Test": "t"
         },
         {
-          "Name": "braille_gt_scrambled",
+          "Name": "bw-sbw",
           "ConditionList": [
             "trial_type.bw",
             "trial_type.sbw"
@@ -80,40 +80,42 @@
           "Test": "t"
         },
         {
-          "Name": "drawing_gt_scrambled",
+          "Name": "fw",
           "ConditionList": [
-            "trial_type.ld",
-            "trial_type.sld"
+            "trial_type.fw"
           ],
           "Weights": [
-            1,
-            -1
+            1
           ],
           "Test": "t"
         },
         {
-          "Name": "frWords_gt_scrLines",
+          "Name": "sfw",
           "ConditionList": [
-            "trial_type.fw",
-            "trial_type.sld"
+            "trial_type.sfw"
           ],
           "Weights": [
-            1,
-            -1
+            1
           ],
           "Test": "t"
         },
         {
-          "Name": "allWords_gt_scrLines",
+          "Name": "bw",
           "ConditionList": [
-            "trial_type.fw",
-            "trial_type.bw",
-            "trial_type.sld"
+            "trial_type.bw"
           ],
           "Weights": [
-            0.5,
-            0.5,
-            -1
+            1
+          ],
+          "Test": "t"
+        },
+        {
+          "Name": "sbw",
+          "ConditionList": [
+            "trial_type.sbw"
+          ],
+          "Weights": [
+            1
           ],
           "Test": "t"
         }

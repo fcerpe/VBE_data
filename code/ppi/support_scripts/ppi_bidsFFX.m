@@ -66,7 +66,7 @@ function [matlabbatch, opt] = ppi_bidsFFX(varargin)
   opt.pipeline.type = 'stats';
 
   opt.dir.input = opt.dir.preproc;
-  opt.dir.output = opt.dir.ppi;
+  opt.dir.output = opt.dir.stats;
 
   description = 'subject level GLM';
 

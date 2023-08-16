@@ -9,8 +9,7 @@ matlabbatch{1}.spm.stats.fmri_spec.timing.RT = 1.75;
 matlabbatch{1}.spm.stats.fmri_spec.timing.fmri_t = 16;
 matlabbatch{1}.spm.stats.fmri_spec.timing.fmri_t0 = 8;
 %%
-matlabbatch{1}.spm.stats.fmri_spec.sess.scans = {
-                                                 '/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives/bidspm-preproc/sub-006/ses-001/func/sub-006_ses-001_task-visualLocalizer_run-001_space-IXI549Space_desc-smth6_bold.nii,1'
+matlabbatch{1}.spm.stats.fmri_spec.sess.scans = {'/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives/bidspm-preproc/sub-006/ses-001/func/sub-006_ses-001_task-visualLocalizer_run-001_space-IXI549Space_desc-smth6_bold.nii,1'
                                                  '/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives/bidspm-preproc/sub-006/ses-001/func/sub-006_ses-001_task-visualLocalizer_run-001_space-IXI549Space_desc-smth6_bold.nii,2'
                                                  '/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives/bidspm-preproc/sub-006/ses-001/func/sub-006_ses-001_task-visualLocalizer_run-001_space-IXI549Space_desc-smth6_bold.nii,3'
                                                  '/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives/bidspm-preproc/sub-006/ses-001/func/sub-006_ses-001_task-visualLocalizer_run-001_space-IXI549Space_desc-smth6_bold.nii,4'

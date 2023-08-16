@@ -1,5 +1,5 @@
 {
-  "Name": "localizer GLM",
+  "Name": "localizerGLM",
   "BIDSModelVersion": "1.0.0",
   "Description": "default model for VisualBraille project - visualLocalizer",
   "Input": {
@@ -10,7 +10,7 @@
   "Nodes": [
     {
       "Level": "Run",
-      "Name": "run_level",
+      "Name": "localizerGLM",
       "GroupBy": [
         "run",
         "subject"

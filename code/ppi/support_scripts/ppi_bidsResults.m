@@ -160,7 +160,7 @@ function matlabbatch = ppi_bidsResults(varargin)
 
   opt.dir.output = opt.dir.stats;
 
-  modelResults = opt.model.bm.getResults();
+  modelResults = opt.model.bm.getResults(); 
   if ~isempty(modelResults)
     opt.results = modelResults;
   end

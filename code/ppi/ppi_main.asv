@@ -8,12 +8,9 @@
 %
 % All the steps are taken from 
 % * SPM 12 Manual - chapter 37 "Psychophysiological Interactions (PPI)"
-%   https://www.fil.ion.ucl.ac.uk/spm/doc/manual.pdf
-%   
-% * Andy's Brain Book - Appendix B: Psychophysiological Interactions (PPI) in SPM
-%   https://andysbrainbook.readthedocs.io/en/latest/SPM/SPM_Short_Course/SPM_PPI.html
-%
-% (C) Copyright 2023 bidspm developers
+% * Andy's Brain Book 
+%mimick what is indicated in the ppi_instruction.txt file,
+% which is a trasnscription of the SPM 12 manual - chapter 37
 
 clear;
 clc;
@@ -27,14 +24,13 @@ bidspm;
 % get options
 opt = ppi_option();
 
-%% Get to it
-
-% Concatenate runs, onsets, durations, motion regressors
-% Compute 1st level analyses
+%% Estimate GLM as indicated by SPM Manual
+%
+% Perform univariate stats on Localizer
+% Runs a modified version of bidspm code, to allow for concatenation of
+% diferent runs into one, in order to extract timeseries information
 ppi_1stLevelConcat
 
-
-%%
 % Extract the VOIs for each area 
 ppi_extractVOIs
 

@@ -73,10 +73,6 @@ function matlabbatch = ppi_setBatchSubjectLevelGLMSpec(varargin)
   % Create ffxDir if it does not exist
   % If it exists, issue a warning that it has been overwritten
   ffxDir = getFFXdir(subLabel, opt);
-   
-  % Issues with folders, brute-force my way into it
-  ffxSplit = strsplit(ffxDir, {'bidspm-stats'});
-  ffxDir = fullfile(opt.dir.ppi, ffxSplit{end});
 
   if ~opt.glm.roibased.do
     overwriteDir(ffxDir, opt);
@@ -131,9 +127,15 @@ function matlabbatch = ppi_setBatchSubjectLevelGLMSpec(varargin)
           msg = sprintf(' Hacking - processing concatenated runs');
           logger('INFO', msg, 'options', opt, 'filename', mfilename());
 
+          % Specify the concatenated items
+          % Scans
           spmSess(spmSessCounter).scans = opt.concat.runs.scans;
-          spmSess(spmSessCounter).onsetsFile = opt.concat.onsetsFilename;
-          spmSess(spmSessCounter).counfoundMatFile = opt.concat.motRegFilename;
+
+          % Onsets
+          spmSess(spmSessCounter).onsetsFile = opt.concat.cond.filename;
+
+          % Motion regressors
+          spmSess(spmSessCounter).counfoundMatFile = opt.concat.motReg.filename;
 
           % Keep old code in case modifications are needed
           %       for iRun = 1:nbRuns
@@ -168,7 +170,6 @@ function matlabbatch = ppi_setBatchSubjectLevelGLMSpec(varargin)
       end
   end
 
-
   % When doing model comparison all runs must have same number of confound regressors
   % so we pad them with zeros if necessary
 %   spmSess = orderAndPadCounfoundMatFile(spmSess, opt);
@@ -179,21 +180,21 @@ function matlabbatch = ppi_setBatchSubjectLevelGLMSpec(varargin)
   for iSpmSess = 1:(spmSessCounter - 1)
 
       fmri_spec.sess(iSpmSess).scans = opt.concat.runs.scans;
-%     fmri_spec = setScans(opt, spmSess(iSpmSess).scans, fmri_spec, iSpmSess);
+      % fmri_spec = setScans(opt, spmSess(iSpmSess).scans, fmri_spec, iSpmSess);
 
-    fmri_spec.sess(iSpmSess).multi = cellstr(spmSess(iSpmSess).onsetsFile);
+      fmri_spec.sess(iSpmSess).multi = cellstr(spmSess(iSpmSess).onsetsFile);
 
-    fmri_spec.sess(iSpmSess).multi_reg = cellstr(spmSess(iSpmSess).counfoundMatFile);
+      fmri_spec.sess(iSpmSess).multi_reg = cellstr(spmSess(iSpmSess).counfoundMatFile);
 
-    % multiregressor selection
-    fmri_spec.sess(iSpmSess).regress = struct('name', {}, 'val', {});
+      % multicondition selection
+      fmri_spec.sess(iSpmSess).cond = struct('name', {}, 'onset', {}, 'duration', {});
 
-    % multicondition selection
-    fmri_spec.sess(iSpmSess).cond = struct('name', {}, 'onset', {}, 'duration', {});
-
-    fmri_spec.sess(iSpmSess).hpf = opt.model.bm.getHighPassFilter();
+      fmri_spec.sess(iSpmSess).hpf = opt.model.bm.getHighPassFilter();
 
   end
+
+  % multiregressor selection
+  fmri_spec.sess(1).regress = struct('name', opt.concat.regress.names(1), 'val', {opt.concat.regress.R(:,1)});
 
   %%  convert mat files to tsv for quicker inspection and interoperability
   for iSpmSess = 1:(spmSessCounter - 1)
