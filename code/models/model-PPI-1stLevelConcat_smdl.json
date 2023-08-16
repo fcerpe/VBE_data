@@ -146,6 +146,24 @@
         ],
         "Type": "glm"
       },
+      "Contrasts": [
+        {
+          "Name": "effects of interest",
+          "ConditionList": [
+            "trial_type.fw",
+            "trial_type.sfw",
+            "trial_type.bw",
+            "trial_type.sbw"
+          ],
+          "Weights": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "Test": "F"
+        }
+      ],
       "DummyContrasts": {
         "Test": "t"
       }

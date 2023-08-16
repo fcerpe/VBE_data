@@ -33,11 +33,9 @@ for iSub = 1:numel(opt.subjects)
     % (16/08/2023)
     % Just manual additions hidden from sight. No generalization to
     % different contrasts, area, parrticular cases
-    matlabbatch = ppi_customizeBatch(opt, iSub);
+    matlabbatch = ppi_customizeBatch(batchParams, batchFig);
 
     % Save and run batch bidspm-style
-    batchName = ['VOI-extraction_ffx_task-', strjoin(opt.taskName, ''), ...
-                 '_space-', char(opt.space), ...
-                 '_FWHM-', num2str(opt.fwhm.func)];
-    status = saveAndRunWorkflow(matlabbatch, batchName, opt, opt.subjects{iSub});
+
+
 end

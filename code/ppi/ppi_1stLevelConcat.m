@@ -9,19 +9,14 @@
 %
 % TO-DO (15/08/2023)
 % - extend to other subjects
-% - move from 1 sub at the time to all of them step-by-step
-%   (will need to specify paths for regressors, onsets, etc)
 
 % Will use modified versions of bidspm functions
 % can be found in ./support_scripts
 addpath(genpath(pwd))
 
-% If you're looking for opt = ppi_option(); 
-% look in ppi_main. This script should ideally be called only from main, to
-% ease the number of steps in a utopic ever-working pipeline
-% (I know, it'll never happen)
 
-% Works subject by subject
+% Take the options from ppi_main call for ppi_option()
+
 for iSub = 1:numel(opt.subjects)
 
     % Get subject number
@@ -142,6 +137,7 @@ for iSub = 1:numel(opt.subjects)
     opt.concat.regress.names = names;
     opt.concat.regress.R = R;
 
+    
 end
 
 %% Create the GLM batches 

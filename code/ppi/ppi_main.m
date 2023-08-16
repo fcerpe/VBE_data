@@ -22,6 +22,7 @@ clc;
 
 % add bidspm and init it
 addpath '../lib/bidspm'
+addpath(genpath(pwd))
 bidspm;
 
 % get options
@@ -31,15 +32,13 @@ opt = ppi_option();
 
 % Concatenate runs, onsets, durations, motion regressors
 % Compute 1st level analyses
-ppi_1stLevelConcat
+ppi_1stLevelConcat;
 
-
-%%
 % Extract the VOIs for each area 
-ppi_extractVOIs
-
-% (perform the PPI)
-ppi_doPPI
-
-% Visualizetion (on matlab)
-ppi_visualizeCorrelations
+ppi_extractVOIs;
+% 
+% % (perform the PPI)
+% ppi_doPPI
+% 
+% % Visualizetion (on matlab)
+% ppi_visualizeCorrelations

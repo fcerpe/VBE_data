@@ -86,38 +86,46 @@ opt.results(2).montage.do = false();
 opt.results(2).nidm = true();
 opt.results(2).threshSpm = true();
 
-% EXTRA CONTRASTS AT DIFFERENT THRESHOLDS FOR EXPANSION
-opt.results(3).nodeName = 'subject_level';
-opt.results(3).name = {'fw'};
-opt.results(3).png = false();   opt.results(3).csv = false();
-opt.results(3).p = 0.001;       opt.results(3).MC = 'none';
-opt.results(3).k = 0;
-opt.results(3).binary = true(); opt.results(3).montage.do = false();
-opt.results(3).nidm = true();   opt.results(3).threshSpm = true();
-
-opt.results(4).nodeName = 'subject_level';
-opt.results(4).name = {'sfw'};
-opt.results(4).png = false();   opt.results(4).csv = false();
-opt.results(4).p = 0.001;       opt.results(4).MC = 'none';
-opt.results(4).k = 0;
-opt.results(4).binary = true(); opt.results(4).montage.do = false();
-opt.results(4).nidm = true();   opt.results(4).threshSpm = true();
-
-opt.results(5).nodeName = 'subject_level';
-opt.results(5).name = {'bw'};
-opt.results(5).png = false();   opt.results(5).csv = false();
-opt.results(5).p = 0.001;       opt.results(5).MC = 'none';
-opt.results(5).k = 0;
-opt.results(5).binary = true(); opt.results(5).montage.do = false();
-opt.results(5).nidm = true();   opt.results(5).threshSpm = true();
-
-opt.results(6).nodeName = 'subject_level';
-opt.results(6).name = {'sbw'};
-opt.results(6).png = false();   opt.results(6).csv = false();
-opt.results(6).p = 0.001;       opt.results(6).MC = 'none';
-opt.results(6).k = 0;
-opt.results(6).binary = true(); opt.results(6).montage.do = false();
-opt.results(6).nidm = true();   opt.results(6).threshSpm = true();
+% % EXTRA CONTRASTS AT DIFFERENT THRESHOLDS FOR EXPANSION
+% opt.results(3).nodeName = 'subject_level';
+% opt.results(3).name = {'fw'};
+% opt.results(3).png = false();   opt.results(3).csv = false();
+% opt.results(3).p = 0.001;       opt.results(3).MC = 'none';
+% opt.results(3).k = 0;
+% opt.results(3).binary = true(); opt.results(3).montage.do = false();
+% opt.results(3).nidm = true();   opt.results(3).threshSpm = true();
+% 
+% opt.results(4).nodeName = 'subject_level';
+% opt.results(4).name = {'sfw'};
+% opt.results(4).png = false();   opt.results(4).csv = false();
+% opt.results(4).p = 0.001;       opt.results(4).MC = 'none';
+% opt.results(4).k = 0;
+% opt.results(4).binary = true(); opt.results(4).montage.do = false();
+% opt.results(4).nidm = true();   opt.results(4).threshSpm = true();
+% 
+% opt.results(5).nodeName = 'subject_level';
+% opt.results(5).name = {'bw'};
+% opt.results(5).png = false();   opt.results(5).csv = false();
+% opt.results(5).p = 0.001;       opt.results(5).MC = 'none';
+% opt.results(5).k = 0;
+% opt.results(5).binary = true(); opt.results(5).montage.do = false();
+% opt.results(5).nidm = true();   opt.results(5).threshSpm = true();
+% 
+% opt.results(6).nodeName = 'subject_level';
+% opt.results(6).name = {'sbw'};
+% opt.results(6).png = false();   opt.results(6).csv = false();
+% opt.results(6).p = 0.001;       opt.results(6).MC = 'none';
+% opt.results(6).k = 0;
+% opt.results(6).binary = true(); opt.results(6).montage.do = false();
+% opt.results(6).nidm = true();   opt.results(6).threshSpm = true();
+% 
+% opt.results(6).nodeName = 'subject_level';
+% opt.results(6).name = {'sbw'};
+% opt.results(6).png = false();   opt.results(6).csv = false();
+% opt.results(6).p = 0.001;       opt.results(6).MC = 'none';
+% opt.results(6).k = 0;
+% opt.results(6).binary = true(); opt.results(6).montage.do = false();
+% opt.results(6).nidm = true();   opt.results(6).threshSpm = true();
 
 
 %% DO NOT TOUCH
