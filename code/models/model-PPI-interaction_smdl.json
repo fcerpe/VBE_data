@@ -1,7 +1,7 @@
 {
-  "Name": "PPI 1st Level Concat - GLM",
+  "Name": "ppiConcatGLM",
   "BIDSModelVersion": "1.0.0",
-  "Description": "default model for VisualBraille project - PPI analysis",
+  "Description": "default model for VisualBraille project - visualLocalizer",
   "Input": {
     "task": [
       "visualLocalizer"
@@ -10,7 +10,7 @@
   "Nodes": [
     {
       "Level": "Run",
-      "Name": "run_level",
+      "Name": "ppiConcatGLM",
       "GroupBy": [
         "run",
         "subject"
@@ -56,7 +56,7 @@
       },
       "Contrasts": [
         {
-          "Name": "effects of interest",
+          "Name": "fw-sfw",
           "ConditionList": [
             "trial_type.fw",
             "trial_type.sfw"
@@ -65,45 +65,17 @@
             1,
             -1
           ],
-          "Test": "F"
-        },
-        {
-          "Name": "fw",
-          "ConditionList": [
-            "trial_type.fw"
-          ],
-          "Weights": [
-            1
-          ],
           "Test": "t"
         },
         {
-          "Name": "sfw",
+          "Name": "bw-sbw",
           "ConditionList": [
-            "trial_type.sfw"
-          ],
-          "Weights": [
-            1
-          ],
-          "Test": "t"
-        },
-        {
-          "Name": "bw",
-          "ConditionList": [
-            "trial_type.bw"
-          ],
-          "Weights": [
-            1
-          ],
-          "Test": "t"
-        },
-        {
-          "Name": "sbw",
-          "ConditionList": [
+            "trial_type.bw",
             "trial_type.sbw"
           ],
           "Weights": [
-            1
+            1,
+            -1
           ],
           "Test": "t"
         }
@@ -134,6 +106,24 @@
         ],
         "Type": "glm"
       },
+      "Contrasts": [
+        {
+          "Name": "effects of interest",
+          "ConditionList": [
+            "trial_type.fw",
+            "trial_type.sfw",
+            "trial_type.bw",
+            "trial_type.sbw"
+          ],
+          "Weights": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "Test": "F"
+        }
+      ],
       "DummyContrasts": {
         "Test": "t"
       }

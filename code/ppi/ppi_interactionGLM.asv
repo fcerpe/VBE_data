@@ -1,0 +1,103 @@
+%% PPI - run GLM analysis with interaction as regressor
+% 
+% Create and run GLM batch for the interaction of the PPI variable 
+%
+% Will use opt.ppi.glmStep = 'interaction' to choose the right batch to 
+% mimick and load the right number of regressors
+%
+% Uses modified versions of bidsFFX, setBatchSubjectLevelGLMSpec, bidsResults
+% from bidspm, until it is integrated in a proper way
+%
+% TO DO:
+% - can I put regressors in bids stats model?
+
+% load these GLM-specific options
+opt = interactionOption(opt);
+
+for iSub = 1:numel(opt.subjects)
+
+    % Get subject number
+    subName = ['sub-', num2str(opt.subjects{iSub})];
+
+    ppi_bidsFFX('specifyAndEstimate', opt);
+
+    ppi_bidsFFX('contrasts', opt);
+
+    ppi_bidsResults(opt);
+
+end
+
+
+
+%% Step-specific options
+function opt = interactionOption(opt)
+    
+% if there is already a model and results information, delete them to avoid
+% overlapping
+opt.model = [];
+opt.results = [];
+
+% Specify the GLM step we are performing, to add the correct regressors
+opt.ppi.glmStep = 'interaction';
+
+% Model specifies all the contrasts
+opt.model.file = fullfile(opt.dir.root, 'code', ...
+    'models', 'model-PPI-interaction_smdl.json');
+
+% nodeName = name of the Node in the BIDS stats model
+opt.results(1).nodeName = 'subject_level';
+% name of the contrast in the BIDS stats model
+opt.results(1).name = {'fw-sfw'};
+% Specify how you want your output (all the following are on false by default)
+opt.results(1).png = true();
+opt.results(1).csv = true();
+opt.results(1).p = 0.001;
+opt.results(1).MC = 'none';
+opt.results(1).k = 0;
+% those don't change across contrasts, try to put only once
+opt.results(1).binary = true();
+opt.results(1).montage.do = false();
+opt.results(1).nidm = true();
+opt.results(1).threshSpm = true();
+
+opt.results(2).nodeName = 'subject_level';
+opt.results(2).name = {'bw-sbw'};
+opt.results(2).png = true();
+opt.results(2).csv = true();
+opt.results(2).p = 0.001;
+opt.results(2).MC = 'none';
+opt.results(2).k = 0;
+% those don't change across contrasts, try to put only once
+opt.results(2).binary = true();
+opt.results(2).montage.do = false();
+opt.results(2).nidm = true();
+opt.results(2).threshSpm = true();
+
+%% DO NOT TOUCH
+opt = checkOptions(opt);
+saveOptions(opt);
+
+end
+
+function opt = ppi_loadPpiAndRegressors(opt)
+
+% Find and load the PPI.mat file
+opt = ppi_loadPpiAndRegressors(opt);
+ppiFiles = dir(fullfile(opt.dir.ppi, subName, 'PPI', 'PPI_VWFA*'));
+load(fullfile(ppiFiles(1).folder, ppiFiles(1).name));
+
+% Pre-load regressors
+opt.ppi.interaction.regress1.name = 'PPI-interaction';
+opt.ppi.interaction.regress1.val = PPI.ppi;
+
+opt.ppi.interaction.regress2.name = 'VWFA-Bold';
+opt.ppi.interaction.regress2.val = PPI.Y;
+
+opt.ppi.interaction.regress3.name = 'Psych_FW-SFW';
+opt.ppi.interaction.regress3.val = PPI.P;
+
+% Requires previous steps of pipeline (i.e. concatRuns)
+opt.ppi.interaction.regress4.name = 'block1';
+opt.ppi.interaction.regress4.val = opt.ppi.concat.regress.R(:,1);
+
+end

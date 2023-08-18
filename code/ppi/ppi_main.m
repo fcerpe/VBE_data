@@ -28,17 +28,32 @@ bidspm;
 % get options
 opt = ppi_option();
 
-%% Get to it
+%% Step by step, follow the manual instructions
 
 % Concatenate runs, onsets, durations, motion regressors
-% Compute 1st level analyses
-ppi_1stLevelConcat;
+% and save all the outputs in opt.
+% Then, run GLM on the concatenated run
+ppi_concatRunsAndRunGLM;
 
-% Extract the VOIs for each area 
+% Extract the first VOI to compute interactions 
+opt.voiList = {'VWFAfr'};
 ppi_extractVOIs;
-% 
-% % (perform the PPI)
-% ppi_doPPI
-% 
-% % Visualizetion (on matlab)
-% ppi_visualizeCorrelations
+ 
+% Based on the VOI extracted, perform and visualize the interactions
+ppi_doPPI;
+ 
+% Run GLM using the PPI-interaction 
+ppi_interactionGLM;
+
+% Extract VOIs for each area we are interested in
+opt.voiList = {'LH_IFGorb', 'LH_IFG', 'LH_MFG', 'LH_AntTemp', 'LH_PosTemp', 'LH_AngG'};
+ppi_extractVOIs;
+
+% Compute interactions with alle the new areas 
+
+% Visualize the results (on matlab)
+ppi_visualizeCorrelations; 
+
+
+
+

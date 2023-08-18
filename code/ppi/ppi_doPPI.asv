@@ -6,6 +6,7 @@
 % TO-DO (16/08/2023)
 % - extend to other VOIs (for next cycle)
 % - add figures to batch
+% - add overwriting of folede
 
 
 for iSub = 1:numel(opt.subjects)

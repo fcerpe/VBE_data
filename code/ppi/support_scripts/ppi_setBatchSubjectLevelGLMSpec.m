@@ -122,20 +122,20 @@ function matlabbatch = ppi_setBatchSubjectLevelGLMSpec(varargin)
           % HIJACK THE FUNCTION
           % Instead of loading onsets, regressors, scans for each run, load
           % the concatenated values created in ppi_1stLevelConcat
-          % (also stored in opt.concat)
+          % (also stored in opt.ppi.concat)
 
           msg = sprintf(' Hacking - processing concatenated runs');
           logger('INFO', msg, 'options', opt, 'filename', mfilename());
 
           % Specify the concatenated items
           % Scans
-          spmSess(spmSessCounter).scans = opt.concat.runs.scans;
+          spmSess(spmSessCounter).scans = opt.ppi.concat.runs.scans;
 
           % Onsets
-          spmSess(spmSessCounter).onsetsFile = opt.concat.cond.filename;
+          spmSess(spmSessCounter).onsetsFile = opt.ppi.concat.cond.filename;
 
           % Motion regressors
-          spmSess(spmSessCounter).counfoundMatFile = opt.concat.motReg.filename;
+          spmSess(spmSessCounter).counfoundMatFile = opt.ppi.concat.motReg.filename;
 
           % Keep old code in case modifications are needed
           %       for iRun = 1:nbRuns
@@ -179,7 +179,7 @@ function matlabbatch = ppi_setBatchSubjectLevelGLMSpec(varargin)
 
   for iSpmSess = 1:(spmSessCounter - 1)
 
-      fmri_spec.sess(iSpmSess).scans = opt.concat.runs.scans;
+      fmri_spec.sess(iSpmSess).scans = opt.ppi.concat.runs.scans;
       % fmri_spec = setScans(opt, spmSess(iSpmSess).scans, fmri_spec, iSpmSess);
 
       fmri_spec.sess(iSpmSess).multi = cellstr(spmSess(iSpmSess).onsetsFile);
@@ -194,7 +194,7 @@ function matlabbatch = ppi_setBatchSubjectLevelGLMSpec(varargin)
   end
 
   % multiregressor selection
-  fmri_spec.sess(1).regress = struct('name', opt.concat.regress.names(1), 'val', {opt.concat.regress.R(:,1)});
+  fmri_spec.sess(1).regress = struct('name', opt.ppi.concat.regress.names(1), 'val', {opt.ppi.concat.regress.R(:,1)});
 
   %%  convert mat files to tsv for quicker inspection and interoperability
   for iSpmSess = 1:(spmSessCounter - 1)
