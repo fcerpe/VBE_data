@@ -8,10 +8,23 @@ end
 
 % suject to run in each group
 opt.subjects = {'006'}; 
-% Participants: '006', '007', '008', '009', '010', '011', '012', '013', '018', '019', '020', '021', '022', '023', '024'
+opt.totalSubs = {'007', '008', '009', '010', '011', '012', '013', '018', '019', '020', '021', '022', '023', '024'};
+% Participants: '006', '007', '008', '009', '010', '011', '012', '013',
+% '018', '019', '020', '021', '022', '023', '024', '025'
 
+% PPI OPTIONS
 % Areas to consider for the creation of VOIs: VWFA and Fedorenko's areas
-opt.voiList = {'VWFAfr', 'LH_IFGorb', 'LH_IFG', 'LH_MFG', 'LH_AntTemp', 'LH_PosTemp', 'LH_AngG'}; 
+opt.ppi.voiList = {'VWFAfr', 'LH_IFGorb', 'LH_IFG', 'LH_MFG', 'LH_AntTemp', 'LH_PosTemp', 'LH_AngG'}; 
+
+% Which script to consider (french, braille)
+opt.ppi.script = 'french';
+
+% Step. SPM Manual seems to do things twice: first we define one VOI and do
+% PPI, and compute a GLM around it.
+% Then we extract new VOIs and do other PPIs
+% Step defines which, well, step we are doing at the moment. It will change
+% after ppi_interactionGLM
+opt.ppi.step = 1;
 
 % we stay in native space (that of the T1)
 opt.space = 'MNI'; % 'individual', 'MNI'

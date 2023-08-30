@@ -228,6 +228,24 @@ for i = 1:length(subs)
             mni{i}(3, 1:3) = [   NaN    NaN    NaN]; % LO LEFT
             mni{i}(4, 1:3) = [   NaN    NaN    NaN]; % LO RIGHT
 
+        case '025' 
+            mni{i}(1, 1:3) = [   NaN    NaN    NaN]; % VWFA FRE
+            mni{i}(2, 1:3) = [   NaN    NaN    NaN]; % VWFA BRA
+            mni{i}(3, 1:3) = [   NaN    NaN    NaN]; % LO LEFT
+            mni{i}(4, 1:3) = [   NaN    NaN    NaN]; % LO RIGHT
+
+        case '026' 
+            mni{i}(1, 1:3) = [   NaN    NaN    NaN]; % VWFA FRE
+            mni{i}(2, 1:3) = [   NaN    NaN    NaN]; % VWFA BRA
+            mni{i}(3, 1:3) = [   NaN    NaN    NaN]; % LO LEFT
+            mni{i}(4, 1:3) = [   NaN    NaN    NaN]; % LO RIGHT
+
+        case '027' 
+            mni{i}(1, 1:3) = [   NaN    NaN    NaN]; % VWFA FRE
+            mni{i}(2, 1:3) = [   NaN    NaN    NaN]; % VWFA BRA
+            mni{i}(3, 1:3) = [   NaN    NaN    NaN]; % LO LEFT
+            mni{i}(4, 1:3) = [   NaN    NaN    NaN]; % LO RIGHT
+
     end
 end
 

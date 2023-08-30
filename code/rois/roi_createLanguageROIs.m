@@ -8,13 +8,11 @@
 % - ROIs in the folder specified in roi_option
 %
 % TO-DO (08/08/2023)
-%   - import code from wip_figureOutFedroenko
-%   - polish it
 %   - for each sub and roi, take the masks and apply them to ??? (copy
 %     other script)
 
 % If not done previously, extract language ROIs from Fedorenko's parcels
-if isempty(dir('masks/fedorenko_parcels/*atlas-fedorenko*'))
+if isempty(dir('masks/fedorenko_parcels/r*atlas-fedorenko*'))
 
     getRoiFromParcels(opt);
     
@@ -36,9 +34,14 @@ fedorenkoMasks = dir('masks/fedorenko_parcels/r*');
 
 % Initialize report
 repFile = dir(['languageRoiReport_' date '.txt']);
-if not(isempty(repFile)), report = readcell(repFile.name);
-else, report = [];
+if not(isempty(repFile))
+    % If there are already reports, name this 'report_date_1.txt'
+    reportID = size(repFile,1);
+else
+    reportID = 0;
 end
+% Start a new report
+report = [];
 
 for iSub = 1:length(opt.subjects)
 
@@ -47,14 +50,14 @@ for iSub = 1:length(opt.subjects)
 
     % Get a reference image for this sub
     dataImage = fullfile(opt.dir.stats, subName, ...
-                         'task-visualLocalizer_space-IXI549Space_FWHM-6', 'beta_0001.nii');
+                         'task-visualLocalizer_space-IXI549Space_FWHM-6_node-localizerGLM', 'beta_0001.nii');
 
     % Get the contrasts: [FW > SFW] and, if expert, [BW > SBW] 
-    subConFR = dir(fullfile(opt.dir.stats, subName, 'task-visualLocalizer_space-IXI549Space_FWHM-6', ...
+    subConFR = dir(fullfile(opt.dir.stats, subName, 'task-visualLocalizer_space-IXI549Space_FWHM-6_node-localizerGLM', ...
                    'sub-*_space-IXI549Space_desc-f*pt05*_mask.nii'));
     subConBR = [];
     if ismember(opt.subjects{iSub}, {'006','007','008','009','012','013'})
-        subConBR = dir(fullfile(opt.dir.stats, subName, 'task-visualLocalizer_space-IXI549Space_FWHM-6', ...
+        subConBR = dir(fullfile(opt.dir.stats, subName, 'task-visualLocalizer_space-IXI549Space_FWHM-6_node-localizerGLM', ...
                        'sub-*_space-IXI549Space_desc-b*pt05*_mask.nii'));
     end
 
@@ -75,6 +78,13 @@ for iSub = 1:length(opt.subjects)
         for iFed = 1:size(fedorenkoMasks,1)
             
             thisROI = fullfile(fedorenkoMasks(iFed).folder, fedorenkoMasks(iFed).name);
+
+            % Reslice on each sub, necessary fro PPI.
+            % Only one time, it's not necessary to do it for each contrast
+            if iCon == 1
+                unslicedRoi = fullfile(fedorenkoMasks(iFed).folder, fedorenkoMasks(iFed).name(2:end));
+                resliceOnParticipant(unslicedRoi, opt, subName);
+            end
 
             % Get name and hemisphere
             strName = strsplit(thisROI, {'_','-'});
@@ -131,7 +141,9 @@ for iSub = 1:length(opt.subjects)
 end
 
 % save report
-writecell(report,['languageRoiReport_' date '.txt'])
+if reportID == 0, writecell(report,['languageRoiReport_' date '.txt']);
+else, writecell(report,['languageRoiReport_' date '_' num2str(reportID) '.txt']);
+end
 
 
 
@@ -170,7 +182,7 @@ for r = 1:numel(roiNames)
     strName = strsplit(roiNames{r}, '_');
     hemi = strName{1}(1);
     reg = strName{2};
-    roiFilename = ['hemi-' hemi '_space-MNI_atlas-Fedorenko_label-' reg '_mask.nii'];
+    roiFilename = ['hemi-' hemi '_space-MNI_atlas-fedorenko_label-' reg '_mask.nii'];
 
     % Assign the new filename to the ROI and save it
     fedHdr.fname = spm_file(fedHdr.fname, 'filename', roiFilename);
@@ -181,12 +193,32 @@ for r = 1:numel(roiNames)
     % It does not matter which sub now, when we apply them to single
     % subjecct they'll be resliced with their distorsions
     dataImage = fullfile(opt.dir.stats, 'sub-006', ...
-                         'task-visualLocalizer_space-IXI549Space_FWHM-6', 'beta_0001.nii');
+                         'task-visualLocalizer_space-IXI549Space_FWHM-6_node-localizerGLM', 'beta_0001.nii');
 
     resliceRoiImages(dataImage, fullfile('masks/fedorenko_parcels', roiFilename));
 
 end
 end
+
+
+function resliceOnParticipant(roi, opt, subName)
+
+    % copy image in sub roi folder
+    roiParseName = strsplit(roi, 'fedorenko_parcels/');
+    copyfile(roi, fullfile(opt.dir.rois, subName, [subName '_' roiParseName{2}]), 'f');
+    
+    % get new name
+    copiedRoi = fullfile(opt.dir.rois, subName, [subName '_' roiParseName{2}]);
+
+    % get reference
+    dataImage = fullfile(opt.dir.stats, subName, ...
+                         'task-visualLocalizer_space-IXI549Space_FWHM-6_node-localizerGLM', 'beta_0001.nii');
+
+    % relisce roi based on the specific sub
+    resliceRoiImages(dataImage, copiedRoi);
+
+end
+
 
 %% CHECK SIZE ustom new name - separate function?
 % % Rename .json and .nii files of both masks to have more readable names

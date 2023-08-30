@@ -13,7 +13,7 @@ opt.taskName = {'visualLocalizer'};
 % opt.taskName = 'visualEventRelated';
 
 % who will be preprocessed?
-opt.subjects = {'025'}; % , '017', '018', '020', '021', '022', '023', '024'};  
+opt.subjects = {'018', '020', '021', '022', '023', '024','025'};  
 % participants: '006', '007', '008', '009', '010', '011', '012', '013', '017', '018', '019', '020',
 % '021', '022', '023', '024'
 

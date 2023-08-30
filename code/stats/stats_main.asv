@@ -17,7 +17,7 @@ bidspm;
 %% Localizer stats
 % get options
 opt = stats_localizer_option();
-
+0sh
 stats_localizer;
 
 %% MVPA task stats

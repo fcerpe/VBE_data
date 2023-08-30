@@ -1,4 +1,4 @@
-function matlabbatch = ppi_fillBatch(opt, iSub, batchID, voiID)
+function matlabbatch = ppi_fillBatch(opt, iSub, batchID, voiID, conID)
 
 
 switch batchID
@@ -7,7 +7,7 @@ switch batchID
         matlabbatch = fillBatchVOI(opt, iSub, voiID);
 
     case 'PPI'
-        matlabbatch = fillBatchPPI(opt, iSub, voiID);
+        matlabbatch = fillBatchPPI(opt, iSub, voiID, conID);
 
     case 'GLM'
         matlabbatch = fillBatchGLM(opt, iSub);
@@ -58,10 +58,20 @@ batchParams.name = [subName '_hemi-' voiHemi '_label-' voiName];
 % - ROI 1: Thresholded SPM
 % SPM.mat file is the same as above
 batchParams.roi{1}.spm.spmmat = {spmPath};
-batchParams.roi{1}.spm.contrast = 14;       % TBD, don't know which is best to use (16/8)
+
+% Find the FW-SFW contrast (TBD, don't know which is best to use (16/8))
+conIdx = find(strcmp({SPM.xCon.name},'fw-sfw_1'));
+batchParams.roi{1}.spm.contrast = conIdx;       
 batchParams.roi{1}.spm.conjunction = 1;
 batchParams.roi{1}.spm.threshdesc = 'none';
-batchParams.roi{1}.spm.thresh = 0.001;
+
+% Change the threshold based on the iterative search
+switch opt.ppi.voiThres
+    case 3, pval = 0.001; 
+    case 2, pval = 0.01;
+    case 1, pval = 0.05;
+end
+batchParams.roi{1}.spm.thresh = pval;
 batchParams.roi{1}.spm.extent = 0;
 batchParams.roi{1}.spm.mask = struct('contrast', {}, 'thresh', {}, 'mtype', {});
 
@@ -93,7 +103,7 @@ matlabbatch{1}.spm.util.voi = batchParams;
 end
 
 %% PPI
-function matlabbatch = fillBatchPPI(opt, iSub, voiID)
+function matlabbatch = fillBatchPPI(opt, iSub, voiID, conID)
 
 % Get subject number
 subName = ['sub-', num2str(opt.subjects{iSub})];
@@ -115,7 +125,7 @@ if startsWith(voiID, 'LH_'), voiName = voiID(4:end);
 else, voiName = voiID;
 end
 
-voiFolder = dir(fullfile(opt.dir.ppi, subName, 'VOIs', ['VOI_*_label-' voiName '*.mat']));
+voiFolder = dir(fullfile(opt.dir.ppi, subName, 'VOIs', ['VOI_*_label-' voiName '_*.mat']));
 voiPath = fullfile(voiFolder.folder, voiFolder.name);
 batchParams.type.ppi.voi = {voiPath};
 
@@ -126,12 +136,19 @@ batchParams.type.ppi.voi = {voiPath};
 % * third column is the contrast weight
 
 % switch contrast: FW SFW BW SBW FW-SFW BW-SBW
-batchParams.type.ppi.u = [1 1 1
-                          2 1 -1];
+contrast = conID;
+switch contrast
+    case 'fw',      weights = [1 1 1];
+    case 'sfw',     weights = [2 1 1];
+    case 'fw-sfw',  weights = [1 1 1; 2 1 -1];
+    case 'bw',      weights = [3 1 1];
+    case 'sbw',     weights = [4 1 1];
+    case 'bw-sbw',  weights = [3 1 1; 4 1 -1];
+end
+batchParams.type.ppi.u = weights;
 
 % - output name
 % standard seems to be VOIx(contrast)
-contrast = 'FW-SFW'; % will be changed later to accomodate braille
 batchParams.name = [subName '_hemi-L_label-' voiName '_x_(' contrast ')'];
 
 % - display result graphs?

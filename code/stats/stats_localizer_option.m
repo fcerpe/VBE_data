@@ -7,7 +7,7 @@ function opt = stats_localizer_option()
 
 opt = [];
 
-opt.subjects = {'006'}; 
+opt.subjects = {'026', '027'}; 
 % participants: '006', '007', '008', '009', '010', '011', '012', '013', '017', '018', '019', '020',
 % '021', '022', '023'
 
@@ -155,6 +155,22 @@ opt.results(9).p = 0.1;         opt.results(9).MC = 'none';
 opt.results(9).k = 0;
 opt.results(9).binary = true(); opt.results(9).montage.do = false();
 opt.results(9).nidm = true();   opt.results(9).threshSpm = true();
+
+opt.results(10).nodeName = 'subject_level';
+opt.results(10).name = {'braille_gt_scrambled'};
+opt.results(10).png = false();   opt.results(10).csv = false();
+opt.results(10).p = 0.01;        opt.results(10).MC = 'none';
+opt.results(10).k = 0;
+opt.results(10).binary = true(); opt.results(10).montage.do = false();
+opt.results(10).nidm = true();   opt.results(10).threshSpm = true();
+
+opt.results(11).nodeName = 'subject_level';
+opt.results(11).name = {'braille_gt_scrambled'};
+opt.results(11).png = false();   opt.results(11).csv = false();
+opt.results(11).p = 0.05;        opt.results(11).MC = 'none';
+opt.results(11).k = 0;
+opt.results(11).binary = true(); opt.results(11).montage.do = false();
+opt.results(11).nidm = true();   opt.results(11).threshSpm = true();
 
 
 % opt.results(4).nodeName = 'subject_level';

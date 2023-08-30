@@ -137,9 +137,8 @@ for iSub = 1:numel(opt.subjects)
    
 
     % Create block regressors
-    names = {'block1','block2'};
-    R = kron([1 0]',ones(358,1));
-    R(:,2) = R(end:-1:1);
+    names = {'block1'};
+    R = vertcat(ones(n_scans(1),1), zeros(n_scans(2),1));
     
     % Save as file and as options
     save(fullfile(spmPpiPath,[subName '_block-regressor.mat']),'R','names');
@@ -149,7 +148,7 @@ for iSub = 1:numel(opt.subjects)
 
 end
 
-%% Create the GLM batches 
+%% Create the GLM batches
 %
 % Uses modified versions of bidsFFX, setBatchSubjectLevelGLMSpec, bidsResults
 % from bidspm, until it is integrated in a proper way
@@ -160,9 +159,9 @@ ppi_bidsFFX('contrasts', opt);
 
 ppi_bidsResults(opt);
 
-%% Copy .mat and .tsv files 
+%% Copy .mat and .tsv files
 % from spm-PPI/sub/1stLevelConcat to bidspm-stats/sub/node
-% 
+%
 % Workaround, bidsFFX overwrites a folder if not empty, so doing it sooner
 % would end up in deleted files and errors.
 % Surely there is a better way
@@ -183,7 +182,7 @@ opt.model = [];
 opt.results = [];
 
 % Specify the GLM step we are performing, to add the correct regressors
-opt.ppi.glmStep = 'concat';
+opt.ppi.step = 1;
 
 % Model specifies all the contrasts
 opt.model.file = fullfile(opt.dir.root, 'code', ...
@@ -217,6 +216,38 @@ opt.results(2).binary = true();
 opt.results(2).montage.do = false();
 opt.results(2).nidm = true();
 opt.results(2).threshSpm = true();
+
+opt.results(3).nodeName = 'subject_level';
+opt.results(3).name = {'fw-sfw'};
+opt.results(3).png = false();   opt.results(3).csv = false();
+opt.results(3).p = 0.01;        opt.results(3).MC = 'none';
+opt.results(3).k = 0;
+opt.results(3).binary = true(); opt.results(3).montage.do = false();
+opt.results(3).nidm = true();   opt.results(3).threshSpm = true();
+
+opt.results(4).nodeName = 'subject_level';
+opt.results(4).name = {'fw-sfw'};
+opt.results(4).png = false();   opt.results(4).csv = false();
+opt.results(4).p = 0.05;        opt.results(4).MC = 'none';
+opt.results(4).k = 0;
+opt.results(4).binary = true(); opt.results(4).montage.do = false();
+opt.results(4).nidm = true();   opt.results(4).threshSpm = true();
+
+opt.results(5).nodeName = 'subject_level';
+opt.results(5).name = {'bw-sbw'};
+opt.results(5).png = false();   opt.results(5).csv = false();
+opt.results(5).p = 0.01;        opt.results(5).MC = 'none';
+opt.results(5).k = 0;
+opt.results(5).binary = true(); opt.results(5).montage.do = false();
+opt.results(5).nidm = true();   opt.results(5).threshSpm = true();
+
+opt.results(6).nodeName = 'subject_level';
+opt.results(6).name = {'bw-sbw'};
+opt.results(6).png = false();   opt.results(6).csv = false();
+opt.results(6).p = 0.05;        opt.results(6).MC = 'none';
+opt.results(6).k = 0;
+opt.results(6).binary = true(); opt.results(6).montage.do = false();
+opt.results(6).nidm = true();   opt.results(6).threshSpm = true();
 
 %% DO NOT TOUCH
 opt = checkOptions(opt);

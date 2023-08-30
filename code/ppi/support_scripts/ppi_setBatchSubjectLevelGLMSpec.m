@@ -129,13 +129,19 @@ function matlabbatch = ppi_setBatchSubjectLevelGLMSpec(varargin)
 
           % Specify the concatenated items
           % Scans
-          spmSess(spmSessCounter).scans = opt.ppi.concat.runs.scans;
+          tmpScans = load(fullfile(opt.dir.ppi, ...
+                                               ['sub-' subLabel(2:4)], '1stLevelConcat', ...
+                                               ['sub-' subLabel(2:4) '_concatenated-scans-list.mat']));
 
+          spmSess(spmSessCounter).scans = tmpScans.runs.scans;
+          
           % Onsets
-          spmSess(spmSessCounter).onsetsFile = opt.ppi.concat.cond.filename;
+          spmSess(spmSessCounter).onsetsFile = fullfile(opt.dir.ppi, ['sub-' subLabel(2:4)], '1stLevelConcat', ...
+                                               ['sub-' subLabel(2:4) '_multi-conditions.mat']);
 
           % Motion regressors
-          spmSess(spmSessCounter).counfoundMatFile = opt.ppi.concat.motReg.filename;
+          spmSess(spmSessCounter).counfoundMatFile = fullfile(opt.dir.ppi, ['sub-' subLabel(2:4)], '1stLevelConcat', ...
+                                               ['sub-' subLabel(2:4) '_motion-regressors.mat']);
 
           % Keep old code in case modifications are needed
           %       for iRun = 1:nbRuns
@@ -194,7 +200,11 @@ function matlabbatch = ppi_setBatchSubjectLevelGLMSpec(varargin)
   end
 
   % multiregressor selection
-  fmri_spec.sess(1).regress = struct('name', opt.ppi.concat.regress.names(1), 'val', {opt.ppi.concat.regress.R(:,1)});
+  tmpRegress = load(fullfile(opt.dir.ppi, ...
+                             ['sub-' subLabel(2:4)], '1stLevelConcat', ...
+                             ['sub-' subLabel(2:4) '_block-regressor.mat']));
+
+  fmri_spec.sess(1).regress = struct('name', opt.ppi.concat.regress.names, 'val', {opt.ppi.concat.regress.R});
 
   %%  convert mat files to tsv for quicker inspection and interoperability
   for iSpmSess = 1:(spmSessCounter - 1)

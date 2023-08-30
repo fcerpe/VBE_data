@@ -10,7 +10,7 @@ clc;
 
 warning('on')
 
-%% GET PATHS, BIDSSPM, OPTIONS
+% GET PATHS, BIDSSPM, OPTIONS
 
 % add bidspm and init it
 addpath '../lib/bidspm'
@@ -24,7 +24,6 @@ opt = preproc_option();
 opt.taskName = 'visualLocalizer';
 
 preproc;
-
 
 % Parfor allow to simultaneously compute different subjects on different
 % cores of the CPU. Make sure you have enough of them and to keep one free

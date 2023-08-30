@@ -42,6 +42,10 @@ for iSub = 1:numel(opt.subjects)
     
     status = saveAndRunWorkflow(matlabbatch, batchName, opt, opt.subjects{iSub});
 
+    %% Update the step
+
+    opt.ppi.step = 2;
+
 end
 
 
@@ -101,7 +105,7 @@ function opt = ppi_loadPpiAndRegressors(opt, iSub)
 
 subName = ['sub-', num2str(opt.subjects{iSub})];
 
-ppiFiles = dir(fullfile(opt.dir.ppi, subName, 'PPI-analysis', 'PPI_VWFA*'));
+ppiFiles = dir(fullfile(opt.dir.ppi, subName, 'PPI-analysis', ['PPI_*label-VWFAfr_x_(' opt.ppi.contrast{1} ')*']));
 load(fullfile(ppiFiles(1).folder, ppiFiles(1).name));
 
 % Pre-load regressors
@@ -115,7 +119,9 @@ opt.ppi.interaction.regress3.name = 'Psych_FW-SFW';
 opt.ppi.interaction.regress3.val = PPI.P;
 
 % Same regressor as opt.ppi.concat.regressor.R 
+oldReg = load(fullfile(opt.dir.ppi, subName, '1stLevelConcat' ,[subName '_block-regressor.mat']));
+
 opt.ppi.interaction.regress4.name = 'Block 1';
-opt.ppi.interaction.regress4.val = kron([1 0]',ones(358,1));
+opt.ppi.interaction.regress4.val = oldReg.R;
 
 end

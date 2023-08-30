@@ -18,7 +18,7 @@
 clear;
 clc;
 
-%% GET PATHS, BIDSSPM, OPTIONS
+% GET PATHS, BIDSSPM, OPTIONS
 
 % add bidspm and init it
 addpath '../lib/bidspm'
@@ -30,30 +30,38 @@ opt = ppi_option();
 
 %% Step by step, follow the manual instructions
 
-% Concatenate runs, onsets, durations, motion regressors
-% and save all the outputs in opt.
-% Then, run GLM on the concatenated run
-ppi_concatRunsAndRunGLM;
+for thisSub = 1:numel(opt.totalSubs)
 
-% Extract the first VOI to compute interactions 
-opt.voiList = {'VWFAfr'};
-ppi_extractVOIs;
- 
-% Based on the VOI extracted, perform and visualize the interactions
-ppi_doPPI;
- 
-% Run GLM using the PPI-interaction 
-ppi_interactionGLM;
+    opt.subjects = opt.totalSubs(thisSub);
 
-% Extract VOIs for each area we are interested in
-opt.voiList = {'LH_IFGorb', 'LH_IFG', 'LH_MFG', 'LH_AntTemp', 'LH_PosTemp', 'LH_AngG'};
-ppi_extractVOIs;
+    % Concatenate runs, onsets, durations, motion regressors
+    % and save all the outputs in opt.
+    % Then, run GLM on the concatenated run
+    ppi_concatRunsAndRunGLM;
 
-% Compute interactions with alle the new areas 
+    % Extract the first VOI to compute interactions
+    % First time it only does so in the first area (VWFA)
+    % and for the whole contrast (e.g. FW-SFW)
+    ppi_extractVOIs;
 
-% Visualize the results (on matlab)
-ppi_visualizeCorrelations; 
+    % Based on the VOI extracted, perform and visualize the interactions
+    ppi_doPPI;
 
+    % Run GLM using the PPI-interaction
+    ppi_interactionGLM;
+
+    % Extract VOIs for each area we are interested in
+    ppi_extractVOIs;
+
+    % Compute interactions with all the areas: old and new for both stimuli type
+    % Example:
+    % - if computing FW-SFW, now get the PPI in each area for both FW and SFW
+    ppi_doPPI;
+
+    % Visualize the results (on matlab)
+    ppi_visualizeInteractions;
+
+end
 
 
 

@@ -7,7 +7,7 @@
 clear;
 clc;
 
-%% GET PATHS, BIDSSPM, OPTIONS
+% GET PATHS, BIDSSPM, OPTIONS
 
 % add bidspm and init it
 addpath '../lib/bidspm'

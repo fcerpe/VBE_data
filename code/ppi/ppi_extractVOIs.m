@@ -9,25 +9,61 @@
 % - find out which spmt contrast to use, neuroscientific problem
 % - add figures to batch
 % - extend to RH_ fedoerenko masks
-% - make it a function and take which ROIs as param
 
+if strcmp(opt.ppi.script, 'french'), opt.ppi.contrast = {'fw-sfw'};
+else, opt.ppi.contrast = {'bw-sbw'};
+end
+
+switch opt.ppi.step
+    case 1
+        opt.ppi.contrast = opt.ppi.contrast;
+        voiList = {'VWFAfr'};
+    case 2
+        opt.ppi.contrast = strsplit(opt.ppi.contrast{1},'-');
+        voiList = opt.ppi.voiList;
+end
 
 for iSub = 1:numel(opt.subjects)
 
     % (18/08/2023)
     % Just manual additions hidden from sight. No generalization to
     % different contrasts, area, particular cases
-    for iVoi = 1:numel(opt.voiList)
 
-        % Choose the specificed VOI to extract from the 1st Level GLM
-        currentVoi = pickMask(opt, iSub, opt.voiList{iVoi});
+    % Start from which step we are in
+    % step == 1, do VWFAfr
+    % step == 2, skip VWFAfr (it was already created anyway)
+    for iVoi = opt.ppi.step:numel(voiList)
+        
+        % Iterative function: If the batch results empty, re-do it with a
+        % more lax threshold
+        emptyVOI = true;
 
-        matlabbatch = ppi_fillBatch(opt, iSub, 'VOI', currentVoi);
+        % Index representing which threshold to use for the VOI extraction
+        % 3 = 0.001; 2 = 0.01; 1 = 0.05
+        opt.ppi.voiThres = 3; 
 
-        % Save and run batch bidspm-style
-        batchName = ['VOI-extraction-' opt.voiList{iVoi} '_task-', char(opt.taskName), '_space-', char(opt.space), '_FWHM-', num2str(opt.fwhm.func)];
+        while emptyVOI && opt.ppi.voiThres > 0
 
-        status = saveAndRunWorkflow(matlabbatch, batchName, opt, opt.subjects{iSub});
+            % Choose the specificed VOI to extract from the 1st Level GLM
+            currentVoi = pickMask(opt, iSub, voiList{iVoi});
+            
+            % Make the batch
+            matlabbatch = ppi_fillBatch(opt, iSub, 'VOI', currentVoi);
+
+            % Save and run batch bidspm-style
+            batchName = ['VOI-extraction-' voiList{iVoi} '_task-', char(opt.taskName), '_space-', char(opt.space), '_FWHM-', num2str(opt.fwhm.func)];
+            status = saveAndRunWorkflow(matlabbatch, batchName, opt, opt.subjects{iSub});
+            
+            % Check that the VOI is not empty. If it is, launche it again
+            % and set a different threshold
+            if ~isempty(xY.y)
+                emptyVOI = false;
+            else
+                opt.ppi.voiThres = opt.ppi.voiThres -1;
+            end
+
+
+        end
 
     end 
 
@@ -37,8 +73,10 @@ for iSub = 1:numel(opt.subjects)
     % - one .mat file
     % - one mask.nii file
     % - one eigen.nii file
+    subName = ['sub-' opt.subjects{iSub}];
+
     statsFolder = dir(fullfile(opt.dir.stats, subName, ['*ppi*']));
-    voisInFolder = dir(fullfile(statsFolder.folder, statsFolder.name, ['VOI_' matlabbatch{1}.spm.util.voi.name '*']));
+    voisInFolder = dir(fullfile(statsFolder.folder, statsFolder.name, ['VOI_*']));
 
     % If destination folder does not exists, make it
     destinationPath = fullfile(opt.dir.ppi, subName, 'VOIs');
@@ -59,7 +97,7 @@ end
 function mask = pickMask(opt, iSub, voiName)
 
 % Check validity of input VOI
-if ~ismember(voiName, opt.voiList)
+if ~ismember(voiName, opt.ppi.voiList)
     warning('Name of area is incorrect. Check spelling');
     return
 end
@@ -93,9 +131,9 @@ switch voiName
 
         % In cpp_spm-rois, there should be many fedorenko ROIs. Pick the
         % original ones, coming from the atlas and resized on the
-        % participant. Avoid those intersected with [FW-SFW] or [BW-SBW]
-        % contrasts
-        fedorenkoRois = dir(fullfile(subRoiPath, ['r' subName '_hemi-L_*_atlas-fedorenko_label-*.nii']));
+        % participant. 
+        % Avoid those intersected with [FW-SFW] or [BW-SBW] contrasts
+        fedorenkoRois = dir(fullfile(subRoiPath, ['r' subName '_hemi-L_*_atlas-Fedorenko_label-*.nii']));
 
         % Check contents of dir. They should be the right number 
         if numel(fedorenkoRois) ~= 6
@@ -105,7 +143,7 @@ switch voiName
 
         % If they're correct, fetch the one we were asked for
         voiFilename = ['r' subName '_hemi-L_space-MNI_atlas-fedorenko_label-' voiName(4:end) '_mask.nii'];
-        voiIdx = find(ismember(voiFilename, {fedorenkoRois.name}));
+        voiIdx = find(strcmp({fedorenkoRois.name}, voiFilename));
 
         mask = fullfile(fedorenkoRois(voiIdx).folder, fedorenkoRois(voiIdx).name);
 
