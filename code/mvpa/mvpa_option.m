@@ -34,7 +34,11 @@ opt.subsCondition = {'006', [1  3  5  7  9 11  2  4  6  8 10 12];
                      '019', [2  4  6  8 10 12  1  3  5  7  9 11];
                      '020', [1  3  5  7  9 11  2  4  6  8 10 12];
                      '021', [2  4  6  8 10 12  1  3  5  7  9 11];
-                     '022', [2  4  6  8 10 12  1  3  5  7  9 11]};
+                     '022', [2  4  6  8 10 12  1  3  5  7  9 11];
+                     '023', [1  3  5  7  9 11  2  4  6  8 10 12];
+                     '024', [2  4  6  8 10 12  1  3  5  7  9 11];
+                     '026', [2  4  6  8 10 12  1  3  5  7  9 11];
+                     '027', [1  3  5  7  9 11  2  4  6  8 10 12]};
 
 % assign the condition to decode, changes based on our aims.
 % Will influence mvpa_assignDecodingConditions
@@ -55,8 +59,16 @@ opt.subsCondition = {'006', [1  3  5  7  9 11  2  4  6  8 10 12];
 %
 % - cross-script: [ONLY FOR mvpa_crossScriptDecoding] train on f/b, test on
 %                  b/f
-
 opt.decodingCondition = {'pairwise-within-script'};
+
+% ROI method (empty = default = intersection between expansion and neurosynth, 'expansionIntersection' for short)
+% expansionIntersection: basic way. Takes only VWFA, lLO, rLO
+% fedorenko: VWFA + AntTemp, PosTemp, AngG, IFG, IFGorb, MFG. All both
+%            Left and Right
+% vwfaSplit: takes the splitted VWFAs based on the raw chopping of the
+%            ROI in half
+% vwfaSplitAtlas: uses VWFA splitted according to atlas (undefined)
+opt.roiMethod = 'vwfaSplit';
 
 % Uncomment the lines below to run preprocessing
 % - don't use realign and unwarp
@@ -103,9 +115,6 @@ opt.funcVoxelDims = [2.6 2.6 2.6];
 opt.parallelize.do = false;
 opt.parallelize.nbWorkers = 1;
 opt.parallelize.killOnExit = true;
-
-% ROI method (empty = default = intersection between expansion and neurosynth, 'expansionIntersection' for short)
-opt.roiMethod = 'expansionIntersection';
 
 %% DO NOT TOUCH
 opt = checkOptions(opt);

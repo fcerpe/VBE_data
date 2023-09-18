@@ -89,11 +89,19 @@ regName = {'VWFAfr','VWFAbr','lLO','rLO'};
 contrastName = {'frenchGtScrambled', 'brailleGtScrambled', 'drawingGtScrambled', 'drawingGtScrambled'};
 hemiName = {'L','L','L','R'};
 
+localizerStatsFolder = 'task-visualLocalizer_space-IXI549Space_FWHM-6_node-localizerGLM';
+
 % specify the number of voxels to keep
 for iSub = 1:length(opt.subjects)
 
     % Get subject number
     subName = ['sub-', num2str(opt.subjects{iSub})];
+
+    % look for folder in cpp_spm-rois
+    % if does not exists, create it
+    if isempty(dir(fullfile(opt.dir.rois, subName)))
+        mkdir(fullfile(opt.dir.rois, subName))
+    end
 
     % for each region this subject has
     for iReg = 1:length(mni{1}(:,1))
@@ -110,16 +118,16 @@ for iSub = 1:length(opt.subjects)
             ROI_center = mni{iSub}(iReg, :);
             
             % Get the reference image
-            dataImage = fullfile(opt.dir.stats, subName, 'task-visualLocalizer_space-IXI549Space_FWHM-6', 'beta_0001.nii');
+            dataImage = fullfile(opt.dir.stats, subName, localizerStatsFolder, 'beta_0001.nii');
 
             % Get the filename of the corresponding contrasts
-            mask001InDir = dir(fullfile(opt.dir.stats, subName, 'task-visualLocalizer_space-IXI549Space_FWHM-6', ...
+            mask001InDir = dir(fullfile(opt.dir.stats, subName, localizerStatsFolder, ...
                 [subName, '_task-visualLocalizer_space-IXI549Space_desc-', contrastName{iReg} ,'_*_p-0pt001_k-0_MC-none_mask.nii']));
-            mask01InDir = dir(fullfile(opt.dir.stats, subName, 'task-visualLocalizer_space-IXI549Space_FWHM-6', ...
+            mask01InDir = dir(fullfile(opt.dir.stats, subName, localizerStatsFolder, ...
                 [subName, '_task-visualLocalizer_space-IXI549Space_desc-', contrastName{iReg} ,'_*_p-0pt010_k-0_MC-none_mask.nii']));
-            mask05InDir = dir(fullfile(opt.dir.stats, subName, 'task-visualLocalizer_space-IXI549Space_FWHM-6', ...
+            mask05InDir = dir(fullfile(opt.dir.stats, subName, localizerStatsFolder, ...
                 [subName, '_task-visualLocalizer_space-IXI549Space_desc-', contrastName{iReg} ,'_*_p-0pt050_k-0_MC-none_mask.nii']));
-            mask1InDir = dir(fullfile(opt.dir.stats, subName, 'task-visualLocalizer_space-IXI549Space_FWHM-6', ...
+            mask1InDir = dir(fullfile(opt.dir.stats, subName, localizerStatsFolder, ...
                 [subName, '_task-visualLocalizer_space-IXI549Space_desc-', contrastName{iReg} ,'_*_p-0pt100_k-0_MC-none_mask.nii']));
             
             % Get the full path: folder + name

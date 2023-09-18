@@ -59,7 +59,7 @@ batchParams.name = [subName '_hemi-' voiHemi '_label-' voiName];
 % SPM.mat file is the same as above
 batchParams.roi{1}.spm.spmmat = {spmPath};
 
-% Find the FW-SFW contrast (TBD, don't know which is best to use (16/8))
+% Find the FW-SFW contrast 
 conIdx = find(strcmp({SPM.xCon.name},'fw-sfw_1'));
 batchParams.roi{1}.spm.contrast = conIdx;       
 batchParams.roi{1}.spm.conjunction = 1;

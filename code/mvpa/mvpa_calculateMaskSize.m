@@ -21,6 +21,8 @@ for iSub = 1:numel(opt.subjects)
     subID = opt.subjects{iSub};
     ffxDir = getFFXdir(subID, opt);
 
+%     ffxDir = [ffxDir '_node-mvpaGLM'];
+
     % get subject folder name
     subFolder = ['sub-', subID];
 

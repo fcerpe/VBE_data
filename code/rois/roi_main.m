@@ -12,7 +12,7 @@ clc;
 % add bidspm and init it
 addpath '../lib/bidspm'
 bidspm;
-
+ 
 % get options
 opt = roi_option();
 
@@ -23,13 +23,9 @@ opt = roi_option();
 % - VWFAbr, [braille words] - [scrambled braille words] * Skipped for now
 % - lLO,    [line drawings] - [scrambled line drawings]
 % - rLO,    [line drawings] - [scrambled line drawings]
-% - V1,     [all] - [rest] * To be implemented
+% - V1      [all] - [rest] ((WIP))
 
 roi_createROIs; 
-
-% Additionally, extract ROIs based on language localizer of Fedorenko et al.
-% (TBD)
-% roi_createLanguageROIs;
 
 %% Resolve possible overlaps between neighbouring areas
 
@@ -38,7 +34,19 @@ roi_resolveOverlaps;
 %% Split VWFA between anterior and posterior
 
 % Consider all subjects (i.e. don't change subjects pool). 
-% Control group can be informativve for french stimuli
-% opt.subjects = {'006','007','008','009','012','013'};
 roi_splitVWFA;
+
+%% Extract ROIs based on language localizer of Fedorenko et al.
+% Extract parcels from Fedorenko et al.'s localzier
+%
+% Use those parcels to create subject level ROIs:
+% - just the mask resliced to the participant's reference
+% - intersections of mask and [french words] - [scrambled french words]
+%
+% Generate and elaborate a report to show which subjects present which
+% areas and plot a 'consensus' over the activated areas.
+% Consensus will be used in PPI
+roi_createLanguageROIs;
+
+
 

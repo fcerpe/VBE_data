@@ -67,7 +67,7 @@ for sp = 1:numel(opt.split)
                     bidslikeName = [subName, '_hemi-L_space-MNI_atlas-none_method-LUCoordinates_label-' regName '_mask'];
     
                     % Get reference image for reslicing
-                    betaReference = fullfile(opt.dir.stats, subName, 'task-wordsDecoding_space-IXI549Space_FWHM-2', 'beta_0001.nii');
+                    betaReference = fullfile(opt.dir.stats, subName, 'task-wordsDecoding_space-IXI549Space_FWHM-2_node-mvpaGLM', 'beta_0001.nii');
     
                     % specify the sphere characteristics for each of them
                     sphereParams = struct;
@@ -89,9 +89,6 @@ for sp = 1:numel(opt.split)
                     % Pre-check that intersection exists
                     % (i.e. there are voxels in the subject's VWFA that fall into the atlas / paper coordinates)
                     % In case it's empty, throw a warning and skip it
-    
-    
-    
                     sphereMask = createRoi('intersection', specification, betaReference, outputPath, opt.saveROI);
     
                     % Rename the intersection mask
@@ -141,65 +138,99 @@ for sp = 1:numel(opt.split)
                 % get the highest and lowest Y (hY and lY)
                 highestCoordsMm = max(vwfaMask.XYZmm, [], 2);
                 hYmm = highestCoordsMm(2);
-                hY =max(vwfaMask.XYZ(2,:));
+                hY = max(vwfaMask.XYZ(2,:));
     
                 lowestCoordsMm = min(vwfaMask.XYZmm, [], 2);
                 lYmm = lowestCoordsMm(2);
                 lY = min(vwfaMask.XYZ(2,:));
     
                 % get the mid-point: mY = hY - lY
-                % if half is odd (e.g. 11 voxels long), skip them for now
+                % if half is odd (e.g. 11 voxels long), assign it to the smallest ROI
                 if mod(hY-lY,2) == 0 % if even
-                    mY = floor((hY-lY-1)/2); % remove 1, i.e. do not assign middle Y value to any ROI
+                    mY = floor((hY-lY-1)/2); % remove 1, to be assigned to smallest 
+
+                    % Pre-calculate sizes
+                    nbVoxPos = length(find(vwfaMask.XYZ(2,:) <= lY+mY));
+                    nbVoxAnt = length(find(vwfaMask.XYZ(2,:) >= hY-mY));
+
+                    if nbVoxAnt <= nbVoxPos
+                        lEndY = mY;
+                        hEndY = mY+1;
+                    else
+                        lEndY = mY+1;
+                        hEndY = mY;
+                    end
+
                 else
                     mY = floor((hY-lY)/2);
+                    hEndY = mY;
+                    lEndY = mY;
                 end
-    
+ 
+                % Get the Y coordinates that have values lower than our mid point, to
+                % be deleted from the anterior mask, and save the coords
+                antInvalidY = find(vwfaMask.XYZ(2,:) < hY-hEndY);
+                posInvalidY = find(vwfaMask.XYZ(2,:) > lY+lEndY);
+
+                % small fix (temporary - 18/09/2023) for sub-018.
+                % In this case, posterior VWFA is composed of too few
+                % voxels
+                if all(opt.subjects{iSub} == '018')
+                    %in this case, split to have an equal number
+                    % division of voxels per Y coord:
+                    % Y = 25 24 23 | 22 21 20 19 18
+                    % v =  6 14 20 | 16  8  6  2  1
+                    % line indicates arbitrary division
+                    antInvalidY = find(vwfaMask.XYZ(2,:) < 23);
+                    posInvalidY = find(vwfaMask.XYZ(2,:) > 22);
+                end
+
     
                 % create masks:
                 %
                 % - anterior vwfa, mY to hY
                 vwfaAnt = vwfaMask;
     
-                % Get the Y coordinates that have values lower than our mid point, to
-                % be deleted from the anterior mask, and save the coords
-                invalidY = find(vwfaAnt.XYZ(2,:) < hY-mY);
-    
                 % Get the coordinates and the matrix indices for every invalid value
-                invalidCoords = vwfaAnt.XYZ(:,invalidY);
-                invalidPoints = sub2ind(size(vwfaAnt.img), invalidCoords(1,:), invalidCoords(2,:), invalidCoords(3,:));
+                antInvalidCoords = vwfaAnt.XYZ(:,antInvalidY);
+                antInvalidPoints = sub2ind(size(vwfaAnt.img), antInvalidCoords(1,:), antInvalidCoords(2,:), antInvalidCoords(3,:));
     
                 % Remove all the values form XYZ coords, XYZmm and img
-                vwfaAnt.XYZ(:,invalidY) = [];
-                vwfaAnt.XYZmm(:,invalidY) = [];
-                vwfaAnt.img(invalidPoints) = 0;
+                vwfaAnt.XYZ(:,antInvalidY) = [];
+                vwfaAnt.XYZmm(:,antInvalidY) = [];
+                vwfaAnt.img(antInvalidPoints) = 0;
     
                 % - posterior vwfa, lY to mY
                 vwfaPos = vwfaMask;
     
-                % Get the Y coordinates that have values lower than our mid point, to
-                % be deleted from the anterior mask, and save the coords
-                invalidY = find(vwfaPos.XYZ(2,:) > lY+mY);
-    
                 % Get the coordinates and the matrix indices for every invalid value
-                invalidCoords = vwfaPos.XYZ(:,invalidY);
-                invalidPoints = sub2ind(size(vwfaPos.img), invalidCoords(1,:), invalidCoords(2,:), invalidCoords(3,:));
+                posInvalidCoords = vwfaPos.XYZ(:,posInvalidY);
+                posInvalidPoints = sub2ind(size(vwfaPos.img), posInvalidCoords(1,:), posInvalidCoords(2,:), posInvalidCoords(3,:));
     
                 % Remove all the values form XYZ coords, XYZmm and img
-                vwfaPos.XYZ(:,invalidY) = [];
-                vwfaPos.XYZmm(:,invalidY) = [];
-                vwfaPos.img(invalidPoints) = 0;
-    
-    
+                vwfaPos.XYZ(:,posInvalidY) = [];
+                vwfaPos.XYZmm(:,posInvalidY) = [];
+                vwfaPos.img(posInvalidPoints) = 0;
+
+                
                 % save new masks in a bidlike name
-                antName = ['r' subName '_hemi-L_space-MNI_atlas-neurosynth_method-splitting_label-antVWFA_mask.nii'];
+                antName = [subName '_hemi-L_space-MNI_atlas-neurosynth_method-splitting_label-antVWFA_mask.nii'];
                 vwfaAnterior = saveSplitROI(vwfaAnt, brainMask, fullfile(opt.dir.rois, subName), antName);
     
-                posName = ['r' subName '_hemi-L_space-MNI_atlas-neurosynth_method-splitting_label-posVWFA_mask.nii'];
+                posName = [subName '_hemi-L_space-MNI_atlas-neurosynth_method-splitting_label-posVWFA_mask.nii'];
                 vwfaPosterior = saveSplitROI(vwfaPos, brainMask, fullfile(opt.dir.rois, subName), posName);
+
+                % reslice the ROIs
+                betaReference = fullfile(opt.dir.stats, subName, ...
+                                         'task-wordsDecoding_space-IXI549Space_FWHM-2_node-mvpaGLM', 'beta_0001.nii');
+                
+                antPath = fullfile(opt.dir.rois, subName, antName);
+                antMask = resliceRoiImages(betaReference, antPath);
+
+                posPath = fullfile(opt.dir.rois, subName, posName);
+                posMask = resliceRoiImages(betaReference, posPath);
     
                 fprintf('Done \n\n');
-    
     
             end
     

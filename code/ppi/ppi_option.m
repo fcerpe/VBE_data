@@ -8,16 +8,16 @@ end
 
 % suject to run in each group
 opt.subjects = {'006'}; 
-opt.totalSubs = {'007', '008', '009', '010', '011', '012', '013', '018', '019', '020', '021', '022', '023', '024'};
+opt.totalSubs = {'006', '007', '008', '009', '013'};
 % Participants: '006', '007', '008', '009', '010', '011', '012', '013',
-% '018', '019', '020', '021', '022', '023', '024', '025'
+% '018', '019', '020', '021', '022', '023', '024', '026', '027'
 
 % PPI OPTIONS
 % Areas to consider for the creation of VOIs: VWFA and Fedorenko's areas
-opt.ppi.voiList = {'VWFAfr', 'LH_IFGorb', 'LH_IFG', 'LH_MFG', 'LH_AntTemp', 'LH_PosTemp', 'LH_AngG'}; 
+opt.ppi.voiList = {'VWFAfr', 'LH_PosTemp'}; 
 
 % Which script to consider (french, braille)
-opt.ppi.script = 'french';
+opt.ppi.script = 'braille';
 
 % Step. SPM Manual seems to do things twice: first we define one VOI and do
 % PPI, and compute a GLM around it.

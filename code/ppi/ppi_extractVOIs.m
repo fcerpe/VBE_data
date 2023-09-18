@@ -129,23 +129,24 @@ switch voiName
     % For now we only consider Left hemisphere for now
     case {'LH_IFGorb', 'LH_IFG', 'LH_MFG', 'LH_AntTemp', 'LH_PosTemp', 'LH_AngG'}
 
-        % In cpp_spm-rois, there should be many fedorenko ROIs. Pick the
-        % original ones, coming from the atlas and resized on the
-        % participant. 
-        % Avoid those intersected with [FW-SFW] or [BW-SBW] contrasts
-        fedorenkoRois = dir(fullfile(subRoiPath, ['r' subName '_hemi-L_*_atlas-Fedorenko_label-*.nii']));
+        % In cpp_spm-rois, there should be many fedorenko ROIs. 
+        % Use masks intersected with [FW-SFW] contrast, it will used to 
+        % probe for [BW-SBW] interactions
+        fedorenkoRoi = dir(fullfile(subRoiPath, ['r' subName '_hemi-L_*_atlas-Fedorenko_contrast-french_label-' voiName(4:end) '_mask.nii']));
 
-        % Check contents of dir. They should be the right number 
-        if numel(fedorenkoRois) ~= 6
-            warning('The number of Fedorenko''s parcels is not correct. There should be six ROIs for each participant, check the folder');
+        % Check contents of dir. It should not be empty ...
+        if isempty(fedorenkoRoi)
+            warning(['No ROI found for ' voiName '. That''s not right, check the folder']);
             return
         end
-
-        % If they're correct, fetch the one we were asked for
-        voiFilename = ['r' subName '_hemi-L_space-MNI_atlas-fedorenko_label-' voiName(4:end) '_mask.nii'];
-        voiIdx = find(strcmp({fedorenkoRois.name}, voiFilename));
-
-        mask = fullfile(fedorenkoRois(voiIdx).folder, fedorenkoRois(voiIdx).name);
+        % ... and there should only be one mask
+        if numel(fedorenkoRoi) > 1
+            warning(['Too many ROIs found for ' voiName '. That''s not right, check the folder']);
+            return
+        end
+        
+        % If they're correct, use the mask
+        mask = fullfile(fedorenkoRoi.folder, fedorenkoRoi.name);
 
 end
 

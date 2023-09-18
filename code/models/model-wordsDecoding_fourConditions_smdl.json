@@ -10,7 +10,7 @@
   "Nodes": [
       {
           "Level": "Run",
-          "Name": "run_level",
+          "Name": "mvpaGLM",
           "GroupBy": [
             "run",
             "subject"

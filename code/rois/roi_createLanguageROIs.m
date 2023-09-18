@@ -33,7 +33,7 @@ fedorenkoMasks = dir('masks/fedorenko_parcels/r*');
 % each sub, area, contrast has been written
 
 % Initialize report
-repFile = dir(['languageRoiReport_' date '.txt']);
+repFile = dir(['languageRoiReport_' date '*.txt']);
 if not(isempty(repFile))
     % If there are already reports, name this 'report_date_1.txt'
     reportID = size(repFile,1);
@@ -41,7 +41,7 @@ else
     reportID = 0;
 end
 % Start a new report
-report = [];
+report = {'subject','script','hemi','area','done','voxels','enough'};
 
 for iSub = 1:length(opt.subjects)
 
@@ -52,99 +52,103 @@ for iSub = 1:length(opt.subjects)
     dataImage = fullfile(opt.dir.stats, subName, ...
                          'task-visualLocalizer_space-IXI549Space_FWHM-6_node-localizerGLM', 'beta_0001.nii');
 
-    % Get the contrasts: [FW > SFW] and, if expert, [BW > SBW] 
+    % Get the contrasts: [FW > SFW] 
+    % Only works on FR contrast. Assumption is to find BR effects in
+    % FR-defined areas
     subConFR = dir(fullfile(opt.dir.stats, subName, 'task-visualLocalizer_space-IXI549Space_FWHM-6_node-localizerGLM', ...
                    'sub-*_space-IXI549Space_desc-f*pt05*_mask.nii'));
-    subConBR = [];
-    if ismember(opt.subjects{iSub}, {'006','007','008','009','012','013'})
-        subConBR = dir(fullfile(opt.dir.stats, subName, 'task-visualLocalizer_space-IXI549Space_FWHM-6_node-localizerGLM', ...
-                       'sub-*_space-IXI549Space_desc-b*pt05*_mask.nii'));
-    end
 
     % Join them to make looping easier
-    subContrasts = vertcat(subConFR,subConBR);
+    subContrasts = vertcat(subConFR);
 
-    % Go through the relevant contrasts (should only be two for now)
-    for iCon = 1:size(subContrasts,1)
+    thisContrast = fullfile(subContrasts.folder, subContrasts.name);
+    
+    % Get the type of stimuli of the contrast, to be specified later in
+    % the new ROI name
+    conName = strsplit(thisContrast,{'desc-','Gt'});
+    con = conName{2};
 
-        thisContrast = fullfile(subContrasts(iCon).folder, subContrasts(iCon).name);
+    % From this contrast, cut out all the necessary fROIs
+    for iFed = 1:size(fedorenkoMasks,1)
         
-        % Get the type of stimuli of the contrast, to be specified later in
-        % the new ROI name
-        conName = strsplit(thisContrast,{'desc-','Gt'});
-        con = conName{2};
+        thisROI = fullfile(fedorenkoMasks(iFed).folder, fedorenkoMasks(iFed).name);
 
-        % From this contrast, cut out all the necessary fROIs
-        for iFed = 1:size(fedorenkoMasks,1)
-            
-            thisROI = fullfile(fedorenkoMasks(iFed).folder, fedorenkoMasks(iFed).name);
+        % Reslice on each sub, necessary for PPI.
+        % Only one time, it's not necessary to do it for each contrast
+        unslicedRoi = fullfile(fedorenkoMasks(iFed).folder, fedorenkoMasks(iFed).name(2:end));
+        resliceOnParticipant(unslicedRoi, opt, subName);
 
-            % Reslice on each sub, necessary fro PPI.
-            % Only one time, it's not necessary to do it for each contrast
-            if iCon == 1
-                unslicedRoi = fullfile(fedorenkoMasks(iFed).folder, fedorenkoMasks(iFed).name(2:end));
-                resliceOnParticipant(unslicedRoi, opt, subName);
-            end
+        % Get name and hemisphere
+        strName = strsplit(thisROI, {'_','-'});
+        hemi = strName{4};
+        reg = strName{10};
 
-            % Get name and hemisphere
-            strName = strsplit(thisROI, {'_','-'});
-            hemi = strName{4};
-            reg = strName{10};
+        % Load the mask and cast it as uint8, otherwise it's not
+        % recognized as a binary mask
+        recastROI = load_nii(thisROI);
+        recastROI.img = cast(recastROI.img, 'uint8');
+        save_nii(recastROI, thisROI);
+        
+        % specify the objects to pass: mask + mask
+        specMasks = struct('mask1', thisROI, ...
+                           'mask2', thisContrast);
 
-            % Load the mask and cast it as uint8, otherwise it's not
-            % recognized as a binary mask
-            recastROI = load_nii(thisROI);
-            recastROI.img = cast(recastROI.img, 'uint8');
-            save_nii(recastROI, thisROI);
-            
-            % specify the objects to pass: mask + mask
-            specMasks = struct('mask1', thisROI, ...
-                               'mask2', thisContrast);
+        % specify the path for each subject
+        outputPath = fullfile(opt.dir.rois, subName);
 
-            % specify the path for each subject
-            outputPath = fullfile(opt.dir.rois, subName);
+        % Reset fROI name. In case it stays empty, it means the ROI was
+        % not created, thus there is no name change to do
+        froiName = [];
 
-            % Reset fROI name. In case it stays empty, it means the ROI was
-            % not created, thus there is no name change to do
-            froiName = [];
+        % Intersection of localizer spmT and mask (TBD)
+        [froiMask, froiName] = roi_createMasksOverlap(specMasks, dataImage, outputPath, opt.saveROI);
 
-            % Intersection of localizer spmT and mask (TBD)
-            [froiMask, froiName] = roi_createMasksOverlap(specMasks, dataImage, outputPath, opt.saveROI);
-
-            % Only rename ROI if an ROI was indeed created in the previous
-            % line, otehrwise try with the next one
-            if ~isempty(froiName)
-                % Rename .json and .nii files of both masks to have more readable names
-                % Remove file extension from name
-                froiJustName = froiName(1:end-4);
-                % New names
-                froiNewName = fullfile(opt.dir.rois, subName, [subName, '_hemi-' hemi ...
-                                       '_space-MNI_atlas-fedorenko_contrast-' con '_label-' reg '_mask']);
-                % Rename intersection
-                movefile(froiName, [froiNewName,'.nii'],'f')
-                movefile([froiJustName,'.json'], [froiNewName,'.json'],'f')
-                % reslice the masks
-                intersectedMask = resliceRoiImages(dataImage, [froiNewName, '.nii']);
-            end
-
-            % Add information to the report
-            % get a proper info for the roi name
-            if isempty(froiName), done = 'skipped';
-            else, done = 'created';
-            end
-            report = vertcat(report, ...
-                {subName, con, hemi, reg, done});
-
-
+        % Only rename ROI if an ROI was indeed created in the previous
+        % line, otehrwise try with the next one
+        if ~isempty(froiName)
+            % Rename .json and .nii files of both masks to have more readable names
+            % Remove file extension from name
+            froiJustName = froiName(1:end-4);
+            % New names
+            froiNewName = fullfile(opt.dir.rois, subName, [subName, '_hemi-' hemi ...
+                                   '_space-MNI_atlas-fedorenko_contrast-' con '_label-' reg '_mask']);
+            % Rename intersection
+            movefile(froiName, [froiNewName,'.nii'],'f')
+            movefile([froiJustName,'.json'], [froiNewName,'.json'],'f')
+            % reslice the masks
+            intersectedMask = resliceRoiImages(dataImage, [froiNewName, '.nii']);
         end
+
+        % Add information to the report
+
+        % get a proper info for the roi name
+        if isempty(froiName), done = 'skipped';
+        else, done = 'created';
+        end
+
+        % get a proper info for the roi name
+        % 50 voxels is arbirtary threshold 
+        nbVox = 50;
+        if froiMask.roi.size >= nbVox, enough = true;
+        else, enough = false;
+        end
+        voxels = froiMask.roi.size;
+
+        report = vertcat(report, ...
+            {subName, con, hemi, reg, done, voxels, enough});
+
+
     end
 end
 
 % save report
-if reportID == 0, writecell(report,['languageRoiReport_' date '.txt']);
-else, writecell(report,['languageRoiReport_' date '_' num2str(reportID) '.txt']);
+if reportID == 0, writecell(report,['languageRoiReport_' date '_voxThres-' num2str(nbVox) '.txt']);
+else, writecell(report,['languageRoiReport_' date '_voxThres-' num2str(nbVox) '_' num2str(reportID) '.txt']);
 end
 
+% Visualize report as graph
+% Manual step, need to specify what to read
+% roi_processReport;
 
 
 %% FUNCTION TO EXTRACT ALL FEDORENKO'S PARCELS
@@ -200,7 +204,7 @@ for r = 1:numel(roiNames)
 end
 end
 
-
+%% FUNCTION TO RESLICE ROI BASED ON PARTICIPANT'S SPACE 
 function resliceOnParticipant(roi, opt, subName)
 
     % copy image in sub roi folder
@@ -210,6 +214,11 @@ function resliceOnParticipant(roi, opt, subName)
     % get new name
     copiedRoi = fullfile(opt.dir.rois, subName, [subName '_' roiParseName{2}]);
 
+    % Open the mask, cast as binary, close it 
+    recastROI = load_nii(copiedRoi);
+    recastROI.img = cast(recastROI.img, 'uint8');
+    save_nii(recastROI, copiedRoi);
+
     % get reference
     dataImage = fullfile(opt.dir.stats, subName, ...
                          'task-visualLocalizer_space-IXI549Space_FWHM-6_node-localizerGLM', 'beta_0001.nii');
@@ -217,10 +226,17 @@ function resliceOnParticipant(roi, opt, subName)
     % relisce roi based on the specific sub
     resliceRoiImages(dataImage, copiedRoi);
 
+    % case resliced ROI as binary 
+    reslicedRoi = fullfile(opt.dir.rois, subName, ['r' subName '_' roiParseName{2}]);
+    % Open the mask, cast as binary, close it 
+    recastROI = load_nii(reslicedRoi);
+    recastROI.img = cast(recastROI.img, 'uint8');
+    save_nii(recastROI, reslicedRoi);
+
+
 end
 
-
-%% CHECK SIZE ustom new name - separate function?
+%% WIP - FUNCTION TO RENAME ROIS - separate function?
 % % Rename .json and .nii files of both masks to have more readable names
 % % Remove file extension from name
 % intersectedJustTheName = intersectedName(1:end-4);

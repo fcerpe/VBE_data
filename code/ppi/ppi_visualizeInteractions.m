@@ -7,9 +7,6 @@
 % nicer R visualizations
 %
 % TO DO:
-% - copy manual code
-% - extend to all our conditions
-% - make sense of it
 % - average values, if neuroscientifically possible 
 
 for iSub = 1:numel(opt.subjects)
@@ -58,12 +55,10 @@ for iSub = 1:numel(opt.subjects)
 
     end
 
+    % Extract slopes of intact and scrambled
+    % Save .mat file in spm-PPI/sub/figures to construct averaging analysis
+
     
-
-    % Save plot in PPI/sub/figures
-
-
-    % Average them? How?
 
 
 end

@@ -178,8 +178,7 @@ for i = 1:length(subs)
             mni{i}(3, 1:3) = [NaN NaN NaN];  % LO LEFT
             mni{i}(4, 1:3) = [NaN NaN NaN];  % LO RIGHT
         
-        % Expert for which localizer did not work
-        case '017' 
+        case '017' % Expert for which localizer did not work
             mni{i}(1, 1:3) = [NaN NaN NaN];  % VWFA FRE
             mni{i}(2, 1:3) = [NaN NaN NaN];  % VWFA BRA
             mni{i}(3, 1:3) = [NaN NaN NaN];  % LO LEFT
@@ -220,31 +219,30 @@ for i = 1:length(subs)
             mni{i}(2, 1:3) = [   NaN    NaN    NaN]; % VWFA BRA
             mni{i}(3, 1:3) = [   NaN    NaN    NaN]; % LO LEFT: Originally -46.80 -78.20  00.20, but cluster is not sufficient
             mni{i}(4, 1:3) = [ 39.00 -67.80 -05.00]; % LO RIGHT
-
-        % Control subject, Drawings v. scrambled contrast did not show LOC    
-        case '024' 
+    
+        case '024' % Control subject, Drawings v. scrambled contrast did not show LOC
             mni{i}(1, 1:3) = [-41.60 -52.20 -10.20]; % VWFA FRE
             mni{i}(2, 1:3) = [   NaN    NaN    NaN]; % VWFA BRA
             mni{i}(3, 1:3) = [   NaN    NaN    NaN]; % LO LEFT
             mni{i}(4, 1:3) = [   NaN    NaN    NaN]; % LO RIGHT
 
-        case '025' 
+        case '025' % Control subject, niether [fw] - [sfw] nor [ld] - [sld]
             mni{i}(1, 1:3) = [   NaN    NaN    NaN]; % VWFA FRE
             mni{i}(2, 1:3) = [   NaN    NaN    NaN]; % VWFA BRA
             mni{i}(3, 1:3) = [   NaN    NaN    NaN]; % LO LEFT
             mni{i}(4, 1:3) = [   NaN    NaN    NaN]; % LO RIGHT
 
         case '026' 
-            mni{i}(1, 1:3) = [   NaN    NaN    NaN]; % VWFA FRE
+            mni{i}(1, 1:3) = [-52.00 -57.40 -15.40]; % VWFA FRE
             mni{i}(2, 1:3) = [   NaN    NaN    NaN]; % VWFA BRA
-            mni{i}(3, 1:3) = [   NaN    NaN    NaN]; % LO LEFT
-            mni{i}(4, 1:3) = [   NaN    NaN    NaN]; % LO RIGHT
+            mni{i}(3, 1:3) = [-49.40 -73.00 -10.20]; % LO LEFT
+            mni{i}(4, 1:3) = [ 44.20 -67.80 -12.80]; % LO RIGHT
 
         case '027' 
-            mni{i}(1, 1:3) = [   NaN    NaN    NaN]; % VWFA FRE
+            mni{i}(1, 1:3) = [-54.60 -57.40 -15.40]; % VWFA FRE
             mni{i}(2, 1:3) = [   NaN    NaN    NaN]; % VWFA BRA
-            mni{i}(3, 1:3) = [   NaN    NaN    NaN]; % LO LEFT
-            mni{i}(4, 1:3) = [   NaN    NaN    NaN]; % LO RIGHT
+            mni{i}(3, 1:3) = [-52.00 -75.60  00.20]; % LO LEFT
+            mni{i}(4, 1:3) = [ 39.00 -75.60 -05.00]; % LO RIGHT
 
     end
 end
