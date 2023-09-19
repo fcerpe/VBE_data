@@ -14,6 +14,10 @@
 %   https://andysbrainbook.readthedocs.io/en/latest/SPM/SPM_Short_Course/SPM_PPI.html
 %
 % (C) Copyright 2023 bidspm developers
+%
+% TO-DO
+% - avoid that running different alphabets overlap each other, specify
+% which script in the folders (second level GLM)
 
 clear;
 clc;
@@ -58,10 +62,9 @@ for thisSub = 1:numel(opt.totalSubs)
     % - if computing FW-SFW, now get the PPI in each area for both FW and SFW
     ppi_doPPI;
 
-    % Visualize the results (on matlab)
-    ppi_visualizeInteractions;
-
 end
 
+% Visualize the results (on matlab)
+ppi_visualizeInteractions;
 
 

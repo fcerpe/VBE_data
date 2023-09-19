@@ -47,6 +47,7 @@
             "trial_type.bpw",
             "trial_type.bnw",
             "trial_type.bfs",
+            "trial_type.target",
             "trans_x",
             "trans_y",
             "trans_z",
@@ -122,6 +123,23 @@
                 "trial_type.bnw",
                 "trial_type.bfs"
             ]
+        }
+    },
+    {
+        "Level": "Subject",
+        "Name": "subject_level",
+        "GroupBy": [
+            "contrast",
+            "subject"
+        ],
+        "Model": {
+            "X": [
+                1
+            ],
+            "Type": "glm"
+        },
+        "DummyContrasts": {
+            "Test": "t"
         }
     }
     ]

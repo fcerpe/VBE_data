@@ -12,8 +12,8 @@
             "Level": "Run",
             "Name": "run_level",
             "GroupBy": [
-              "run",
-              "subject"
+                "run",
+                "subject"
             ],
             "Model": {
                 "Type": "glm",
@@ -37,16 +37,16 @@
                 ],
                 "HRF": {
                     "Variables": [
-                      "trial_type.frw",
-                      "trial_type.fpw",
-                      "trial_type.fnw",
-                      "trial_type.ffs",
-                      "trial_type.brw",
-                      "trial_type.bpw",
-                      "trial_type.bnw",
-                      "trial_type.bfs",
-                      "trial_type.target",
-                      "trial_type.response"
+                        "trial_type.frw",
+                        "trial_type.fpw",
+                        "trial_type.fnw",
+                        "trial_type.ffs",
+                        "trial_type.brw",
+                        "trial_type.bpw",
+                        "trial_type.bnw",
+                        "trial_type.bfs",
+                        "trial_type.target",
+                        "trial_type.response"
                     ],
                     "Model": "DoubleGamma"
                 },
@@ -64,16 +64,16 @@
             "DummyContrasts": {
                 "Test": "t",
                 "Contrasts": [
-                  "trial_type.frw",
-                  "trial_type.fpw",
-                  "trial_type.fnw",
-                  "trial_type.ffs",
-                  "trial_type.brw",
-                  "trial_type.bpw",
-                  "trial_type.bnw",
-                  "trial_type.bfs",
-                  "trial_type.target",
-                  "trial_type.response"
+                    "trial_type.frw",
+                    "trial_type.fpw",
+                    "trial_type.fnw",
+                    "trial_type.ffs",
+                    "trial_type.brw",
+                    "trial_type.bpw",
+                    "trial_type.bnw",
+                    "trial_type.bfs",
+                    "trial_type.target",
+                    "trial_type.response"
                 ]
             }
         },

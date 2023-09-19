@@ -33,7 +33,8 @@ fedorenkoMasks = dir('masks/fedorenko_parcels/r*');
 % each sub, area, contrast has been written
 
 % Initialize report
-repFile = dir(['languageRoiReport_' date '*.txt']);
+nbVox = 80;
+repFile = dir(['languageRoiReport_' date '_voxThres-' num2str(nbVox) '*.txt']);
 if not(isempty(repFile))
     % If there are already reports, name this 'report_date_1.txt'
     reportID = size(repFile,1);
@@ -128,7 +129,6 @@ for iSub = 1:length(opt.subjects)
 
         % get a proper info for the roi name
         % 50 voxels is arbirtary threshold 
-        nbVox = 50;
         if froiMask.roi.size >= nbVox, enough = true;
         else, enough = false;
         end

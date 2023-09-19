@@ -7,7 +7,7 @@ function opt = stats_blockMvpa_option()
 
 opt = [];
 
-opt.subjects = {'006','007','008','009','010','011','012','013','018','019','020','021','022','023','024','025','026','027'}; 
+opt.subjects = {'006','007','008','009','010','011','012','013','018','019','020','021','022','023','024','026','027'}; 
 % participants: 
 % '006','007','008','009','010','011','012','013','018','019','020','021','022','023','024','025','026,'027'
 
@@ -35,7 +35,7 @@ opt.dir.raw = fullfile(opt.dir.root, 'inputs', 'raw');
 opt.dir.derivatives = fullfile(opt.dir.root, 'outputs', 'derivatives');
 opt.dir.preproc = fullfile(opt.dir.root, 'outputs', 'derivatives', 'bidspm-preproc');
 opt.dir.input = opt.dir.preproc;
-opt.dir.roi = fullfile(opt.dir.root, 'outputs', 'derivatives', 'cpp_spm-roi');
+opt.dir.roi = fullfile(opt.dir.root, 'outputs', 'derivatives', 'cpp_spm-rois');
 opt.dir.stats = fullfile(opt.dir.root, 'outputs', 'derivatives', 'bidspm-stats');
 
 % Model specifies all the contrasts
@@ -69,6 +69,29 @@ opt.results(1).nidm = true();
 opt.results(1).threshSpm = true();
 opt.results(1).png = true();
 opt.results(1).csv = true();
+
+% create contrasts for each individual stimulus condition
+% contrastToMake = {'frw','fpw','fnw','ffs','brw','bpw','bnw','bfs'};
+% 
+% for ctm = 1:numel(contrastToMake)
+%     opt.results(ctm).nodeName = 'subject_level';
+%     opt.results(ctm).name = contrastToMake(ctm);
+%     opt.results(ctm).png = true();    
+%     opt.results(ctm).csv = true();
+%     opt.results(ctm).p = 0.001;
+%     opt.results(ctm).MC = 'none';
+%     opt.results(ctm).k = 0;
+%     % those don't change across contrasts, try to put only once
+%     opt.results(ctm).binary = true();
+%     opt.results(ctm).montage.do = true();
+%     opt.results(ctm).montage.background = struct('suffix', 'T1w', 'desc', 'preproc', 'modality', 'anat');
+%     opt.results(ctm).montage.slices = -20:2:0;
+%     opt.results(ctm).montage.orientation = 'axial'; % also 'sagittal', 'coronal'
+%     opt.results(ctm).nidm = true();
+%     opt.results(ctm).threshSpm = true();
+% 
+% end
+
 
 %% DO NOT TOUCH
 opt = checkOptions(opt);

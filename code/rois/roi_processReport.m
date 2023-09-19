@@ -1,6 +1,6 @@
 % Process report
 
-d = '18-Sep-2023';
+d = '18-Sep-2023_voxThres-50';
 
 % Don't procastiante, get today's report!
 repFiles = dir(['languageRoiReport_' d '*.txt']);
