@@ -63,9 +63,6 @@ for iSub = 1:numel(opt.subjects)
             end
             
 
-            
-
-
         case 'vwfaSplit'
             atlas_filename = [opt.dir.rois, '/sub-',num2str(subID),...
                               '/rsub-',num2str(subID),'_hemi-*_space-MNI_atlas-neurosynth_method-splitting*.nii'];
@@ -73,6 +70,15 @@ for iSub = 1:numel(opt.subjects)
             opt.maskName = horzcat(opt.maskName, {atlas_files.name});
 
             opt.maskLabel = {'antVWFA', 'posVWFA'};
+
+
+        case 'earlyVisual'
+            atlas_filename = [opt.dir.rois, '/sub-',num2str(subID),...
+                              '/rsub-',num2str(subID),'_hemi-*_space-MNI_atlas-visfatlas_label-V1*.nii'];
+            atlas_files = dir(atlas_filename);
+            opt.maskName = horzcat(opt.maskName, {atlas_files.name});
+
+            opt.maskLabel = {'v1'};   
 
         % Old methods 
 %         case 'general_coords_10mm'

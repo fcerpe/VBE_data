@@ -11,10 +11,10 @@ library("dplyr")
 ### Load matrices of decoding accuracies for both groups 
 
 # Controls
-controls <- read.csv("../../outputs/derivatives/CoSMoMVPA/decoding-pairwise-within-script_grp-controls_rois-vwfaSplit_nbvoxels-16.csv")
+controls <- read.csv("../../outputs/derivatives/CoSMoMVPA/decoding-pairwise-within-script_grp-controls_rois-vwfaSplit_nbvoxels-23.csv")
 
 # Experts
-experts <- read.csv("../../outputs/derivatives/CoSMoMVPA/decoding-pairwise-within-script_grp-experts_rois-vwfaSplit_nbvoxels-16.csv")
+experts <- read.csv("../../outputs/derivatives/CoSMoMVPA/decoding-pairwise-within-script_grp-experts_rois-vwfaSplit_nbvoxels-23.csv")
 
 
 

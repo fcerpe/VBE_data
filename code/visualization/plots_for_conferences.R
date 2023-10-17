@@ -10,11 +10,11 @@ library("pracma")
 
 # Controls
 ctrl_accuracies <- 
-  read.csv("../../outputs/derivatives/CoSMoMVPA/mvpa-decoding_grp-controls_task-wordsDecoding_condition-pairwise-within-script_nbvoxels-73.csv")
+  read.csv("../../outputs/derivatives/CoSMoMVPA/decoding-pairwise-within-script_grp-controls_rois-expansionIntersection_nbvoxels-43.csv")
 
 # Experts
 exp_accuracies <- 
-  read.csv("../../outputs/derivatives/CoSMoMVPA/mvpa-decoding_grp-experts_task-wordsDecoding_condition-pairwise-within-script_nbvoxels-73.csv")
+  read.csv("../../outputs/derivatives/CoSMoMVPA/decoding-pairwise-within-script_grp-controls_rois-expansionIntersection_nbvoxels-43.csv")
 
 
 

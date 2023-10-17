@@ -38,7 +38,8 @@ opt.subsCondition = {'006', [1  3  5  7  9 11  2  4  6  8 10 12];
                      '023', [1  3  5  7  9 11  2  4  6  8 10 12];
                      '024', [2  4  6  8 10 12  1  3  5  7  9 11];
                      '026', [2  4  6  8 10 12  1  3  5  7  9 11];
-                     '027', [1  3  5  7  9 11  2  4  6  8 10 12]};
+                     '027', [1  3  5  7  9 11  2  4  6  8 10 12];
+                     '028', [1  3  5  7  9 11  2  4  6  8 10 12]};
 
 % assign the condition to decode, changes based on our aims.
 % Will influence mvpa_assignDecodingConditions
@@ -62,13 +63,13 @@ opt.subsCondition = {'006', [1  3  5  7  9 11  2  4  6  8 10 12];
 opt.decodingCondition = {'pairwise-within-script'};
 
 % ROI method (empty = default = intersection between expansion and neurosynth, 'expansionIntersection' for short)
-% expansionIntersection: basic way. Takes only VWFA, lLO, rLO
-% fedorenko: VWFA + AntTemp, PosTemp, AngG, IFG, IFGorb, MFG. All both
-%            Left and Right
-% vwfaSplit: takes the splitted VWFAs based on the raw chopping of the
-%            ROI in half
-% vwfaSplitAtlas: uses VWFA splitted according to atlas (undefined)
-opt.roiMethod = 'vwfaSplit';
+% - expansionIntersection: basic way. Takes only VWFA, lLO, rLO
+% - fedorenko: left PosTemp, the only area selected for language analyses
+% - vwfaSplit: takes the splitted VWFAs based on the raw chopping of the
+%              ROI in half
+% - vwfaSplitAtlas: uses VWFA splitted according to atlas (undefined)
+% - earlyVisual: V1 extracted from visfatlas
+opt.roiMethod = 'earlyVisual';
 
 % Uncomment the lines below to run preprocessing
 % - don't use realign and unwarp

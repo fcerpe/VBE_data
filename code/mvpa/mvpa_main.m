@@ -32,7 +32,7 @@ opt = mvpa_option();
 % starts report on sizes of ROIs
 % Calc features selection on all the subjects
 opt.subjects = {'006','007','008','009','010','011','012','013','018',...
-                '019','020','021','022','023','024','026','027'};
+                '019','020','021','022','023','024','026','027','028'};
 opt.roiSizesReport = [];
 allRatios = [];
 
@@ -58,7 +58,7 @@ mvpaWithin = mvpa_pairwiseDecoding(opt);
 
 
 %% Controls
-opt.subjects = {'010','011','018','019','020','021','022','023','024','026','027'};
+opt.subjects = {'010','011','018','019','020','021','022','023','024','026','027','028'};
 opt.groupName = {'controls'};
 mvpaWithin = mvpa_pairwiseDecoding(opt);
 
@@ -79,7 +79,7 @@ opt.roiMethod = 'fedorenko';
 
 % Calc features selection on all the subjects
 opt.subjects = {'006','007','008','009','010','011','013','018',...
-                '019','020','021','022','023','024','027'};
+                '019','020','021','022','023','024','027','028'};
 opt.roiSizesReport = [];
 allRatios = [];
 
@@ -99,7 +99,7 @@ opt.decodingCondition = {'cross-script'};
 mvpaCross = mvpa_crossScriptDecoding(opt);
 
 % Controls
-opt.subjects = {'010','011','018','019','020','021','022','023','024','027'};
+opt.subjects = {'010','011','018','019','020','021','022','023','024','027','028'};
 opt.groupName = {'controls'};
 mvpaWithin = mvpa_pairwiseDecoding(opt);
 

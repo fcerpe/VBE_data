@@ -1,16 +1,16 @@
-function matlabbatch = ppi_fillBatch(opt, iSub, batchID, voiID, conID)
+function matlabbatch = ppi_fillBatch(opt, batchID, voiID, conID)
 
 
 switch batchID
 
     case 'VOI'
-        matlabbatch = fillBatchVOI(opt, iSub, voiID);
+        matlabbatch = fillBatchVOI(opt, voiID);
 
     case 'PPI'
-        matlabbatch = fillBatchPPI(opt, iSub, voiID, conID);
+        matlabbatch = fillBatchPPI(opt, voiID, conID);
 
     case 'GLM'
-        matlabbatch = fillBatchGLM(opt, iSub);
+        matlabbatch = fillBatchGLM(opt);
 
 end
 
@@ -18,10 +18,10 @@ end
 
 
 %% VOI 
-function matlabbatch = fillBatchVOI(opt, iSub, voiID)
+function matlabbatch = fillBatchVOI(opt, voiID)
 
 % Get subject number
-subName = ['sub-', num2str(opt.subjects{iSub})];
+subName = ['sub-', num2str(opt.thisSub)];
 
 % Get to work, the matlab batch needs:
 batchParams = struct;
@@ -29,7 +29,7 @@ batchParams = struct;
 % - SPM.mat file on which to work
 % Among the stats folders created so far, get the one with a PPI node
 % (hoping there is only one)
-stats = dir(fullfile(opt.dir.stats, subName, ['*ppi*']));
+stats = dir(fullfile(opt.dir.stats, subName, ['task-' opt.taskName{1} '*ppi*']));
 spmPath = fullfile(stats.folder, stats.name, 'SPM.mat');
 batchParams.spmmat = {spmPath};
 
@@ -59,8 +59,12 @@ batchParams.name = [subName '_hemi-' voiHemi '_label-' voiName];
 % SPM.mat file is the same as above
 batchParams.roi{1}.spm.spmmat = {spmPath};
 
-% Find the FW-SFW contrast 
-conIdx = find(strcmp({SPM.xCon.name},'fw-sfw_1'));
+% Find the French contrast 
+switch opt.ppi.dataset 
+    case 'localizer', contrastToFind = 'fw-sfw_1';
+    case 'mvpa', contrastToFind = 'frw-ffs_1';
+end
+conIdx = find(strcmp({SPM.xCon.name},contrastToFind));
 batchParams.roi{1}.spm.contrast = conIdx;       
 batchParams.roi{1}.spm.conjunction = 1;
 batchParams.roi{1}.spm.threshdesc = 'none';
@@ -103,10 +107,10 @@ matlabbatch{1}.spm.util.voi = batchParams;
 end
 
 %% PPI
-function matlabbatch = fillBatchPPI(opt, iSub, voiID, conID)
+function matlabbatch = fillBatchPPI(opt, voiID, conID)
 
 % Get subject number
-subName = ['sub-', num2str(opt.subjects{iSub})];
+subName = ['sub-', opt.thisSub];
 
 % Create temp struct
 batchParams = struct;
@@ -160,14 +164,14 @@ end
 
 %% GLM - only PPI-interaction
 % GLM in the concatenation is taken care by bidspm-stats
-function matlabbatch = fillBatchGLM(opt, iSub)
+function matlabbatch = fillBatchGLM(opt)
 
 % Get subject number
-subName = ['sub-', num2str(opt.subjects{iSub})];
+subName = ['sub-', opt.thisSub];
 
 % Specify the folers of each subject, to ease path names
 concatFolder = fullfile(opt.dir.ppi, subName, '1stLevelConcat');
-glmFolder = fullfile(opt.dir.ppi, subName, 'task-visualLocalizer_space-IXI549Space_FWHM-6_node-ppiInteractionGLM');
+glmFolder = fullfile(opt.dir.ppi, subName, ['task-visualLocalizer_space-IXI549Space_FWHM-6_node-ppiInteractionGLM']);
 
 % Create temp struct
 batchSpec = struct;

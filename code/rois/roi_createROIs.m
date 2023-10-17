@@ -68,10 +68,11 @@ if isempty(dir('masks/*atlas-visfatlas*'))
     resliceRoiImages(dI, 'masks/hemi-B_space-MNI_atlas-visfatlas_label-V1_mask.nii');
 
     % Intersect v1 mask with activity from a contrast
-    % 
+    roi_createV1ROIs;
+
 end
 
-%% Get the ROIs (actually just the spheres)
+%% Get the ROIs 
 
 % get the resliced masks in the folder. Only 'visualWords' and 'objects'
 % fit the criterium
@@ -232,6 +233,9 @@ for iSub = 1:length(opt.subjects)
         end
     end
 end
+
+
+
 
 
 

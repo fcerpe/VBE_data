@@ -244,6 +244,12 @@ for i = 1:length(subs)
             mni{i}(3, 1:3) = [-52.00 -75.60  00.20]; % LO LEFT
             mni{i}(4, 1:3) = [ 39.00 -75.60 -05.00]; % LO RIGHT
 
+        case '028' 
+            mni{i}(1, 1:3) = [-54.60 -49.60 -12.80]; % VWFA FRE
+            mni{i}(2, 1:3) = [   NaN    NaN    NaN]; % VWFA BRA
+            mni{i}(3, 1:3) = [-46.80 -73.00 -12.80]; % LO LEFT
+            mni{i}(4, 1:3) = [ 39.00 -73.00 -10.20]; % LO RIGHT
+
     end
 end
 

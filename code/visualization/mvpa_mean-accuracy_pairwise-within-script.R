@@ -11,10 +11,10 @@ library("dplyr")
 ### Load matrices of decoding accuracies for both groups 
 
 # Controls
-controls <- read.csv("../../outputs/derivatives/CoSMoMVPA/mvpa-decoding_grp-controls_task-wordsDecoding_condition-pairwise-within-script_nbvoxels-73.csv")
+controls <- read.csv("../../outputs/derivatives/CoSMoMVPA/decoding-pairwise-within-script_grp-controls_rois-expansionIntersection_nbvoxels-43.csv")
 
 # Experts
-experts <- read.csv("../../outputs/derivatives/CoSMoMVPA/mvpa-decoding_grp-experts_task-wordsDecoding_condition-pairwise-within-script_nbvoxels-73.csv")
+experts <- read.csv("../../outputs/derivatives/CoSMoMVPA/decoding-pairwise-within-script_grp-experts_rois-expansionIntersection_nbVoxels-43.csv")
 
 
 
@@ -73,98 +73,107 @@ stats_gen <- general %>% group_by(mask, decodingCondition, script, numDecoding, 
 
 # VWFA
 ggplot(subset(stats_gen, mask == "VWFA"), aes(x = decodingCondition, y = mean_accuracy)) + 
-  scale_color_manual(name = "script x group",
-                     limits = c("french_expert",   "braille_expert",    "french_control",  "braille_control"),
-                     values = c("#69B5A2",         "#FF9E4A",           "#699ae5",         "#da5F49"),
-                     labels = c("french - expert", "braille - expert", "french - control", "braille - control")) +
+  scale_color_manual(name = "    ",
+                     limits = c("french_expert",   "french_control",  "braille_expert",    "braille_control"),
+                     values = c("#69B5A2",         "#699ae5",         "#FF9E4A",          "#da5F49"),
+                     labels = c("expert - french", "control - french", "expert - braille", "control - braille")) +
   # Mean and SE bars
   geom_pointrange(aes(x = decodingCondition, 
                       y = mean_accuracy, 
                       ymin = mean_accuracy - se_accuracy, 
                       ymax = mean_accuracy + se_accuracy, 
                       colour = cluster),
-                  position = position_dodge(1), size = .5, linewidth = 1) +
+                  position = position_dodge(1), size = .75, linewidth = 1.7) +
   # Individual data clouds 
   geom_point(data = subset(general, mask == "VWFA"), 
              aes(x = reorder(decodingCondition, cluster), 
                  y = accuracy, 
                  colour = cluster),
              position = position_jitter(w = 0.3, h = 0.01),
-             alpha = 0.2,
+             alpha = 0.3,
              legend = F) +
-  geom_hline(yintercept = 0.5, size = .25, linetype = "dashed") +                # .50 line
-  theme_classic() +                                                              # white background, simple theme
-  ylim(0,1) +                                                                    # proper y axis length
-  theme(axis.text.x = element_text(angle = 90), axis.ticks = element_blank()) +       # oblique text for x axis
-  scale_x_discrete(limits=rev,                                                   # customize x axis labels
-                   labels = c("\nFRW - FPW"," ", "\nFRW - FNW"," ", "\nFRW - FFS"," ", "\nFPW - FNW"," ", "\nFPW - FFS"," ", "FNW - FFS"," ",
-                              "\nBRW - BPW"," ", "\nBRW - BNW"," ", "\nBRW - BFS"," ", "\nBPW - BNW"," ", "\nBPW - BFS"," ", "BNW - BFS"," ")) +
-  labs(x = "Decoding pair", y = "Accuracy", title = "Pairwise decoding - VWFA")      
+  geom_hline(yintercept = 0.5, size = .25, linetype = "dashed") +                
+  theme_classic() +                                                              
+  ylim(0,1) +                                                                    
+  theme(axis.text.x = element_text(angle = 45,  vjust=1, hjust=1, size = 10), 
+        axis.ticks = element_blank(),
+        axis.title.x = element_text(size = 15), 
+        axis.title.y = element_text(size = 15)) +
+  scale_x_discrete(limits=rev,                                                   
+                   labels = c("\nFRW - FPW"," ", "\nFRW - FNW"," ", "\nFRW - FFS"," ", "\nFPW - FNW"," ", "\nFPW - FFS"," ", "\nFNW - FFS"," ",
+                              "\nBRW - BPW"," ", "\nBRW - BNW"," ", "\nBRW - BFS"," ", "\nBPW - BNW"," ", "\nBPW - BFS"," ", "\nBNW - BFS"," ")) +
+  labs(x = "Decoding pair", y = "Accuracy")      
 
 ggsave("figures/area-VWFA_pairwise-decoding_mean-accuracy.png", width = 3000, height = 1800, dpi = 320, units = "px")
 
 
 # lLO 
 ggplot(subset(stats_gen, mask == "lLO"), aes(x = decodingCondition, y = mean_accuracy)) + 
-  scale_color_manual(name = "script x group",
-                     limits = c("french_expert",   "braille_expert",    "french_control",  "braille_control"),
-                     values = c("#69B5A2",         "#FF9E4A",           "#699ae5",         "#da5F49"),
-                     labels = c("french - expert", "braille - expert", "french - control", "braille - control")) +
+  scale_color_manual(name = "      ",
+                     limits = c("french_expert",   "french_control",  "braille_expert",    "braille_control"),
+                     values = c("#69B5A2",         "#699ae5",         "#FF9E4A",          "#da5F49"),
+                     labels = c("expert - french", "control - french", "expert - braille", "control - braille")) +
   # Mean and SE bars
   geom_pointrange(aes(x = decodingCondition, 
                       y = mean_accuracy, 
                       ymin = mean_accuracy - se_accuracy, 
                       ymax = mean_accuracy + se_accuracy, 
                       colour = cluster),
-                  position = position_dodge(1), size = .5, linewidth = 1) +
+                  position = position_dodge(1), size = .75, linewidth = 1.7) +
   # Individual data clouds 
   geom_point(data = subset(general, mask == "lLO"), 
              aes(x = reorder(decodingCondition, cluster), 
                  y = accuracy, 
                  colour = cluster),
              position = position_jitter(w = 0.3, h = 0.01),
-             alpha = 0.2,
+             alpha = 0.3,
              legend = F) +
-  geom_hline(yintercept = 0.5, size = .25, linetype = "dashed") +                # .50 line
-  theme_classic() +                                                              # white background, simple theme
-  ylim(0,1) +                                                                    # proper y axis length
-  theme(axis.text.x = element_text(angle = 90), axis.ticks = element_blank()) +       # oblique text for x axis
-  scale_x_discrete(limits=rev,                                                   # customize x axis labels
-                   labels = c("\nFRW - FPW"," ", "\nFRW - FNW"," ", "\nFRW - FFS"," ", "\nFPW - FNW"," ", "\nFPW - FFS"," ", "FNW - FFS"," ",
-                              "\nBRW - BPW"," ", "\nBRW - BNW"," ", "\nBRW - BFS"," ", "\nBPW - BNW"," ", "\nBPW - BFS"," ", "BNW - BFS"," ")) +
-  labs(x = "Decoding pair", y = "Accuracy", title = "Pairwise decoding - lLO")      
+  geom_hline(yintercept = 0.5, size = .25, linetype = "dashed") +                
+  theme_classic() +                                                              
+  ylim(0,1) +                                                                    
+  theme(axis.text.x = element_text(angle = 45,  vjust=1, hjust=1, size = 10), 
+        axis.ticks = element_blank(),
+        axis.title.x = element_text(size = 15), 
+        axis.title.y = element_text(size = 15)) +
+  scale_x_discrete(limits=rev,                                                   
+                   labels = c("\nFRW - FPW"," ", "\nFRW - FNW"," ", "\nFRW - FFS"," ", "\nFPW - FNW"," ", "\nFPW - FFS"," ", "\nFNW - FFS"," ",
+                              "\nBRW - BPW"," ", "\nBRW - BNW"," ", "\nBRW - BFS"," ", "\nBPW - BNW"," ", "\nBPW - BFS"," ", "\nBNW - BFS"," ")) +
+  labs(x = "Decoding pair", y = "Accuracy")      
 
 ggsave("figures/area-lLO_pairwise-decoding_mean-accuracy.png", width = 3000, height = 1800, dpi = 320, units = "px")
 
 
 # rLO 
 ggplot(subset(stats_gen, mask == "rLO"), aes(x = decodingCondition, y = mean_accuracy)) + 
-  scale_color_manual(name = "script x group",
-                     limits = c("french_expert",   "braille_expert",    "french_control",  "braille_control"),
-                     values = c("#69B5A2",         "#FF9E4A",           "#699ae5",         "#da5F49"),
-                     labels = c("french - expert", "braille - expert", "french - control", "braille - control")) +
+  scale_color_manual(name = "   ",
+                     limits = c("french_expert",   "french_control",  "braille_expert",    "braille_control"),
+                     values = c("#69B5A2",         "#699ae5",         "#FF9E4A",          "#da5F49"),
+                     labels = c("expert - french", "control - french", "expert - braille", "control - braille")) +
   # Mean and SE bars
   geom_pointrange(aes(x = decodingCondition, 
                       y = mean_accuracy, 
                       ymin = mean_accuracy - se_accuracy, 
                       ymax = mean_accuracy + se_accuracy, 
                       colour = cluster),
-                  position = position_dodge(1), size = .5, linewidth = 1) +
+                  position = position_dodge(1), size = .75, linewidth = 1.7) +
   # Individual data clouds 
   geom_point(data = subset(general, mask == "rLO"), 
              aes(x = reorder(decodingCondition, cluster), 
                  y = accuracy, 
                  colour = cluster),
              position = position_jitter(w = 0.3, h = 0.01),
-             alpha = 0.2,
+             alpha = 0.3,
              legend = F) +
-  geom_hline(yintercept = 0.5, size = .25, linetype = "dashed") +                # .50 line
-  theme_classic() +                                                              # white background, simple theme
-  ylim(0,1) +                                                                    # proper y axis length
-  theme(axis.text.x = element_text(angle = 90), axis.ticks = element_blank()) +       # oblique text for x axis
-  scale_x_discrete(limits=rev,                                                   # customize x axis labels
-                   labels = c("\nFRW - FPW"," ", "\nFRW - FNW"," ", "\nFRW - FFS"," ", "\nFPW - FNW"," ", "\nFPW - FFS"," ", "FNW - FFS"," ",
-                              "\nBRW - BPW"," ", "\nBRW - BNW"," ", "\nBRW - BFS"," ", "\nBPW - BNW"," ", "\nBPW - BFS"," ", "BNW - BFS"," ")) +
-  labs(x = "Decoding pair", y = "Accuracy", title = "Pairwise decoding - rLO")      
+  geom_hline(yintercept = 0.5, size = .25, linetype = "dashed") +                
+  theme_classic() +                                                              
+  ylim(0,1) +                                                                    
+  theme(axis.text.x = element_text(angle = 45,  vjust=1, hjust=1, size = 10), 
+        axis.ticks = element_blank(),
+        axis.title.x = element_text(size = 15), 
+        axis.title.y = element_text(size = 15)) +
+  scale_x_discrete(limits=rev,                                                   
+                   labels = c("\nFRW - FPW"," ", "\nFRW - FNW"," ", "\nFRW - FFS"," ", "\nFPW - FNW"," ", "\nFPW - FFS"," ", "\nFNW - FFS"," ",
+                              "\nBRW - BPW"," ", "\nBRW - BNW"," ", "\nBRW - BFS"," ", "\nBPW - BNW"," ", "\nBPW - BFS"," ", "\nBNW - BFS"," ")) +
+  labs(x = "Decoding pair", y = "Accuracy")      
 
 ggsave("figures/area-rLO_pairwise-decoding_mean-accuracy.png", width = 3000, height = 1800, dpi = 320, units = "px")

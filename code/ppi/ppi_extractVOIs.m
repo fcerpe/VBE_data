@@ -10,17 +10,24 @@
 % - add figures to batch
 % - extend to RH_ fedoerenko masks
 
-if strcmp(opt.ppi.script, 'french'), opt.ppi.contrast = {'fw-sfw'};
-else, opt.ppi.contrast = {'bw-sbw'};
-end
-
 switch opt.ppi.step
     case 1
-        opt.ppi.contrast = opt.ppi.contrast;
+        if strcmp(opt.ppi.dataset, 'mvpa'), opt.ppi.contrast = {'frw-ffs'};
+        else, opt.ppi.contrast = {'fw-sfw'};
+        end
         voiList = {'VWFAfr'};
     case 2
-        opt.ppi.contrast = strsplit(opt.ppi.contrast{1},'-');
+        if strcmp(opt.ppi.dataset, 'mvpa')
+            if strcmp(opt.ppi.script, 'french'), opt.ppi.contrast = {'frw','fpw','fnw','ffs'};
+            else, opt.ppi.contrast = {'brw','bpw','bnw','bfs'};
+            end
+        else
+            opt.ppi.contrast = strsplit(opt.ppi.contrast{1},'-');
+        end
+
+        % VOIs stay the same
         voiList = opt.ppi.voiList;
+
 end
 
 for iSub = 1:numel(opt.subjects)
@@ -32,7 +39,7 @@ for iSub = 1:numel(opt.subjects)
     % Start from which step we are in
     % step == 1, do VWFAfr
     % step == 2, skip VWFAfr (it was already created anyway)
-    for iVoi = opt.ppi.step:numel(voiList)
+    for iVoi = 1:numel(voiList)
         
         % Iterative function: If the batch results empty, re-do it with a
         % more lax threshold
@@ -45,14 +52,14 @@ for iSub = 1:numel(opt.subjects)
         while emptyVOI && opt.ppi.voiThres > 0
 
             % Choose the specificed VOI to extract from the 1st Level GLM
-            currentVoi = pickMask(opt, iSub, voiList{iVoi});
+            currentVoi = pickMask(opt, voiList{iVoi});
             
             % Make the batch
-            matlabbatch = ppi_fillBatch(opt, iSub, 'VOI', currentVoi);
+            matlabbatch = ppi_fillBatch(opt, 'VOI', currentVoi);
 
             % Save and run batch bidspm-style
-            batchName = ['VOI-extraction-' voiList{iVoi} '_task-', char(opt.taskName), '_space-', char(opt.space), '_FWHM-', num2str(opt.fwhm.func)];
-            status = saveAndRunWorkflow(matlabbatch, batchName, opt, opt.subjects{iSub});
+            batchName = ['VOI-extraction-' voiList{iVoi} '_task-', char(opt.taskName), '_space-', char(opt.space)];
+            status = saveAndRunWorkflow(matlabbatch, batchName, opt, opt.thisSub);
             
             % Check that the VOI is not empty. If it is, launche it again
             % and set a different threshold
@@ -94,7 +101,7 @@ end
 
 
 
-function mask = pickMask(opt, iSub, voiName)
+function mask = pickMask(opt, voiName)
 
 % Check validity of input VOI
 if ~ismember(voiName, opt.ppi.voiList)
@@ -103,7 +110,7 @@ if ~ismember(voiName, opt.ppi.voiList)
 end
 
 % Go to subject's ROI folder
-subName = ['sub-', opt.subjects{iSub}];
+subName = ['sub-' opt.thisSub];
 subRoiPath = fullfile(opt.dir.rois, subName);
 
 % Pick existing masks
@@ -149,10 +156,6 @@ switch voiName
         mask = fullfile(fedorenkoRoi.folder, fedorenkoRoi.name);
 
 end
-
-% check that the mask exists
-% if not, warn
-% if so, return it
 
 
 end

@@ -22,10 +22,23 @@ bidspm;
 opt = stats_blockMvpa_option();
 
 % either
-% - vwfa, for one big area
-% - split, for anterior and posterior vwfa
-opt.masksCondition = 'split';
+% - vwfa: one big area
+% - split: anterior and posterior vwfa
+% - postemp: check that opt.subject is correct. Not all of them are
+%            included in the language analysis. There will be errors
+% - loc: both L and R
+% - v1
+opt.masksCondition = 'v1';
 
+if strcmp(opt.masksCondition,'loc')
+    % Check if '023' exists in the cell array
+    if any(strcmp(opt.subjects, '023')), opt.subjects(strcmp(opt.subjects, '023')) = []; end
+    if any(strcmp(opt.subjects, '024')), opt.subjects(strcmp(opt.subjects, '024')) = []; end
+end
+if strcmp(opt.masksCondition,'postemp')
+    % overwrite for simplicity
+    opt.subjects = {'006', '007', '008', '009', '010', '011', '013', '018', '019', '020', '021', '022', '023', '024', '027', '028'};
+end
 % Initialize report
 % Start a new report
 report = {'subject','group','contrast','condition','mask','peak','mean'};
@@ -47,6 +60,17 @@ for iSub = 1:numel(opt.subjects)
                         fullfile(opt.dir.roi, subName, ['r' subName '_hemi-L_space-MNI_atlas-neurosynth_method-splitting_label-antVWFA_mask.nii'])
                         fullfile(opt.dir.roi, subName, ['r' subName '_hemi-L_space-MNI_atlas-neurosynth_method-splitting_label-posVWFA_mask.nii'])};
             maskName = {'antVWFA', 'posVWFA'};
+        case 'postemp'
+            maskPath = {fullfile(opt.dir.roi, subName, ['r' subName '_hemi-L_space-MNI_atlas-fedorenko_contrast-french_label-PosTemp_mask.nii'])};  
+            maskName = {'PosTemp'};
+        case 'loc'
+            maskPath = {...
+                        fullfile(opt.dir.roi, subName, ['r' subName '_hemi-L_space-MNI_atlas-neurosynth_method-expansionIntersection_label-lLO_mask.nii'])
+                        fullfile(opt.dir.roi, subName, ['r' subName '_hemi-R_space-MNI_atlas-neurosynth_method-expansionIntersection_label-rLO_mask.nii'])};
+            maskName = {'lLO', 'rLO'};
+        case 'v1'
+            maskPath = {fullfile(opt.dir.roi, subName, ['r' subName '_hemi-B_space-MNI_atlas-visfatlas_label-V1_mask.nii'])};  
+            maskName = {'v1'};
     end
 
     % for each mask
@@ -64,35 +88,29 @@ for iSub = 1:numel(opt.subjects)
         maskHdr = spm_vol(maskPath{iMask});
         maskVol = spm_read_vols(maskHdr);
 
+        contrasts = {'frw','fpw','fnw','ffs','brw','bpw','bnw','bfs'};
 
-        for iCon = 49:56
+        for iCon = 1:numel(contrasts)
 
-            % get contrast
+            % get contrast number 
+            conNum = find(strcmp({spmMat.SPM.xCon.name}, contrasts(iCon)));
+
             % load .nii files and get the volume data
-            conHdr = spm_vol(fullfile(opt.dir.stats, subName, 'task-wordsDecoding_space-IXI549Space_FWHM-2_node-mvpaGLM', ['spmT_00' num2str(iCon) '.nii']));
+            conHdr = spm_vol(fullfile(opt.dir.stats, subName, 'task-wordsDecoding_space-IXI549Space_FWHM-2_node-mvpaGLM', ['spmT_00' num2str(conNum) '.nii']));
             conVol = spm_read_vols(conHdr);
 
             % overlap mask and contrast
             overlapVoxels = conVol(maskVol == 1);
 
             % calculate peak and average (I don't know which one I need)
-            meanResponse = mean(overlapVoxels);
-            peakResponse = max(overlapVoxels);
+            meanResponse = mean(overlapVoxels,'omitnan');
+            peakResponse = max(overlapVoxels,[],'omitnan');
 
             % add to report
-            switch iCon
-                case 49, cond = 'frw';
-                case 50, cond = 'fpw';
-                case 51, cond = 'fnw';
-                case 52, cond = 'ffs';
-                case 53, cond = 'brw';
-                case 54, cond = 'bpw';
-                case 55, cond = 'bnw';
-                case 56, cond = 'bfs';
-            end
+            cond = spmMat.SPM.xCon(conNum).name;
 
             switch subName(end-1:end)
-                case {'06', '07','08','09','12','13'}
+                case {'06','07','08','09','12','13'}
                     group = 'expert';
                 otherwise
                     group = 'control';
@@ -109,7 +127,7 @@ for iSub = 1:numel(opt.subjects)
 end
 
 % save report
-writecell(report,[opt.masksCondition '_unvariateReport.txt']);
+writecell(report,['univariateReport_' opt.masksCondition '.txt']);
 
 
 
