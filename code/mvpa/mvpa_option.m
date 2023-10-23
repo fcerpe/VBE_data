@@ -9,16 +9,17 @@ end
 % suject to run in each group
 % Specifiy which group is being analysed, to ease comprehension 
 
-% All available subjects
-% opt.subjects = {'006','007','008','009','010','011','012','013','018','019','020','021'};
+% Divide by groups, in some cases it's wise to run decodings on sub-groups
+% (e.g. cross decoding only on experts)
+opt.mvpaGroups.experts = {'006','007','008','009','012','013'};
+opt.mvpaGroups.controls = {'010','011','018','019','020','021','022','023','024','026','027','028'};
+opt.mvpaGroups.allParticipants = {'006','007','008','009','010','011','012','013',...
+                              '018','019','020','021','022','023','024','026','027','028'};
+opt.mvpaGroups.languageActivation = {'006','007','008','009','010','011','013',...
+                                 '018','019','020','021','022','023','024','027','028'};
 
-% Only experts
-opt.subjects = {'006','007','008','009','012','013'};
-opt.groupName = {'experts'};
-
-% Only controls
-% opt.subjects = {'010','011','018','019','020','021'};
-% opt.groupName = {'controls'};
+% By default, work on all the subjects
+opt.subjects = opt.mvpaGroups.allParticipants;
 
 % specify the order of the runs where we can find the following conditions
 %                            F  F  F  F  F  F  B  B  B  B  B  B

@@ -31,8 +31,8 @@ opt = mvpa_option();
 
 % starts report on sizes of ROIs
 % Calc features selection on all the subjects
-opt.subjects = {'006','007','008','009','010','011','012','013','018',...
-                '019','020','021','022','023','024','026','027','028'};
+opt.subjects = opt.mvpaGroups.allParticipants;
+
 opt.roiSizesReport = [];
 allRatios = [];
 
@@ -52,20 +52,20 @@ fprintf(['\nWILL USE ', num2str(min(maskVoxel)), ' VOXELS FOR MVPA\n\n']);
 
 
 %% Experts
-opt.subjects = {'006','007','008','009','012','013'};
+opt.subjects = opt.mvpaGroups.experts;
 opt.groupName = {'experts'};
 mvpaWithin = mvpa_pairwiseDecoding(opt);
 
 
 %% Controls
-opt.subjects = {'010','011','018','019','020','021','022','023','024','026','027','028'};
+opt.subjects = opt.mvpaGroups.controls;
 opt.groupName = {'controls'};
 mvpaWithin = mvpa_pairwiseDecoding(opt);
 
 
 %% Compute cross-script decoding
 % Train on one of the conditions, test on the others
-opt.subjects = {'006','007','008','009','012','013'};
+opt.subjects = opt.mvpaGroups.experts;
 opt.groupName = {'experts'};
 opt.decodingCondition = {'cross-script'};
 mvpaCross = mvpa_crossScriptDecoding(opt);
@@ -78,8 +78,7 @@ mvpaCross = mvpa_crossScriptDecoding(opt);
 opt.roiMethod = 'fedorenko';
 
 % Calc features selection on all the subjects
-opt.subjects = {'006','007','008','009','010','011','013','018',...
-                '019','020','021','022','023','024','027','028'};
+opt.subjects = opt.mvpaGroups.languageActivation;
 opt.roiSizesReport = [];
 allRatios = [];
 

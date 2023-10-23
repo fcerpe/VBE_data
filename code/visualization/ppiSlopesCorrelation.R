@@ -30,6 +30,11 @@ slopes$condition <- ifelse(slopes$group == "expert",
                          paste(slopes$condition,"_exp",sep=""), 
                          paste(slopes$condition,"_ctr",sep=""))
 
+# Sub-010, 018, 023 do not present any area in posTemp that is correlated with VWFA
+# Select rows where 'subject' is not in the specified list
+slopes <- slopes[!(slopes$subject %in% c("sub-010", "sub-018", "sub-023")), ]
+
+
 # calculate stats for error bars
 stats_slopes <- slopes %>% group_by(group, script, condition, cluster) %>% 
   summarize(mean_slope = mean(slope), sd_slope = sd(slope), se_slope = sd(slope)/sqrt(6),
@@ -44,6 +49,10 @@ allPoints <- read.csv("/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/code/
 
 # Manipulate the matrix to get something readable by ggplot
 allPoints <- as.data.frame(allPoints)
+
+# Sub-010, 018, 023 do not present any area in posTemp that is correlated with VWFA
+# Select rows where 'subject' is not in the specified list
+allPoints <- allPoints[!(allPoints$subject %in% c(10, 18, 23)), ]
 
 
 

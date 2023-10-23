@@ -282,10 +282,6 @@ vwfa_ctr_br <- group_split(vwfa_ctr_accu, script)[[1]]
 # perform correlations
 vwfa_EXFR_EXBR <- cor.test(vwfa_exp_fr[["accuracy"]], vwfa_exp_br[["accuracy"]])
 vwfa_CTFR_CTBR <- cor.test(vwfa_ctr_fr[["accuracy"]], vwfa_ctr_br[["accuracy"]])
-vwfa_EXFR_CTFR <- cor.test(vwfa_exp_fr[["accuracy"]], vwfa_ctr_fr[["accuracy"]])
-vwfa_EXBR_CTFR <- cor.test(vwfa_exp_br[["accuracy"]], vwfa_ctr_fr[["accuracy"]])
-vwfa_EXFR_CTBR <- cor.test(vwfa_exp_fr[["accuracy"]], vwfa_ctr_br[["accuracy"]])
-vwfa_EXBR_CTBR <- cor.test(vwfa_exp_br[["accuracy"]], vwfa_ctr_br[["accuracy"]])
 
 # average decodings 
 vwfa_exp_br_means <- aggregate(vwfa_exp_br$accuracy, list(vwfa_exp_br$decodingCondition), FUN=mean)
@@ -386,6 +382,87 @@ ggsave("figures/SNL_area-VWFA_rsa-controls-braille.png", width = 3600, height = 
 
 
 # all correlations within VWFA
+exp_fr <- group_split(vwfa_exp_fr, subID)
+exp_br <- group_split(vwfa_exp_br, subID)
+ctr_fr <- group_split(vwfa_ctr_fr, subID)
+ctr_br <- group_split(vwfa_ctr_br, subID)
+
+dataframes <- list(exp_fr[[1]], exp_fr[[2]], exp_fr[[3]], exp_fr[[4]], exp_fr[[5]], exp_fr[[6]],
+                   exp_br[[1]], exp_br[[2]], exp_br[[3]], exp_br[[4]], exp_br[[5]], exp_br[[6]],
+                   ctr_fr[[1]], ctr_fr[[2]], ctr_fr[[3]], ctr_fr[[4]], ctr_fr[[5]], ctr_fr[[6]],
+                   ctr_fr[[7]], ctr_fr[[8]], ctr_fr[[9]], ctr_fr[[10]], ctr_fr[[11]], ctr_fr[[12]],
+                   ctr_br[[1]], ctr_br[[2]], ctr_br[[3]], ctr_br[[4]], ctr_br[[5]], ctr_br[[6]],
+                   ctr_br[[7]], ctr_br[[8]], ctr_br[[9]], ctr_br[[10]], ctr_br[[11]], ctr_br[[12]])
+
+# Extract subjects, conditions, and groups from each dataframe
+subject_condition_group_list <- lapply(dataframes, function(df) {
+  return(df[, c("subID", "accuracy","decodingCondition","cluster")])
+})
+
+# Create an empty dataframe to store correlation results
+correlation_dataframe <- data.frame(
+  "sub1" = character(),
+  "cluster1" = character(),
+  "sub2" = character(),
+  "cluster2" = character(),
+  "correlation" = numeric()
+)
+
+# Calculate correlations between accuracies
+for (i in 1:length(dataframes)) {
+  for (j in 1:length(dataframes)) {
+    if (i != j) {
+      # Check if the dataframes have different groups before correlating
+      if (dataframes[[i]]$cluster[1] != dataframes[[j]]$cluster[1]) {
+        # Calculate correlation between accuracies in dataframes i and j
+        correlation_result <- cor(dataframes[[i]]$accuracy, dataframes[[j]]$accuracy)
+        
+        # Get the subject and group information for the first and second dataframes
+        subject1 <- subject_condition_group_list[[i]]$subID[1]
+        group1 <- subject_condition_group_list[[i]]$cluster[1]
+        subject2 <- subject_condition_group_list[[j]]$subID[1]
+        group2 <- subject_condition_group_list[[j]]$cluster[1]
+        
+        # Add the correlation result to the correlation_dataframe
+        new_row <- data.frame(
+          "sub1" = subject1,
+          "cluster1" = group1,
+          "sub2" = subject2,
+          "cluster2" = group2,
+          "correlation" = correlation_result
+        )
+        
+        # Append the new row to the correlation_dataframe
+        correlation_dataframe <- rbind(correlation_dataframe, new_row)
+      }
+    }
+  }
+}
+
+# Average the correlations
+# Group the correlation_dataframe by the pair of groups and calculate the average correlation
+grouped_correlation_dataframe <- correlation_dataframe %>%
+  group_by(cluster1, cluster2) %>%
+  summarise(AverageCorrelation = mean(correlation))
+
+# If you want to reset the row names and convert the result to a regular dataframe
+grouped_correlation_dataframe <- as.data.frame(grouped_correlation_dataframe)
+
+# Rows to be selected
+selected_rows <- c(1, 2, 3, 5, 6, 9)
+
+# Filter the rows based on the selected row numbers
+selected_correlations <- grouped_correlation_dataframe %>%
+  filter(row_number() %in% selected_rows)
+
+# If you want to reset the row names and convert the result to a regular dataframe
+selected_correlations <- as.data.frame(selected_correlations)
+
+
+
+
+
+
 corr_vwfa_eFR_eBR <- cor.test(vwfa_exp_fr_means[["x"]], vwfa_exp_br_means[["x"]])
 corr_vwfa_cFR_cBR <- cor.test(vwfa_ctr_fr_means[["x"]], vwfa_ctr_br_means[["x"]])
 corr_vwfa_eFR_cBR <- cor.test(vwfa_exp_fr_means[["x"]], vwfa_ctr_br_means[["x"]])

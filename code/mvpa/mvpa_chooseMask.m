@@ -74,7 +74,7 @@ for iSub = 1:numel(opt.subjects)
 
         case 'earlyVisual'
             atlas_filename = [opt.dir.rois, '/sub-',num2str(subID),...
-                              '/rsub-',num2str(subID),'_hemi-*_space-MNI_atlas-visfatlas_label-V1*.nii'];
+                              '/rsub-',num2str(subID),'_hemi-*_space-MNI_atlas-JUBrain_label-V1*.nii'];
             atlas_files = dir(atlas_filename);
             opt.maskName = horzcat(opt.maskName, {atlas_files.name});
 

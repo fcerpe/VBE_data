@@ -14,7 +14,11 @@
 
 % find V1 masks. There are many as visfatlas divides both hemisphere and
 % dorsal/ventral
-visfatlasV1Masks = dir('masks/*V1*');
+% Atlas may change:
+% - visfatlas
+% - JUBrain (anatomy toolbox)
+atlas = 'JUBrain';
+visfatlasV1Masks = dir(['masks/*atlas-' atlas '*V1*']);
 
 % extract the first one
 % Correpsonds to the fusion of all the subareas, created in roi_createROIs 
