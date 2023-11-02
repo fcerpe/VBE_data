@@ -19,7 +19,7 @@ postemp <- read.csv("/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/code/st
 # LOC - left and right LO from our localizer
 loc <- read.csv("/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/code/stats/univariateReport_loc.txt")
 # V1 - bilateral from visfatlas
-v1 <- read.csv("/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/code/stats/univariateReport_v1.txt")
+v1 <- read.csv("/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/code/stats/univariateReport_v1_jubrain.txt")
 
 
 
@@ -222,7 +222,7 @@ ggplot(stats_v1, aes(x = condition, y = mean_activation)) +
             aes(x = reorder(condition, cluster),
                 y = average_activation, label = subject),
             alpha = 0.8, size = 3, vjust = -0.5, hjust = 1.5, check_overlap = T) +
-  geom_point(data = postemp, aes(x = reorder(condition, cluster),  y = average_activation),
+  geom_point(data = v1, aes(x = reorder(condition, cluster),  y = average_activation),
              alpha = 0.4) +
   theme_classic() +                                                              
   theme(axis.ticks = element_blank()) +
@@ -231,7 +231,8 @@ ggplot(stats_v1, aes(x = condition, y = mean_activation)) +
                               "\t\t\tBRW"," ", "\t\t\tBPW"," ", "\t\t\tBNW"," ", "\t\t\tBFS"," ")) +
   labs(x = "Stimulus condition", y = "Mean univariate activation", title = "Univariate acitvation in V1")      
 
-ggsave("figures/cond-V1_univariate_average-activation_with-labels.png", width = 3000, height = 1800, dpi = 320, units = "px")
+ggsave("figures/cond-V1-jubrain_univariate_average-activation_with-labels.png", width = 3000, height = 1800, dpi = 320, units = "px")
+
 
 
 ## WITH JUST INDIVIDUAL DOTS

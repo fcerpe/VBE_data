@@ -69,7 +69,7 @@ for iSub = 1:numel(opt.subjects)
                         fullfile(opt.dir.roi, subName, ['r' subName '_hemi-R_space-MNI_atlas-neurosynth_method-expansionIntersection_label-rLO_mask.nii'])};
             maskName = {'lLO', 'rLO'};
         case 'v1'
-            maskPath = {fullfile(opt.dir.roi, subName, ['r' subName '_hemi-B_space-MNI_atlas-JUBrain_label-V1_mask.nii'])};  
+            maskPath = {fullfile(opt.dir.roi, subName, ['r' subName '_hemi-B_space-MNI_atlas-JUBrain_contrast-allFrench_label-V1_mask.nii'])};  
             maskName = {'v1'};
     end
 

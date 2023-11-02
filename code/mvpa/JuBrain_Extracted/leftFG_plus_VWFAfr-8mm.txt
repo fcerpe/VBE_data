@@ -1,2 +1,0 @@
-Files used	Left Visual_FG1	Left Visual_FG2	Left Visual_FG3	Left Visual_FG4	
-/Users/cerpelloni/Desktop/GitHub/VisualBraille_data/outputs/derivatives/cpp_spm-rois/sub-006/rsub-006_space-MNI_trial-IndividualCoords_label-VWFAfr_radius-8mm_mask.nii -> 1	0.5817    	726.8585  	0.0000    	531.6667  	

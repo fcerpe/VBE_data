@@ -7,9 +7,9 @@ function opt = stats_localizer_option()
 
 opt = [];
 
-opt.subjects = {'028'}; 
+opt.subjects = {'006', '007', '008', '009', '010', '011', '012', '013', '018', '019', '020', '021', '022', '023','024','026','027','028'}; 
 % participants: '006', '007', '008', '009', '010', '011', '012', '013', '017', '018', '019', '020',
-% '021', '022', '023'
+% '021', '022', '023', 
 
 % Task to analyze - change accordingly
 opt.taskName = 'visualLocalizer';
@@ -172,6 +172,21 @@ opt.results(11).k = 0;
 opt.results(11).binary = true(); opt.results(11).montage.do = false();
 opt.results(11).nidm = true();   opt.results(11).threshSpm = true();
 
+opt.results(12).nodeName = 'subject_level';
+opt.results(12).name = {'allFrench_gt_nothing'};
+opt.results(12).png = false();   opt.results(12).csv = false();
+opt.results(12).p = 0.001;       opt.results(12).MC = 'none';
+opt.results(12).k = 0;
+opt.results(12).binary = true(); opt.results(12).montage.do = false();
+opt.results(12).nidm = true();   opt.results(12).threshSpm = true();
+
+opt.results(13).nodeName = 'subject_level';
+opt.results(13).name = {'allFrench_gt_nothing'};
+opt.results(13).png = false();   opt.results(13).csv = false();
+opt.results(13).p = 0.05;        opt.results(13).MC = 'none';
+opt.results(13).k = 0;
+opt.results(13).binary = true(); opt.results(13).montage.do = false();
+opt.results(13).nidm = true();   opt.results(13).threshSpm = true();
 
 % opt.results(4).nodeName = 'subject_level';
 % opt.results(4).name = {'frWords_gt_scrLines'};

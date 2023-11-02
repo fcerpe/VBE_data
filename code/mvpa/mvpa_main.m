@@ -4,7 +4,7 @@
 clear;
 clc;
 
-%% GET PATHS, BIDSSPM, OPTIONS
+% GET PATHS, BIDSSPM, OPTIONS
 
 % spm
 warning('on');

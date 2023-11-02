@@ -31,12 +31,6 @@ bidsFFX('contrasts', opt);
 
 bidsResults(opt);
 
-%% Group analysis
-% Soon
-% 
-% bidsRFX('smoothContrasts', opt);
-% bidsRFX('RFX', opt);
-
 %% TASK - visualLocalizer
 %
 % Will perform stats and results for selected contrasts on the localizer
@@ -63,35 +57,6 @@ bidspm(opt.dir.raw, opt.dir.output, ...
         'fwhm', opt.fwhm.func);
 
 %% Results - subject level
-
-% prepare to print the results
-% results = defaultResultsStructure();
-% 
-% opt.subjects = cell(1,1);
-% 
-% results.nodeName = 'subject_level';
-% results.name = {'static', 'motion', 'motion_gt_static', 'static_gt_motion'};
-% results.MC = 'none';
-% results.p = 0.001;
-% results.k = 0;
-% results.threshSpm = true();
-% results.png = false();
-% results.csv = true();
-% results.binary = true();
-% results.nidm = false();
-% results.montage.do = true();
-% results.montage.slices = -50:10:50;
-% results.montage.orientation = 'axial';
-% results.montage.background = struct('sub', opt.subjects{1}, ...
-%                                     'suffix', 'T1w', ...
-%                                     'desc', 'preproc', ...
-%                                     'modality', 'anat');
-% 
-% results(2) = results;
-% results(2).MC = 'FWE';
-% results(2).p = 0.05;
-% 
-% opt.results = results;
 
 bidspm(opt.dir.raw, opt.dir.output, 'subject', ...
        'action', 'results', ... 

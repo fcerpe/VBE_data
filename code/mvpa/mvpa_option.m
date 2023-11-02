@@ -16,7 +16,7 @@ opt.mvpaGroups.controls = {'010','011','018','019','020','021','022','023','024'
 opt.mvpaGroups.allParticipants = {'006','007','008','009','010','011','012','013',...
                               '018','019','020','021','022','023','024','026','027','028'};
 opt.mvpaGroups.languageActivation = {'006','007','008','009','010','011','013',...
-                                 '018','019','020','021','022','023','024','027','028'};
+                                 '018','019','020','021','023','024','027','028'};
 
 % By default, work on all the subjects
 opt.subjects = opt.mvpaGroups.allParticipants;
@@ -70,7 +70,7 @@ opt.decodingCondition = {'pairwise-within-script'};
 %              ROI in half
 % - vwfaSplitAtlas: uses VWFA splitted according to atlas (undefined)
 % - earlyVisual: V1 extracted from visfatlas
-opt.roiMethod = 'earlyVisual';
+opt.roiMethod = 'expansionIntersection';
 
 % Uncomment the lines below to run preprocessing
 % - don't use realign and unwarp
