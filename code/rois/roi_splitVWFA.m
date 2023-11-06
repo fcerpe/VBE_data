@@ -17,6 +17,7 @@
 %   - Adjust documentation mentioning multiple objects can be passed at
 %   once, that atlas does not work
 %   - add aVWFA and pVWFA in atlas
+%   - make report of vwfa overlaps
 
 for sp = 1:numel(opt.split)
    
