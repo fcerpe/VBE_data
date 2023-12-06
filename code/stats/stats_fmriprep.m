@@ -75,4 +75,18 @@ bidspm(opt.dir.raw, opt.dir.output, 'subject', ...
 % Will perform stats and concatenation into 4D images on the mvpa runs
 % No results are planned so far, will probably be implemented later
 % If present, details of the contrasts are in stats_fmriprep_option
-   
+
+opt.taskName = 'wordsDecoding';
+opt.fwhm.func = 2;
+opt.fwhm.contrast = 0;
+opt.model.file = fullfile(opt.dir.root, 'code', ...
+    'models', 'model-wordsDecoding_smdl.json');
+
+bidsFFX('specifyAndEstimate', opt);
+ 
+bidsFFX('contrasts', opt);
+
+bidsResults(opt);
+
+% At the end, also extract concatenate betas and t-maps for later mvpa
+bidsConcatBetaTmaps(opt, 0);

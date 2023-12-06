@@ -7,7 +7,7 @@ function opt = stats_localizer_option()
 
 opt = [];
 
-opt.subjects = {'006', '007', '008', '009', '010', '011', '012', '013', '018', '019', '020', '021', '022', '023','024','026','027','028'}; 
+opt.subjects = {'007', '008', '009', '010', '011', '012', '013', '018', '019', '020', '021', '022', '023','024','026','027','028'}; 
 % participants: '006', '007', '008', '009', '010', '011', '012', '013', '017', '018', '019', '020',
 % '021', '022', '023', 
 
@@ -34,12 +34,12 @@ opt.dir.raw = fullfile(opt.dir.root, 'inputs', 'raw');
 opt.dir.derivatives = fullfile(opt.dir.root, 'outputs', 'derivatives');
 opt.dir.preproc = fullfile(opt.dir.root, 'outputs', 'derivatives', 'bidspm-preproc');
 opt.dir.input = opt.dir.preproc;
-opt.dir.roi = fullfile(opt.dir.root, 'outputs', 'derivatives', 'cpp_spm-roi');
+opt.dir.roi = fullfile(opt.dir.root, 'outputs', 'derivatives', 'cpp_spm-rois');
 opt.dir.stats = fullfile(opt.dir.root, 'outputs', 'derivatives', 'bidspm-stats');
 
 % Model specifies all the contrasts
 opt.model.file = fullfile(opt.dir.root, 'code', ...
-    'models', 'model-visualLocalizerUnivariate_smdl.json');
+    'models', 'model-visualLocalizerEyeMovements_smdl.json');
 
 opt.pipeline.type = 'stats';
 

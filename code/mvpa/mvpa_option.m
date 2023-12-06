@@ -50,8 +50,8 @@ opt.subsCondition = {'006', [1  3  5  7  9 11  2  4  6  8 10 12];
 % - pairwise-within-script: frw v. fpw, frw v. fnw, frw v. ffs, fpw v. fnw, fpw v. ffs, fnw v. ffs 
 %                           brw v. bpw, brw v. bnw, brw v. bfs, bpw v. bnw, bpw v. bfs, bnw v. bfs
 %
-% - four-way-classification-within: frw v. fpw v. fnw v. ffs
-%                                   brw v. bpw v. bnw v. bfs
+% - multiple-within: frw v. fpw v. fnw v. ffs
+%                    brw v. bpw v. bnw v. bfs
 %
 % - linguistic-condition: frw+brw v. fpw+bpw v. fnw+bnw v. ffs+bfs
 %

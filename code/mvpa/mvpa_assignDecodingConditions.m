@@ -33,7 +33,7 @@ function [conditionLabels, decodingName, conditionNumbers, decodingNumbers] = mv
             conditionNumbers = [1 2 3 4 5 6 7 8];
             decodingNumbers = [1 2; 1 3; 1 4; 2 3; 2 4; 3 4; 5 6; 5 7; 5 8; 6 7; 6 8; 7 8];
 
-        case 'four-way-classification-within'
+        case 'multiple-within'
             decodingName = {'frw_v_fpw_v_fnw_v_ffs', 'brw_v_bpw_v_bnw_v_bfs'};     
             conditionLabels = {'frw','fpw','fnw','ffs','brw','bpw','bnw','bfs'};
             conditionNumbers = [1 2 3 4 5 6 7 8];

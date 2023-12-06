@@ -8,7 +8,8 @@ end
 
 % suject to run in each group
 opt.subjects = {'006'}; 
-% Participants: '006', '007', '008', '009', '010', '011', '013', '018', '019', '020', '021', '022', '023', '024', '027', '028'
+% Participants: '006', '007', '008', '009', '011', '013', '019', '020', '021', '022', '024', '027', '028'
+% 10, 18, 23 do not how PosTemp. Excluded
 
 % PPI OPTIONS
 % Areas to consider for the creation of VOIs: VWFA and Fedorenko's areas

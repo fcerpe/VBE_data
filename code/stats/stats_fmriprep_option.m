@@ -7,10 +7,10 @@ function opt = stats_fmriprep_option()
 
 opt = [];
 
-opt.subjects = {'028'}; % 002 003 004 005
+opt.subjects = {'006','007','008','009','010','011','012','013','018','020','021','022','023'}; % 002 003 004 005
 
 % Task to analyze - change accordingly
-opt.taskName = 'visualLocalizer';
+opt.taskName = 'wordsDecoding';
 
 opt.verbosity = 2;
 
@@ -22,8 +22,8 @@ opt.space = 'MNI152NLin2009cAsym';
 opt.glm.QA.do = false;
 
 % The functional smoothing 
-opt.fwhm.func = 6;
-opt.fwhm.contrast = 6;
+opt.fwhm.func = 2;
+opt.fwhm.contrast = 0;
 
 % The directory where the data are located
 opt.dir.root = fullfile(fileparts(mfilename('fullpath')), '..', '..');
@@ -37,7 +37,7 @@ opt.dir.stats = fullfile(opt.dir.root, 'outputs', 'derivatives', 'fmriprep-bidsp
 
 % Model specifies all the contrasts
 opt.model.file = fullfile(opt.dir.root, 'code', ...
-    'models', 'model-visualLocalizerUnivariate_smdl.json');
+    'models', 'model-wordsDecoding_smdl.json');
 
 opt.pipeline.type = 'stats';
 

@@ -45,34 +45,29 @@ opt.mvpa.ratioToKeep = min(maskVoxel);
 fprintf(['\nWILL USE ', num2str(min(maskVoxel)), ' VOXELS FOR MVPA\n\n']);
 
 
-%% Compute decoding
-% Within modality
-% training set and test set both contain RW, PW, NW, FS stimuli.
-% Learn to distinguish them
+%% Compute decodings - run the desired block
 
-
-%% Experts
+%% Pairwise decoding - within and across scripts
+% Experts
 opt.subjects = opt.mvpaGroups.experts;
 opt.groupName = {'experts'};
 mvpaWithin = mvpa_pairwiseDecoding(opt);
 
-
-%% Controls
+% Controls
 opt.subjects = opt.mvpaGroups.controls;
 opt.groupName = {'controls'};
 mvpaWithin = mvpa_pairwiseDecoding(opt);
 
-
-%% Compute cross-script decoding
+% Cross-script 
 % Train on one of the conditions, test on the others
+% Only in experts 
 opt.subjects = opt.mvpaGroups.experts;
 opt.groupName = {'experts'};
 opt.decodingCondition = {'cross-script'};
 mvpaCross = mvpa_crossScriptDecoding(opt);
 
 
-
-%% Higher level language decoding
+%% Language areas decoding
 % Perform within-script and cross-script decoding in language areas
 % Subject pool and areas from roi_createLanguageRois
 opt.roiMethod = 'fedorenko';
@@ -93,6 +88,7 @@ fprintf(['\nWILL USE ', num2str(min(maskVoxel)), ' VOXELS FOR MVPA\n\n']);
 opt.subjects = {'006','007','008','009','013'};
 opt.groupName = {'experts'};
 mvpaWithin = mvpa_pairwiseDecoding(opt);
+
 % Compute cross-script decoding
 opt.decodingCondition = {'cross-script'};
 mvpaCross = mvpa_crossScriptDecoding(opt);
@@ -102,3 +98,27 @@ opt.subjects = {'010','011','018','019','020','021','022','023','024','027','028
 opt.groupName = {'controls'};
 mvpaWithin = mvpa_pairwiseDecoding(opt);
 
+
+%% Multiple decoding - within and across scripts
+
+% chage to desired conditions
+opt.decodingCondition = {'multiple-within'};
+
+% Experts
+opt.subjects = opt.mvpaGroups.experts;
+opt.groupName = {'experts'};
+mvpaWithin = mvpa_multipleConditionsDecoding(opt);
+
+% Controls
+opt.subjects = opt.mvpaGroups.controls;
+opt.groupName = {'controls'};
+mvpaWithin = mvpa_multipleConditionsDecoding(opt);
+
+% TO-DO:
+% Cross-script 
+% Train on one of the conditions, test on the others
+% Only in experts 
+% opt.subjects = opt.mvpaGroups.experts;
+% opt.groupName = {'experts'};
+% opt.decodingCondition = {'cross-script'};
+% mvpaCross = mvpa_crossScriptDecoding(opt);

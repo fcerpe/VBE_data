@@ -46,36 +46,35 @@ stats <- experts %>% group_by(mask, decodingCondition, modality, numDecoding) %>
 ### Plot the decodings 
 
 # Both training - test conditions
-ggplot(subset(stats, mask == "VWFA"), aes(x = decodingCondition, y = mean_accuracy)) + 
+ggplot(subset(stats, mask == "VWFA" & modality == "both"), aes(x = decodingCondition, y = mean_accuracy)) + 
   scale_color_manual(name = "condtions",
-                     limits = c("tr-french_te-braille", "tr-braille_te-french", "both"),
-                     values = c("#69B5A2",              "#FF9E4A",              "#8372AC"),
-                     labels = c("training FR, test BR", "training BR, test FR", " average")) +
+                     limits = c("both"),
+                     values = c("#8372AC"),
+                     labels = c("average")) +
   # Mean and SE bars
   geom_pointrange(aes(x = decodingCondition, 
                       y = mean_accuracy, 
                       ymin = mean_accuracy - se_accuracy, 
                       ymax = mean_accuracy + se_accuracy, 
                       colour = modality),
-                  position = position_dodge(1), size = .5, linewidth = 1) +
+                  position = position_dodge(1), size = 1, linewidth = 2) +
   # Individual data clouds 
-  geom_point(data = experts,
+  geom_point(data = subset(experts, modality == "both"),
              aes(x = reorder(decodingCondition, modality),
                  y = accuracy,
                  colour = modality),
              position = position_jitter(w = 0.3, h = 0.01),
-             alpha = 0.2,
+             alpha = 0.5,
              legend = F) +
   geom_hline(yintercept = 0.5, size = .25, linetype = "dashed") +            
   theme_classic() +                                                          
-  ylim(0,1) +                                                                   
-  theme(axis.text.x = element_text(angle = 45,  vjust=1, hjust=1, size = 10), 
-        axis.ticks = element_blank()) +      
-  # facet_grid(~factor(mask, levels = c("VWFA", "lLO", "rLO")), 
-  #            labeller = label_value) + 
-  scale_x_discrete(limits=rev,
-  labels = c(" ","RW - PW"," ", " ","RW - NW"," ", " ","RW - FS"," ",
-             " ","PW - NW"," ", " ","PW - FS"," ", " ","NW - FS"," ")) +
+  ylim(0.15,1) +                                                                    
+  theme(axis.text.x = element_text(size = 15), axis.text.y = element_text(size = 15), 
+        axis.ticks = element_blank(), axis.title.y = element_text(size = 20)) +      
+  scale_x_discrete(limits=rev,                                                
+                   labels = c("RW\nPW","RW\nNW",
+                              "RW\nFS","PW\nNW",
+                              "PW\nFS","NW\nFS")) +
   labs(x = "Decoding pair", y = "Decoding accuracy", title = "Crossmodal decoding")      
 
 ggsave("figures/trial_cross.png", width = 3000, height = 1800, dpi = 320, units = "px")

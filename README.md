@@ -1,4 +1,4 @@
-# Project <insert name>
+# Project: Visual Braille Expertise 
 
 ## Dataset structure
 
