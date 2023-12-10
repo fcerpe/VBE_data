@@ -32,9 +32,7 @@ opt.taskName = 'visualLocalizer';
 % 'parfor' skips this step, so execute it outside the parallel loop
 bidsCopyInputFolder(opt);
 
-% Run multiple participants at the same time, one per CPU core
-% For more info, check 'parallel computing toolbox' and 
-% https://bidspm.readthedocs.io/en/latest/FAQ.html#
+% Run multiple participants at the same time 
 parfor iSub = 1:numel(opt.subjects)
 
     % preprocessing

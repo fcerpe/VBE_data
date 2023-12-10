@@ -1,0 +1,132 @@
+{
+  "GeneratedBy": {
+    "name": "bidspm",
+    "Version": "v3.1.0dev",
+    "Branch": "main",
+    "Commit": "20062416",
+    "Description": "",
+    "CodeURL": "https://github.com/cpp-lln-lab/bidspm",
+    "DOI": "https://doi.org/10.5281/zenodo.3554331"
+  },
+  "OS": {
+    "name": "macOS",
+    "version": "13.0.1",
+    "platform": {
+      "name": "MATLAB",
+      "version": "9.11.0.2358333 (R2021b) Update 7"
+    },
+    "spmVersion": "SPM12 - 7771",
+    "environmentVariables": {
+      "COMMAND_MODE": "unix2003",
+      "DISPLAY": "/private/tmp/com.apple.launchd.6QUdzrOmcN/org.xquartz:0",
+      "HOME": "/Users/cerpelloni",
+      "ICU_TIMEZONE_FILES_DIR": "/Applications/MATLAB_R2021b.app/bin/icutzdata",
+      "KMP_BLOCKTIME": "1",
+      "KMP_HANDLE_SIGNALS": "0",
+      "KMP_INIT_AT_FORK": "false",
+      "KMP_STACKSIZE": "512k",
+      "LANG": "en_US.UTF-8",
+      "LC_CTYPE": "UTF-8",
+      "LOGNAME": "cerpelloni",
+      "MATLAB_USE_USERWORK": "",
+      "MDCE_LABINDEX": "1",
+      "MDCE_NUMLABS": "9",
+      "MDCE_OVERRIDE_CLIENT_HOST": "127.0.0.1",
+      "MDCE_PID_TO_WATCH": "10190",
+      "MDCE_USE_ML_LICENSING": "true",
+      "MEMKIND_HEAP_MANAGER": "TBB",
+      "MKL_DOMAIN_NUM_THREADS": "",
+      "MKL_NUM_THREADS": "",
+      "MPICH_INTERFACE_HOSTNAME": "127.0.0.1",
+      "OLDPWD": "/Volumes/fcerpe_ssd/VisualBraille_data/code/preproc",
+      "PARALLEL_SERVER_DECODE_FUNCTION": "parallel.internal.decode.localConcurrentTask",
+      "PARALLEL_SERVER_EXPERIMENTAL_MJS_VER": "",
+      "PARALLEL_SERVER_EXPERIMENTAL_PLR_VER": "",
+      "PARALLEL_SERVER_EXPERIMENTAL_RCA_VER": "",
+      "PARALLEL_SERVER_JOB_LOCATION": "Job2",
+      "PARALLEL_SERVER_STORAGE_CONSTRUCTOR": "makeFileStorageObject",
+      "PARALLEL_SERVER_STORAGE_LOCATION": "PC%7B%7D%3AUNIX%7B%2FUsers%2Fcerpelloni%2FLibrary%2FApplication%20Support%2FMathWorks%2FMATLAB%2Flocal%5Fcluster%5Fjobs%2FR2021b%7D%3A",
+      "PARALLEL_SERVER_USERNAME": "cerpelloni",
+      "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+      "PWD": "/Volumes/fcerpe_ssd/VisualBraille_data/code/preproc",
+      "SHELL": "/bin/zsh",
+      "SHLVL": "0",
+      "SSH_AUTH_SOCK": "/private/tmp/com.apple.launchd.FUXR5pT2Pe/Listeners",
+      "TMPDIR": "/var/folders/3h/_6ppwnss0hl_dqpt2ynwx7tc0000gp/T/",
+      "USER": "cerpelloni",
+      "XPC_FLAGS": "0x0",
+      "XPC_SERVICE_NAME": "application.com.mathworks.matlab.572443.917855",
+      "CFBundleIdentifier": "com.mathworks.matlab",
+      "CF_USER_TEXT_ENCODING": "0x1F6:0x0:0x0",
+      "KMP_REGISTERED_LIB______": "0x12ba091a8-cafecbea-libiomp5.dylib"
+    }
+  },
+  "ME": {
+    "identifier": "MATLAB:COPYFILE:FileNotFound",
+    "message": "No matching files named '/Volumes/fcerpe_ssd/VisualBraille_data/code/lib/bidspm/lib/CPP_ROI/atlas/visual_topography_probability_atlas/subj_vol_all/space-MNI_seg-wang_dseg.nii' were found.",
+    "cause": [],
+    "stack": [
+      {
+        "file": "/Volumes/fcerpe_ssd/VisualBraille_data/code/lib/bidspm/lib/CPP_ROI/src/atlas/copyAtlasToSpmDir.m",
+        "name": "copyAtlasToSpmDir",
+        "line": 54
+      },
+      {
+        "file": "/Volumes/fcerpe_ssd/VisualBraille_data/code/lib/bidspm/lib/CPP_ROI/initCppRoi.m",
+        "name": "initCppRoi",
+        "line": 34
+      },
+      {
+        "file": "/Applications/MATLAB_R2021b.app/toolbox/matlab/lang/run.m",
+        "name": "run",
+        "line": 91
+      },
+      {
+        "file": "/Volumes/fcerpe_ssd/VisualBraille_data/code/lib/bidspm/bidspm.m",
+        "name": "initBidspm",
+        "line": 209
+      },
+      {
+        "file": "/Volumes/fcerpe_ssd/VisualBraille_data/code/lib/bidspm/bidspm.m",
+        "name": "executeAction",
+        "line": 49
+      },
+      {
+        "file": "/Volumes/fcerpe_ssd/VisualBraille_data/code/lib/bidspm/bidspm.m",
+        "name": "bidspm",
+        "line": 26
+      },
+      {
+        "file": "/Volumes/fcerpe_ssd/VisualBraille_data/code/lib/bidspm/src/cli/getOptionsFromCliArgument.m",
+        "name": "getOptionsFromCliArgument",
+        "line": 17
+      },
+      {
+        "file": "/Volumes/fcerpe_ssd/VisualBraille_data/code/lib/bidspm/src/cli/cliPreprocess.m",
+        "name": "cliPreprocess",
+        "line": 28
+      },
+      {
+        "file": "/Volumes/fcerpe_ssd/VisualBraille_data/code/lib/bidspm/bidspm.m",
+        "name": "executeAction",
+        "line": 80
+      },
+      {
+        "file": "/Volumes/fcerpe_ssd/VisualBraille_data/code/lib/bidspm/bidspm.m",
+        "name": "bidspm",
+        "line": 26
+      },
+      {
+        "file": "/Applications/MATLAB_R2021b.app/toolbox/matlab/lang/parallel_function.m",
+        "name": "make_general_channel/channel_general",
+        "line": 852
+      },
+      {
+        "file": "/Applications/MATLAB_R2021b.app/toolbox/parallel/remoteParallelFunction.m",
+        "name": "remoteParallelFunction",
+        "line": 67
+      }
+    ],
+    "Correction": []
+  }
+}
