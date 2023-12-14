@@ -34,10 +34,10 @@ for sp = 1:numel(opt.split)
             %   Lerma-Usabiaga et al., 2018
     
             vwfa.locations = {[-45 -51 -12], ...
-                [-45 -57 -12],...
-                [-45 -72 -10],...
-                [-39 -71 -8],...
-                [-42 -58 -10]};
+                              [-45 -57 -12], ...
+                              [-45 -72 -10], ...
+                              [-39 -71 -8], ...
+                              [-42 -58 -10]};
     
             vwfa.names = {'aVWFA','cVWFA','pVWFA','lexVWFA','perVWFA'};
     
@@ -109,7 +109,6 @@ for sp = 1:numel(opt.split)
                 end
             end
     
-    
         case 'individual'
             % Individual split
             %
@@ -122,16 +121,16 @@ for sp = 1:numel(opt.split)
             % - divide the mask in two halves nad save them as masks
     
             for iSub = 1:length(opt.subjects)
-    
+                
+                % Notify the user
+                fprintf(['Splitting individual ROIs of ' subName '\n']);
+
                 % Get subject number
                 subName = ['sub-', num2str(opt.subjects{iSub})];
     
-                fprintf(['Splitting individual ROIs of ' subName '\n']);
-    
                 % Get the subject's VWFA mask
                 brainMask = fullfile(opt.dir.rois, subName, ...
-                    ['r' subName '_hemi-L_space-MNI_atlas-neurosynth_method-expansionIntersection_label-VWFAfr_mask.nii']);
-    
+                    ['r' subName '_hemi-L_space-IXI549Space_atlas-neurosynth_method-expansionIntersection_label-VWFAfr_mask.nii']);
     
                 % Load the mask
                 vwfaMask = loadROI(brainMask);
@@ -173,9 +172,8 @@ for sp = 1:numel(opt.split)
                 antInvalidY = find(vwfaMask.XYZ(2,:) < hY-hEndY);
                 posInvalidY = find(vwfaMask.XYZ(2,:) > lY+lEndY);
 
-                % small fix (temporary - 18/09/2023) for sub-018.
-                % In this case, posterior VWFA is composed of too few
-                % voxels
+                % Small fix for sub-018, posterior VWFA is composed of 
+                % too few voxels
                 if all(opt.subjects{iSub} == '018')
                     %in this case, split to have an equal number
                     % division of voxels per Y coord:
@@ -186,9 +184,7 @@ for sp = 1:numel(opt.split)
                     posInvalidY = find(vwfaMask.XYZ(2,:) > 22);
                 end
 
-    
-                % create masks:
-                %
+                % Create masks:
                 % - anterior vwfa, mY to hY
                 vwfaAnt = vwfaMask;
     
@@ -214,14 +210,14 @@ for sp = 1:numel(opt.split)
                 vwfaPos.img(posInvalidPoints) = 0;
 
                 
-                % save new masks in a bidlike name
+                % Save new masks in a bidlike name
                 antName = [subName '_hemi-L_space-MNI_atlas-neurosynth_method-splitting_label-antVWFA_mask.nii'];
                 vwfaAnterior = saveSplitROI(vwfaAnt, brainMask, fullfile(opt.dir.rois, subName), antName);
     
                 posName = [subName '_hemi-L_space-MNI_atlas-neurosynth_method-splitting_label-posVWFA_mask.nii'];
                 vwfaPosterior = saveSplitROI(vwfaPos, brainMask, fullfile(opt.dir.rois, subName), posName);
 
-                % reslice the ROIs
+                % Reslice the ROIs
                 betaReference = fullfile(opt.dir.stats, subName, ...
                                          'task-wordsDecoding_space-IXI549Space_FWHM-2_node-mvpaGLM', 'beta_0001.nii');
                 
@@ -233,58 +229,7 @@ for sp = 1:numel(opt.split)
     
                 fprintf('Done \n\n');
     
-            end
-    
-    
-        case 'overlap'
-            % BONUS: calculate VWFA overlap between-subjects
-            %
-            % Take the ROIs for each subject and sum them
-            % Display the overlap as % of shared space
-    
-            % Create a struct to store all the rois. Left empty for now and initalized
-            % while loading the first roi
-            vwfas = [];
-    
-            for iSub = 1:length(opt.subjects)
-    
-                % Get subject number
-                subName = ['sub-', num2str(opt.subjects{iSub})];
-    
-                fprintf(['Adding vwfa for ' subName '\n']);
-    
-                % Get the subject's VWFA mask
-                brainMask = fullfile(opt.dir.rois, subName, ...
-                    ['r' subName '_hemi-L_space-MNI_atlas-neurosynth_method-expansionIntersection_label-VWFAfr_mask.nii']);
-    
-                % Load the mask
-                % USe load_nii instead of our custom function because we deal with
-                % multiple subjects at the same time. A more simple measure appears to
-                % be more solid
-                vwfaMask = load_nii(brainMask);
-    
-                % In case it's the first mask, use it as base to summ all the others
-                % Otherwise, add this .img to the previous masks
-                if isempty(vwfas)
-                    vwfas = struct;
-                    allImg = vwfaMask.img;
-                    totalMasks = 1;
-                else
-                    allImg = allImg + vwfaMask.img;
-                    totalMasks = totalMasks + 1;
-                end
-    
-                % Add it to the others, for storage
-                eval(['vwfas.sub' num2str(opt.subjects{iSub}) ' = vwfaMask;']);
-    
-            end
-    
-            % Create a custom mask with the overlap
-            vwfaMaskName = fullfile(opt.dir.rois, 'overlap_hemi-L_space-MNI_label-VWFAfr.nii');
-            vwfaMask.img = allImg;
-    
-            save_nii(vwfaMask, vwfaMaskName);
-    
+            end            
     end
 end
 

@@ -78,5 +78,3 @@ bidsSmoothing(opt)
 stats_run(opt);
 
 
-
-

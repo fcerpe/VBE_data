@@ -6,43 +6,27 @@
 % Outputs:
 % - ROIs (duh) in the 'code/rois/masks'
 % - ROIs in the folder specified in roi_option
-%
-% TO-DO (08/08/2023)
-%   - for each sub and roi, take the masks and apply them to ??? (copy
-%     other script)
 
 % If not done previously, extract language ROIs from Fedorenko's parcels
-if isempty(dir('masks/fedorenko_parcels/r*atlas-fedorenko*'))
+if isempty(dir('masks/fedorenko_parcels/r*'))
 
     getRoiFromParcels(opt);
-    
 end
-
-% Apply the masks to subject data and get single participant's ROIs
-% Localizer
 
 %% Overlap the fROI to each subject VWFA contrast 
+% From each subject's constrasts [FW > SFW] and [BW > SBW], overlap these 
+% contrasts with each of Fedorenko's fROIs.
+% Outputs a report 
 
-% get the resliced masks in the folder (created by code above)
+% Get the resliced masks in the folder (created by code above)
 fedorenkoMasks = dir('masks/fedorenko_parcels/r*');
 
-% TL;DR
-% Get each subject's constrasts [FW > SFW] and [BW > SBW]. In eacch of
-% them, overlap the contrast with each of Fedorenko's fROIs.
-% 'languageRoiReport_date.txt' contains a quick report of which area of
-% each sub, area, contrast has been written
+% Set an accepted nb of voxels 
+nbVoxels = opt.numLanguageVoxels;
 
-% Initialize report
-nbVox = 80;
-repFile = dir(['languageRoiReport_' date '_voxThres-' num2str(nbVox) '*.txt']);
-if not(isempty(repFile))
-    % If there are already reports, name this 'report_date_1.txt'
-    reportID = size(repFile,1);
-else
-    reportID = 0;
-end
-% Start a new report
+% Initialize report 
 report = {'subject','script','hemi','area','done','voxels','enough'};
+
 
 for iSub = 1:length(opt.subjects)
 
@@ -80,12 +64,13 @@ for iSub = 1:length(opt.subjects)
         resliceOnParticipant(unslicedRoi, opt, subName);
 
         % Get name and hemisphere
+        % (highlighly sensitive to path and folders)
         strName = strsplit(thisROI, {'_','-'});
-        hemi = strName{4};
-        reg = strName{10};
+        hemi = strName{5};
+        reg = strName{11};
 
-        % Load the mask and cast it as uint8, otherwise it's not
-        % recognized as a binary mask
+        % Load the mask and cast it as uint8, 
+        % otherwise it's not recognized as a binary mask
         recastROI = load_nii(thisROI);
         recastROI.img = cast(recastROI.img, 'uint8');
         save_nii(recastROI, thisROI);
@@ -111,8 +96,8 @@ for iSub = 1:length(opt.subjects)
             % Remove file extension from name
             froiJustName = froiName(1:end-4);
             % New names
-            froiNewName = fullfile(opt.dir.rois, subName, [subName, '_hemi-' hemi ...
-                                   '_space-MNI_atlas-fedorenko_contrast-' con '_label-' reg '_mask']);
+            froiNewName = fullfile(opt.dir.rois, subName, [subName,'_hemi-',hemi, ...
+                                   '_space-',opt.space{1},'_atlas-fedorenko_contrast-',con,'_label-',reg,'_mask']);
             % Rename intersection
             movefile(froiName, [froiNewName,'.nii'],'f')
             movefile([froiJustName,'.json'], [froiNewName,'.json'],'f')
@@ -121,42 +106,39 @@ for iSub = 1:length(opt.subjects)
         end
 
         % Add information to the report
-
-        % get a proper info for the roi name
-        if isempty(froiName), done = 'skipped';
-        else, done = 'created';
+        % - whether ROI was created or skipped (empty)
+        if isempty(froiName) 
+            done = 'skipped';
+        else
+            done = 'created';
         end
 
-        % get a proper info for the roi name
-        % 50 voxels is arbirtary threshold 
-        if froiMask.roi.size >= nbVox, enough = true;
-        else, enough = false;
+        % - were there enough (more than the threhold number of) voxels? 
+        if froiMask.roi.size >= nbVoxels
+            enough = true;
+        else
+            enough = false;
         end
+
+        % - how many voxels are there in the new ROI?
         voxels = froiMask.roi.size;
 
+        % Add subject, contrast, hemisphere, region, and details to report
         report = vertcat(report, ...
-            {subName, con, hemi, reg, done, voxels, enough});
-
+                         {subName, con, hemi, reg, done, voxels, enough});
 
     end
 end
 
-% save report
-if reportID == 0, writecell(report,['languageRoiReport_' date '_voxThres-' num2str(nbVox) '.txt']);
-else, writecell(report,['languageRoiReport_' date '_voxThres-' num2str(nbVox) '_' num2str(reportID) '.txt']);
-end
-
-% Visualize report as graph
-% Manual step, need to specify what to read
-% roi_processReport;
+% Save report
+writecell(report,['reports/roi_reports_languageROIs_voxThres-' num2str(nbVoxels) '_' date '.txt']);
 
 
 %% FUNCTION TO EXTRACT ALL FEDORENKO'S PARCELS
+
 function getRoiFromParcels(opt)
-% Code to extract ROIs from atlas is taken and adapted from the
+% Extract ROIs from atlas is taken and adapted from the
 % extractRoiFromAtlas function of CPP_ROI
-% 09/08/23: addition of the atlas to the defaults of CPP_ROI is in
-%           process
 
 % load look-up table and get ROI names
 fedLut = spm_load('masks/fedorenko_parcels/LUT.csv');
@@ -186,7 +168,7 @@ for r = 1:numel(roiNames)
     strName = strsplit(roiNames{r}, '_');
     hemi = strName{1}(1);
     reg = strName{2};
-    roiFilename = ['hemi-' hemi '_space-MNI_atlas-fedorenko_label-' reg '_mask.nii'];
+    roiFilename = ['hemi-',hemi,'_space-',opt.space{1},'_atlas-fedorenko_label-',reg,'_mask.nii'];
 
     % Assign the new filename to the ROI and save it
     fedHdr.fname = spm_file(fedHdr.fname, 'filename', roiFilename);
@@ -233,23 +215,6 @@ function resliceOnParticipant(roi, opt, subName)
     recastROI.img = cast(recastROI.img, 'uint8');
     save_nii(recastROI, reslicedRoi);
 
-
 end
-
-%% WIP - FUNCTION TO RENAME ROIS - separate function?
-% % Rename .json and .nii files of both masks to have more readable names
-% % Remove file extension from name
-% intersectedJustTheName = intersectedName(1:end-4);
-% 
-% % New names
-% intersectedNewName = fullfile(opt.dir.rois, subName, [subName, '_hemi-' hemiName{iReg} ...
-%                               '_space-MNI_atlas-neurosynth_method-expansionIntersection_label-' regName{iReg} '_mask']);
-% 
-% % Rename intersection
-% movefile(intersectedName, [intersectedNewName,'.nii'],'f')
-% movefile([intersectedJustTheName,'.json'], [intersectedNewName,'.json'],'f')
-% 
-% % reslice the masks
-% intersectedMask = resliceRoiImages(dataImage, [intersectedNewName, '.nii']);
 
 

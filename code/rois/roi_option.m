@@ -9,40 +9,40 @@ end
 % suject to run in each group
 opt.subjects = {'006','007','008','009','010','011','012','013','018','019','020','021','022','023','024','026','027','028'}; 
 % Participants: 
-% '006','007','008','009','010','011','012','013','018','019','020','021','022','023','024','026','027'
+% '006','007','008','009','010','011','012','013','018','019','020','021','022','023','024','026','027','028'
 
-
-% ROIs to consider for the expansion intersection
-% (18/07/2023) only few areas for MVPA
-opt.roiList = {'VWFA-Fr', 'LOC-Left', 'LOC-Right'}; % , 'PFS-Left', 'PFS-Right'};
+% ROIs for which we extracted peaks of  activation
+% Also, those to consider for the expansion intersection
+opt.roiList = {'VWFAfr', 'VWFAbr', 'lLO', 'rLO'};
 
 % Radius of the sphere around the peak
-opt.radius = 10; % standard, will probably change in the individual scripts
+opt.radius = 10; 
 
 % Number of voxels in the case of expanding ROI
 opt.numVoxels = 115;
 
-% Option to execute in vwfa split
-% Can be a cell array with all the options we want
-% Possible options (as of 07/08/2023)
+% Number of voxels in the case of expanding ROI
+opt.numLanguageVoxels = 80;
+
+% Option(s) to execute in vwfa split
+% Possible options:
 % - 'atlas': VWFA ROI for each subject intersected with aVWFA/pVWFA
 %            coordinates form visfatlas, with perVWFA adn lexVWFA from 
 %            Lerma-Usabiaga et al. (2018)
-% - 'individual': take each VWFA ROI and split it in anterior / posterior
-%                 halves
-% - 'overlap': take all the VWFA ROIs and sum them to obtain an overlap of
-%              where all the areas are
-
-opt.split = {'individual','overlap'};
+% - individual: split each VWFA ROI in anterior / posterior halves
+opt.split = {'individual'};
 
 % Save the ROI?
 opt.saveROI = true;
 
-% we stay in native space (that of the T1)
-opt.space = 'MNI'; % 'individual', 'MNI'
+% Specify space accordingly to source of data 
+% - IXI549Space for bidspm preprocessing
+% - MNI152NLin2009cAsym for fmriprep
+% - individual
+opt.space = 'IXI549Space'; 
 
-% description to add to folder name, to distinguish from GLM (see other
-% script)
+% description to add to folder name, to distinguish from GLM 
+% Possibly obsolete
 opt.desc = 'ROI';
 
 % I like chatty outputs
