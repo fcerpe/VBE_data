@@ -10,9 +10,6 @@
 % - V1
 %
 % Use visualLocalizer contrast to probe for Braille sensitivity in other areas
-%
-% TO-DO (11/10/2023)
-% - everything
 
 clear;
 clc;
@@ -23,9 +20,6 @@ warning('off');
 addpath(fullfile(pwd, '..', 'lib', 'bidspm'));
 addpath(fullfile(pwd, '..', 'lib', 'CPP_BIDS'));
 bidspm;
-
-% check inside if everything is ok before starting the pipeline
-opt = stats_localizer_option();
 
 % do all the areas one after the other
 opt.masks = {'VWFA', 'lLO', 'rLO', 'lPosTemp', 'V1'};
@@ -136,7 +130,7 @@ end
 fprintf(['\nDone. Saving report\n']);
 
 % save report
-writecell(report,'braille_sensitivity_tmaps_eyeMovements.txt');
+writecell(report,'reports/stats_braille-sensitivity_eye-movements.txt');
 
 
 

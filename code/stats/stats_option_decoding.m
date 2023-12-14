@@ -1,4 +1,4 @@
-function opt = stats_blockMvpa_option()
+function opt = stats_option_decoding()
 %
 % returns a structure that contains the options chosen by the user to run
 % slice timing correction, pre-processing, FFX, RFX.
@@ -9,9 +9,9 @@ opt = [];
 
 opt.subjects = {'006','007','008','009','010','011','012','013','018','019','020','021','022','023','024','026','027','028'}; 
 % participants: 
-% '006','007','008','009','010','011','012','013','018','019','020','021','022','023','024','026','027'
+% '006','007','008','009','010','011','012','013','018','019','020','021','022','023','024','026','027','028'
 
-% Task to analyze - change accordingly
+% Task to analyze
 opt.taskName = 'wordsDecoding';
 
 opt.verbosity = 2;

@@ -17,7 +17,6 @@ addpath '../lib/bidspm'
 bidspm;
 
 
-
 %% Task: visualLocalizer
 
 % get options
@@ -35,7 +34,7 @@ bidsCopyInputFolder(opt);
 % Run multiple participants at the same time, one per CPU core
 % For more info, check 'parallel computing toolbox' and 
 % https://bidspm.readthedocs.io/en/latest/FAQ.html#
-parfor iSub = 1:numel(opt.subjects)
+for iSub = 1:numel(opt.subjects)
 
     % preprocessing
     bidspm(opt.dir.raw, opt.dir.output, ...
@@ -83,14 +82,18 @@ parfor iSub = 1:numel(opt.subjects)
             'options', opt, ...
             'skip_validation', true);
 
-    % smoothing 
-    bidspm(opt.dir.raw, opt.dir.output, ...
-           'participant_label', opt.subjects(iSub), ...
-           'action', 'smooth', ...
-           'task', opt.taskName, ...
-           'space', opt.space, ...
-           'options', opt);
+%     % smoothing 
+%     bidspm(opt.dir.raw, opt.dir.output, ...
+%            'participant_label', opt.subjects(iSub), ...
+%            'action', 'smooth', ...
+%            'task', opt.taskName, ...
+%            'space', opt.space, ...
+%            'options', opt);
 end
+
+% Temporarily perform smoothing outside the parfor loop. 
+% If done inside, it's forced at 6mm.
+bidsSmoothing(opt);
 
 % Nofity the user
 fprintf('\n\nDECODING PIPELINE DONE\n\n')

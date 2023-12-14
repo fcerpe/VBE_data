@@ -1,4 +1,4 @@
-function opt = stats_fmriprep_option()
+function opt = stats_option_fmriprep_decoding()
 %
 % returns a structure that contains the options chosen by the user to run
 % slice timing correction, pre-processing, FFX, RFX.
@@ -7,7 +7,9 @@ function opt = stats_fmriprep_option()
 
 opt = [];
 
-opt.subjects = {'006','007','008','009','010','011','012','013','018','020','021','022','023'}; % 002 003 004 005
+opt.subjects = {'006','007','008','009','010','011','012','013','018','019','020','021','022','023','024','026','027','028'}; 
+% participants: 
+% '006','007','008','009','010','011','012','013','018','019','020','021','022','023','024','026','027','028'
 
 % Task to analyze - change accordingly
 opt.taskName = 'wordsDecoding';
@@ -32,8 +34,8 @@ opt.dir.raw = fullfile(opt.dir.root, 'inputs', 'raw');
 opt.dir.derivatives = fullfile(opt.dir.root, 'outputs', 'derivatives');
 opt.dir.preproc = fullfile(opt.dir.root, 'outputs', 'derivatives', 'fmriprep');
 opt.dir.input = opt.dir.preproc;
-opt.dir.roi = fullfile(opt.dir.root, 'outputs', 'derivatives', 'cpp_spm-roi');
-opt.dir.stats = fullfile(opt.dir.root, 'outputs', 'derivatives', 'fmriprep-bidspm-stats');
+opt.dir.roi = fullfile(opt.dir.root, 'outputs', 'derivatives', 'cpp_spm-rois');
+opt.dir.stats = fullfile(opt.dir.root, 'outputs', 'derivatives', 'bidspm-stats');
 
 % Model specifies all the contrasts
 opt.model.file = fullfile(opt.dir.root, 'code', ...
@@ -171,12 +173,52 @@ opt.results(11).binary = true(); opt.results(11).montage.do = false();
 opt.results(11).nidm = true();   opt.results(11).threshSpm = true();
 
 opt.results(12).nodeName = 'subject_level';
-opt.results(12).name = {'french_gt_nothing'};
+opt.results(12).name = {'allFrench_gt_nothing'};
 opt.results(12).png = false();   opt.results(12).csv = false();
 opt.results(12).p = 0.001;       opt.results(12).MC = 'none';
 opt.results(12).k = 0;
 opt.results(12).binary = true(); opt.results(12).montage.do = false();
 opt.results(12).nidm = true();   opt.results(12).threshSpm = true();
+
+opt.results(13).nodeName = 'subject_level';
+opt.results(13).name = {'allFrench_gt_nothing'};
+opt.results(13).png = false();   opt.results(13).csv = false();
+opt.results(13).p = 0.05;        opt.results(13).MC = 'none';
+opt.results(13).k = 0;
+opt.results(13).binary = true(); opt.results(13).montage.do = false();
+opt.results(13).nidm = true();   opt.results(13).threshSpm = true();
+
+% opt.results(4).nodeName = 'subject_level';
+% opt.results(4).name = {'frWords_gt_scrLines'};
+% opt.results(4).png = true();
+% opt.results(4).csv = true();
+% opt.results(4).p = 0.001;
+% opt.results(4).MC = 'none';
+% opt.results(4).k = 0;
+% % those don't change across contrasts, try to put only once
+% opt.results(4).binary = true();
+% opt.results(4).montage.do = true();
+% opt.results(4).montage.background = struct('suffix', 'T1w', 'desc', 'preproc', 'modality', 'anat');
+% opt.results(4).montage.slices = -20:2:0;
+% opt.results(4).montage.orientation = 'axial'; % also 'sagittal', 'coronal'
+% opt.results(4).nidm = true();
+% opt.results(4).threshSpm = true();
+
+% opt.results(5).nodeName = 'subject_level';
+% opt.results(5).name = {'allWords_gt_scrLines'};
+% opt.results(5).png = true();
+% opt.results(5).csv = true();
+% opt.results(5).p = 0.001;
+% opt.results(5).MC = 'none';
+% opt.results(5).k = 0;
+% % those don't change across contrasts, try to put only once
+% opt.results(5).binary = true();
+% opt.results(5).montage.do = true();
+% opt.results(5).montage.background = struct('suffix', 'T1w', 'desc', 'preproc', 'modality', 'anat');
+% opt.results(5).montage.slices = -20:2:0;
+% opt.results(5).montage.orientation = 'axial'; % also 'sagittal', 'coronal'
+% opt.results(5).nidm = true();
+% opt.results(5).threshSpm = true();
 
 % % Specify how you want your output (all the following are on false by default)
 

@@ -1,32 +1,9 @@
-% Analyse behvioural responses 
-%
-% For all those subjects where they have been recorded, calculate responses
-% to the task. 
-% Goal is to correlate percentages of wrong answers to the weird univariate
-% activations
-%
-% TO-DO ()
-% - 
 
-clear;
-clc;
-
-warning('off');
-
-% add spm to the path
-addpath(fullfile(pwd, '..', 'lib', 'bidspm'));
-addpath(fullfile(pwd, '..', 'lib', 'CPP_BIDS'));
-bidspm;
-
-% check inside if everything is ok before starting the pipeline
-opt = stats_blockMvpa_option();
+%% STATS - Extract behavioural responses for the decoding task
 
 % Initialize report
 % Start a new report
 report = {'subject','trial_type','response_type','stim','run'};
-
-
-%% 
 
 for iSub = 1:numel(opt.subjects)
 
@@ -98,7 +75,7 @@ for iSub = 1:numel(opt.subjects)
 end
 
 % save report
-writecell(report,'behaviouralReport.txt');
+writecell(report,'reports/behaviouralReport.txt');
 
 
 

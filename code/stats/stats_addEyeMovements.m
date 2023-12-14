@@ -17,13 +17,10 @@ warning('off');
 
 % add spm to the path
 addpath(fullfile(pwd, '..', 'lib', 'bidspm'));
-addpath(fullfile(pwd, '..', 'lib', 'CPP_BIDS'));
 bidspm;
 
 % check inside if everything is ok before starting the pipeline
-opt = stats_localizer_option();
-
-
+opt = stats_option_localizer();
 
 %% 
 
