@@ -1,39 +1,9 @@
 %% MULTIDIMENSIONAL SCALING
-% Visual representation of relationships between stimuli categories
-%
-% Adapted from scripts of Iqra and Ineke
 
-
-%% Clean workspace, load cosmo and bidspm, load options
-
-clear;
-clc;
-
-% GET PATHS, BIDSPM, OPTIONS
-warning('on');
-
-% cosmo
-cosmo = '~/Applications/CoSMoMVPA-master';
-addpath(genpath(cosmo));
-cosmo_warning('once');
-
-% libsvm
-libsvm = 'Users/Applications/libsvm';
-addpath(genpath(libsvm));
-
-% verify it worked
-cosmo_check_external('libsvm'); % should not give an error
-
-% bisdpm
-bidspm;
-
-% load options
-opt = mvpa_option();
-
-% Small specific arrangements: 
-% - Work exclusively on the braille experts, as we are interested in the
+% Small specific arrangements
+% - Work on experts and later on controls
 %   organization of both scripts
-opt.subjects = opt.mvpaGroups.controls;
+opt.groups = {'experts', 'controls'};
 
 % - Work only on beta images
 opt.mvpa.map4D = {'beta'};
@@ -54,7 +24,7 @@ opt.mvpa.map4D = {'beta'};
 % - indices
 % - pairs
 % they change based on our analyses
-[condLabelName, decodingCondition, condLabelNb] = mvpa_assignDecodingConditions(opt);
+[condLabelName, decodingCondition, condLabelNb] = mvpa_assignConditions(opt);
 
 % choose masks to be used
 opt = mvpa_chooseMask(opt);

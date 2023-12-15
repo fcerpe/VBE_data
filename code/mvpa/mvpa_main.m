@@ -1,124 +1,85 @@
 %% VISual BRAille DECODING ANALYSIS
 %
+% Main script to run all the multivariate analyses
+% Performs several types of decoding:
+% - pairwise decoding within script
+% - pairwise decoding cross-script
+% - multiclass decoding 
+% in several areas (the ROIs created beforehand) 
+%
+% Code is split between the different areas analysed: 
+% * localized areas include VWFA, lLO, rLO
+% * language areas include all the Fedorenko's parcels and l-PosTemp in
+%   particular
+% * early visual areas includes V1, obviuously (could not find a better 
+%   definition)
 
 clear;
 clc;
 
-% GET PATHS, BIDSSPM, OPTIONS
+% GET PATHS, BIDSSPM
 
 % spm
 warning('on');
 
 % cosmo
-cosmo = '~/Applications/CoSMoMVPA-master';
+cosmo = '~/Applications/CoSMoMVPA';
 addpath(genpath(cosmo));
 cosmo_warning('once');
 
 % libsvm
-libsvm = 'Users/Applications/libsvm';
+libsvm = '~/Applications/libsvm';
 addpath(genpath(libsvm));
 
 % verify it worked
-cosmo_check_external('libsvm'); % should not give an error
+cosmo_check_external('libsvm'); 
 
-% add cpp repo
+% add bidspm repo
+addpath '../lib/bidspm'
 bidspm;
 
-% load options
+
+%% Decoding on localized areas 
+% Areas localized in the first part of the experiment are the main focus
+
+% Load options
 opt = mvpa_option();
 
-%% SET UP MASKS AND VOXELS
+% Perform all the decodings in one function:
+% - feature selection
+% - pairwise comparisons within script
+% - multiclass decoding within script
+% - pairwise comparison cross-script
+[expansionPairwiseWithin, expansionMulticlass, expansionPairwiseCross, opt] = mvpa_decoding(opt);
 
-% starts report on sizes of ROIs
-% Calc features selection on all the subjects
-opt.subjects = opt.mvpaGroups.allParticipants;
-
-opt.roiSizesReport = [];
-allRatios = [];
-
-% get how many voxels are active / significant in each ROI
-[maskVoxel, opt] = mvpa_calculateMaskSize(opt);
-
-% keep the minimun value of voxels in a ROI as ratio to keep (must be constant)
-opt.mvpa.ratioToKeep = min(maskVoxel);
-
-fprintf(['\nWILL USE ', num2str(min(maskVoxel)), ' VOXELS FOR MVPA\n\n']);
-
-
-%% Compute decodings - run the desired block
-
-%% Pairwise decoding - within and across scripts
-% Experts
-opt.subjects = opt.mvpaGroups.experts;
-opt.groupName = {'experts'};
-mvpaWithin = mvpa_pairwiseDecoding(opt);
-
-% Controls
-opt.subjects = opt.mvpaGroups.controls;
-opt.groupName = {'controls'};
-mvpaWithin = mvpa_pairwiseDecoding(opt);
-
-% Cross-script 
-% Train on one of the conditions, test on the others
-% Only in experts 
-opt.subjects = opt.mvpaGroups.experts;
-opt.groupName = {'experts'};
-opt.decodingCondition = {'cross-script'};
-mvpaCross = mvpa_crossScriptDecoding(opt);
-
+% Multidimensional scaling 
+mds_main 
+% FIX IT
 
 %% Language areas decoding
 % Perform within-script and cross-script decoding in language areas
 % Subject pool and areas from roi_createLanguageRois
-opt.roiMethod = 'fedorenko';
 
-% Calc features selection on all the subjects
-opt.subjects = opt.mvpaGroups.languageActivation;
-opt.roiSizesReport = [];
-allRatios = [];
+% Load options
+opt = mvpa_option_languageROIs();
 
-% get how many voxels are active / significant in each ROI
-[maskVoxel, opt] = mvpa_calculateMaskSize(opt);
-
-% keep the minimun value of voxels in a ROI as ratio to keep (must be constant)
-opt.mvpa.ratioToKeep = min(maskVoxel);
-fprintf(['\nWILL USE ', num2str(min(maskVoxel)), ' VOXELS FOR MVPA\n\n']);
-
-% Experts
-opt.subjects = {'006','007','008','009','013'};
-opt.groupName = {'experts'};
-mvpaWithin = mvpa_pairwiseDecoding(opt);
-
-% Compute cross-script decoding
-opt.decodingCondition = {'cross-script'};
-mvpaCross = mvpa_crossScriptDecoding(opt);
-
-% Controls
-opt.subjects = {'010','011','018','019','020','021','022','023','024','027','028'};
-opt.groupName = {'controls'};
-mvpaWithin = mvpa_pairwiseDecoding(opt);
+% Perform all the decodings in one function:
+% - feature selection
+% - pairwise comparisons within script
+% - multiclass decoding within script
+% - pairwise comparison cross-script
+[languagePairwiseWithin, languageMulticlass, languagePairwiseCross, opt] = mvpa_decoding(opt);
 
 
-%% Multiple decoding - within and across scripts
+%% Early visual areas decoding
+% Perform within-script and cross-script decoding in early visual areas
+% Subject pool and areas from roi_createV1ROIs
 
-% chage to desired conditions
-opt.decodingCondition = {'multiple-within'};
+% Load options
+opt = mvpa_option_earlyVisual();
 
-% Experts
-opt.subjects = opt.mvpaGroups.experts;
-opt.groupName = {'experts'};
-mvpaWithin = mvpa_multipleConditionsDecoding(opt);
+% Perform all the decodings in one function:
+% (you know the gist by now)
+[visualPairwiseWithin, visualMulticlass, visualPairwiseCross, opt] = mvpa_decoding(opt);
 
-% Controls
-opt.subjects = opt.mvpaGroups.controls;
-opt.groupName = {'controls'};
-mvpaWithin = mvpa_multipleConditionsDecoding(opt);
 
-% TO-DO:
-% Cross-script 
-% Train on one of the conditions, test on the others
-% Only in experts 
-% opt.subjects = opt.mvpaGroups.experts;
-% opt.groupName = {'experts'};
-% opt.decodingCondition = {'cross-script'};
-% mvpaCross = mvpa_crossScriptDecoding(opt);

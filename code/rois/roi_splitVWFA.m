@@ -98,7 +98,7 @@ for sp = 1:numel(opt.split)
                     % - giving up on a personalized name (never)
                     % - modifying createRoi to pick a cutomized name
                     path = '../../outputs/derivatives/cpp_spm-rois/';
-                    nativeName = ['r' subName '_hemi-L_space-MNI_atlas-neurosynth_label-VWFAfrIntersection_method-expansionIntersection_mask'];
+                    nativeName = ['r' subName '_hemi-L_space-',opt.space{1},'_atlas-neurosynth_label-VWFAfrIntersection_method-expansionIntersection_mask'];
                     movefile(fullfile(path, subName, [nativeName,'.nii']), fullfile(path, subName, [bidslikeName,'.nii']),'f')
                     movefile([path, subName, '/', nativeName,'.json'], [path, subName, '/', bidslikeName,'.json'],'f')
     
@@ -130,7 +130,7 @@ for sp = 1:numel(opt.split)
     
                 % Get the subject's VWFA mask
                 brainMask = fullfile(opt.dir.rois, subName, ...
-                    ['r' subName '_hemi-L_space-IXI549Space_atlas-neurosynth_method-expansionIntersection_label-VWFAfr_mask.nii']);
+                    ['r' subName '_hemi-L_space-',opt.space{1},'_atlas-neurosynth_method-expansionIntersection_label-VWFAfr_mask.nii']);
     
                 % Load the mask
                 vwfaMask = loadROI(brainMask);
@@ -211,15 +211,15 @@ for sp = 1:numel(opt.split)
 
                 
                 % Save new masks in a bidlike name
-                antName = [subName '_hemi-L_space-MNI_atlas-neurosynth_method-splitting_label-antVWFA_mask.nii'];
+                antName = [subName '_hemi-L_space-',opt.space{1},'_atlas-neurosynth_method-splitting_label-antVWFA_mask.nii'];
                 vwfaAnterior = saveSplitROI(vwfaAnt, brainMask, fullfile(opt.dir.rois, subName), antName);
     
-                posName = [subName '_hemi-L_space-MNI_atlas-neurosynth_method-splitting_label-posVWFA_mask.nii'];
+                posName = [subName '_hemi-L_space-',opt.space{1},'_atlas-neurosynth_method-splitting_label-posVWFA_mask.nii'];
                 vwfaPosterior = saveSplitROI(vwfaPos, brainMask, fullfile(opt.dir.rois, subName), posName);
 
                 % Reslice the ROIs
                 betaReference = fullfile(opt.dir.stats, subName, ...
-                                         'task-wordsDecoding_space-IXI549Space_FWHM-2_node-mvpaGLM', 'beta_0001.nii');
+                                         'task-wordsDecoding_space-',opt.space{1},'_FWHM-2_node-mvpaGLM', 'beta_0001.nii');
                 
                 antPath = fullfile(opt.dir.rois, subName, antName);
                 antMask = resliceRoiImages(betaReference, antPath);
