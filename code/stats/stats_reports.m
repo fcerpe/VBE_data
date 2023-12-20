@@ -56,10 +56,22 @@ stats_reports_univariateActivation;
 % Already assessed for VWFA, but known for the other ROIs
 
 % load options 
-opt = stats_option_localzier();
+opt = stats_option_localizer();
 
 % get activations
 stats_reports_brailleContrasts;
+
+
+%% Check tSNR for acquired data 
+% In localizer activation, look for differences between intact and
+% scrambled braille. 
+% Already assessed for VWFA, but known for the other ROIs
+
+% load options 
+opt = stats_option_localizer();
+
+% get a report of the tSNR in the raw files
+stats_reports_tSNR;
 
 
 

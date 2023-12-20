@@ -39,7 +39,7 @@ opt.saveROI = true;
 % - IXI549Space for bidspm preprocessing
 % - MNI152NLin2009cAsym for fmriprep
 % - individual
-opt.space = 'IXI549Space'; 
+opt.space = 'MNI152NLin2009cAsym'; 
 
 % description to add to folder name, to distinguish from GLM 
 % Possibly obsolete

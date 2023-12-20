@@ -21,7 +21,7 @@ for iSub = 1:numel(opt.subjects)
 
     % Get a reference image for this sub
     dataImage = fullfile(opt.dir.stats, subName, ...
-                         'task-visualLocalizer_space-IXI549Space_FWHM-6_node-localizerGLM', 'beta_0001.nii');
+                         ['task-visualLocalizer_space-',opt.space{1},'_FWHM-6_node-localizerGLM'], 'beta_0001.nii');
 
     % Get name and use it to compose new path
     newMaskPath = fullfile(opt.dir.rois, subName, [subName '_' visfatlasV1Masks(1).name]);
@@ -45,7 +45,7 @@ for iSub = 1:numel(opt.subjects)
 
     % Get the contrasts: [FW + SFW > nothing] 
     % And the full path
-    subCon = dir(fullfile(opt.dir.stats, subName, 'task-visualLocalizer_space-IXI549Space_FWHM-6_node-localizerGLM', ...
+    subCon = dir(fullfile(opt.dir.stats, subName, ['task-visualLocalizer_space-',opt.space{1},'_FWHM-6_node-localizerGLM'], ...
                    'sub-*_desc-allF*pt05*_mask.nii'));
     thisContrast = fullfile(subCon.folder, subCon.name);
     

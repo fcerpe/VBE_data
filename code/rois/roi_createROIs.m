@@ -43,7 +43,7 @@ contrastName = {'frenchGtScrambled', 'brailleGtScrambled', 'drawingGtScrambled',
 hemiName = {'L','L','L','R'};
 
 % - folder contating the localizer activations:
-localizerStatsFolder = 'task-visualLocalizer_space-IXI549Space_FWHM-6_node-localizerGLM';
+localizerStatsFolder = ['task-visualLocalizer_space-',opt.space{1},'_FWHM-6_node-localizerGLM'];
 
 
 % specify the number of voxels to keep
@@ -80,13 +80,13 @@ for iSub = 1:length(opt.subjects)
             % Get the filename of the corresponding contrasts with
             % different thresholds
             mask001InDir = dir(fullfile(opt.dir.stats, subName, localizerStatsFolder, ...
-                [subName, '_task-visualLocalizer_space-IXI549Space_desc-', contrastName{iReg} ,'*_p-0pt001_k-0_MC-none_mask.nii']));
+                [subName, '_task-visualLocalizer_space-',opt.space{1},'_desc-', contrastName{iReg} ,'*_p-0pt001_k-0_MC-none_mask.nii']));
             mask01InDir = dir(fullfile(opt.dir.stats, subName, localizerStatsFolder, ...
-                [subName, '_task-visualLocalizer_space-IXI549Space_desc-', contrastName{iReg} ,'*_p-0pt010_k-0_MC-none_mask.nii']));
+                [subName, '_task-visualLocalizer_space-',opt.space{1},'_desc-', contrastName{iReg} ,'*_p-0pt010_k-0_MC-none_mask.nii']));
             mask05InDir = dir(fullfile(opt.dir.stats, subName, localizerStatsFolder, ...
-                [subName, '_task-visualLocalizer_space-IXI549Space_desc-', contrastName{iReg} ,'*_p-0pt050_k-0_MC-none_mask.nii']));
+                [subName, '_task-visualLocalizer_space-',opt.space{1},'_desc-', contrastName{iReg} ,'*_p-0pt050_k-0_MC-none_mask.nii']));
             mask1InDir = dir(fullfile(opt.dir.stats, subName, localizerStatsFolder, ...
-                [subName, '_task-visualLocalizer_space-IXI549Space_desc-', contrastName{iReg} ,'*_p-0pt100_k-0_MC-none_mask.nii']));
+                [subName, '_task-visualLocalizer_space-',opt.space{1},'_desc-', contrastName{iReg} ,'*_p-0pt100_k-0_MC-none_mask.nii']));
             
             % Get the full pathof each thresholded contrast (if exists)
             localizer001Mask = fullfile(mask001InDir.folder, mask001InDir.name);

@@ -35,13 +35,13 @@ for iSub = 1:length(opt.subjects)
 
     % Get a reference image for this sub
     dataImage = fullfile(opt.dir.stats, subName, ...
-                         'task-visualLocalizer_space-IXI549Space_FWHM-6_node-localizerGLM', 'beta_0001.nii');
+                         ['task-visualLocalizer_space-',opt.space{1},'_FWHM-6_node-localizerGLM'], 'beta_0001.nii');
 
     % Get the contrasts: [FW > SFW] 
     % Only works on FR contrast. Assumption is to find BR effects in
     % FR-defined areas
-    subConFR = dir(fullfile(opt.dir.stats, subName, 'task-visualLocalizer_space-IXI549Space_FWHM-6_node-localizerGLM', ...
-                   'sub-*_space-IXI549Space_desc-f*pt05*_mask.nii'));
+    subConFR = dir(fullfile(opt.dir.stats, subName, ['task-visualLocalizer_space-',opt.space{1},'_FWHM-6_node-localizerGLM'], ...
+                   ['sub-*_space-',opt.space{1},'_desc-f*pt05*_mask.nii']));
 
     % Join them to make looping easier
     subContrasts = vertcat(subConFR);
@@ -97,7 +97,7 @@ for iSub = 1:length(opt.subjects)
             froiJustName = froiName(1:end-4);
             % New names
             froiNewName = fullfile(opt.dir.rois, subName, [subName,'_hemi-',hemi, ...
-                                   '_space-',opt.space{1},'_atlas-fedorenko_contrast-',con,'_label-',reg,'_mask']);
+                                   '_space-',opt.space{1},'_atlas-language_contrast-',con,'_label-',reg,'_mask']);
             % Rename intersection
             movefile(froiName, [froiNewName,'.nii'],'f')
             movefile([froiJustName,'.json'], [froiNewName,'.json'],'f')
@@ -168,7 +168,7 @@ for r = 1:numel(roiNames)
     strName = strsplit(roiNames{r}, '_');
     hemi = strName{1}(1);
     reg = strName{2};
-    roiFilename = ['hemi-',hemi,'_space-',opt.space{1},'_atlas-fedorenko_label-',reg,'_mask.nii'];
+    roiFilename = ['hemi-',hemi,'_space-',opt.space{1},'_atlas-language_label-',reg,'_mask.nii'];
 
     % Assign the new filename to the ROI and save it
     fedHdr.fname = spm_file(fedHdr.fname, 'filename', roiFilename);
@@ -179,7 +179,7 @@ for r = 1:numel(roiNames)
     % It does not matter which sub now, when we apply them to single
     % subjecct they'll be resliced with their distorsions
     dataImage = fullfile(opt.dir.stats, 'sub-006', ...
-                         'task-visualLocalizer_space-IXI549Space_FWHM-6_node-localizerGLM', 'beta_0001.nii');
+                         ['task-visualLocalizer_space-',opt.space{1},'_FWHM-6_node-localizerGLM'], 'beta_0001.nii');
 
     resliceRoiImages(dataImage, fullfile('masks/fedorenko_parcels', roiFilename));
 
@@ -203,7 +203,7 @@ function resliceOnParticipant(roi, opt, subName)
 
     % get reference
     dataImage = fullfile(opt.dir.stats, subName, ...
-                         'task-visualLocalizer_space-IXI549Space_FWHM-6_node-localizerGLM', 'beta_0001.nii');
+                         ['task-visualLocalizer_space-',opt.space{1},'_FWHM-6_node-localizerGLM'], 'beta_0001.nii');
 
     % relisce roi based on the specific sub
     resliceRoiImages(dataImage, copiedRoi);

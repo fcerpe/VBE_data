@@ -5,6 +5,8 @@
 % Uses different scripts / methods based on the avialbility of localizer
 % data. 
 % The use of different methods is due to a limited localizer experiment
+% IMPORTANT: if data is stored using datalad, you need to unlock the
+% 'stats' and 'rois' folders first
 % 
 % ROIs and methods
 % - VWFA, lLO, rLO: localzier contrast [FW > SFW], expansion intersection

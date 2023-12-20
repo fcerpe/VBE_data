@@ -22,17 +22,20 @@ for iSub = 1:numel(opt.subjects)
         fprintf(['Analysing ' subName '\n']);
     
         % Load ROIs: 1-VWFA, 2-lLO
-        roi1 = load_nii(fullfile(opt.dir.rois, subName, ...
-                        ['r',subName,'_hemi-L_space-IXI549Space_atlas-neurosynth_method-expansionIntersection_label-VWFAfr_mask.nii']));
-        roi2 = load_nii(fullfile(opt.dir.rois, subName, ...
-                        ['r',subName,'_hemi-L_space-IXI549Space_atlas-neurosynth_method-expansionIntersection_label-lLO_mask.nii']));
+
+        % Get names to overwrite them later
+        roi1name = ['r',subName,'_hemi-L_space-',opt.space{1},'_atlas-neurosynth_method-expansionIntersection_label-VWFAfr_mask.nii'];
+        roi2name = ['r',subName,'_hemi-L_space-',opt.space{1},'_atlas-neurosynth_method-expansionIntersection_label-lLO_mask.nii']; 
+
+        roi1 = load_nii(fullfile(opt.dir.rois, subName, roi1name));
+        roi2 = load_nii(fullfile(opt.dir.rois, subName, roi2name));
     
         % Load contrasts, to resolve cases of equal distance from peaks.
         % In the case of equal distances AND different contrasts (VWFA - lLO),
         % assign the voxel to the contrast with the most activity
-        spmT_words = dir(fullfile(opt.dir.stats, subName, 'task-visualLocalizer_space-IXI549Space_FWHM-6_node-localizerGLM', ...
+        spmT_words = dir(fullfile(opt.dir.stats, subName, ['task-visualLocalizer_space-',opt.space{1},'_FWHM-6_node-localizerGLM'], ...
                          [subName, '_*_desc-frenchGtScrambled_p-0pt001_*_mask.nii']));
-        spmT_objects = dir(fullfile(opt.dir.stats, subName, 'task-visualLocalizer_space-IXI549Space_FWHM-6_node-localizerGLM', ...
+        spmT_objects = dir(fullfile(opt.dir.stats, subName, ['task-visualLocalizer_space-',opt.space{1},'_FWHM-6_node-localizerGLM'], ...
                            [subName, '_*_desc-drawingGtScrambled_p-0pt001_*_mask.nii']));
     
         conWords = fullfile(spmT_words.folder, spmT_words.name);

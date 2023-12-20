@@ -54,7 +54,7 @@ opt = mvpa_option();
 
 % Multidimensional scaling 
 mds_main 
-% FIX IT
+% TO BE FIXED
 
 %% Language areas decoding
 % Perform within-script and cross-script decoding in language areas

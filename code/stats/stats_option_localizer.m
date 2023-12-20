@@ -39,7 +39,7 @@ opt.dir.stats = fullfile(opt.dir.root, 'outputs', 'derivatives', 'bidspm-stats')
 
 % Model specifies all the contrasts
 opt.model.file = fullfile(opt.dir.root, 'code', ...
-    'models', 'model-visualLocalizerUnivariateNoResp_smdl.json');
+    'models', 'model-visualLocalizer-univariate-noResp_smdl.json');
 
 opt.pipeline.type = 'stats';
 
