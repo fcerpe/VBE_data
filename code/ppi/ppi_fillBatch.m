@@ -1,6 +1,6 @@
 function matlabbatch = ppi_fillBatch(opt, batchID, voiID, conID)
 
-
+% Choose the appropriate batch to prepare
 switch batchID
 
     case 'VOI'
@@ -17,34 +17,31 @@ end
 end
 
 
-%% VOI 
+
+
+%% Case VOI 
 function matlabbatch = fillBatchVOI(opt, voiID)
 
-% Get subject number
-subName = ['sub-', num2str(opt.thisSub)];
-
-% Get to work, the matlab batch needs:
+% Initialize the batch 
 batchParams = struct;
 
 % - SPM.mat file on which to work
-% Among the stats folders created so far, get the one with a PPI node
-% (hoping there is only one)
-stats = dir(fullfile(opt.dir.stats, subName, ['task-' opt.taskName{1} '*ppi*']));
+% Pick the stats folders with a PPI node
+stats = dir(fullfile(opt.dir.stats, opt.subName, ['*ppi*']));
 spmPath = fullfile(stats.folder, stats.name, 'SPM.mat');
 batchParams.spmmat = {spmPath};
 
 % - F-contrast adjustment
-% Load the SPM.mat file, the number of the F-contrast may vary but it's in there
+% Load SPM.mat file
 load(spmPath);
-% List all the stats as a string of characters: T or F
-% the only contrast F is "effects of interest", so its position is the
-% position of the contrast used as adjustment
+
+% Pick position of F, the only F-contrast ("effects of interest")
 listOfContrasts = [SPM.xCon.STAT];
 fContrastIdx = find(listOfContrasts == 'F');
 batchParams.adjust = fContrastIdx;
 
 % - Session number
-% Fixed, we concatenated the runs so there is only one
+% Fixed: runs are concatenated, there is only one
 batchParams.session = 1;
 
 % - Name of the VOI
@@ -52,25 +49,22 @@ batchParams.session = 1;
 trimName = strsplit(voiID, {'_hemi-','_space-','_atlas-','_method-','_label-','_mask'});
 voiHemi = trimName{2};
 voiName = trimName{end-1};
-% Will add VOI automatically at the beginning of the name
-batchParams.name = [subName '_hemi-' voiHemi '_label-' voiName];
+
+% generate a 'VOI_sub-XXX_hemi-X_label-AREA' filename
+batchParams.name = [opt.subName '_hemi-' voiHemi '_label-' voiName];
 
 % - ROI 1: Thresholded SPM
 % SPM.mat file is the same as above
 batchParams.roi{1}.spm.spmmat = {spmPath};
 
-% Find the French contrast 
-switch opt.ppi.dataset 
-    case 'localizer', contrastToFind = 'fw-sfw_1';
-    case 'mvpa', contrastToFind = 'frw-ffs_1';
-end
-conIdx = find(strcmp({SPM.xCon.name},contrastToFind));
+% Find the FW-SFW contrast 
+conIdx = find(strcmp({SPM.xCon.name},'fw-sfw'));
 batchParams.roi{1}.spm.contrast = conIdx;       
 batchParams.roi{1}.spm.conjunction = 1;
 batchParams.roi{1}.spm.threshdesc = 'none';
 
 % Change the threshold based on the iterative search
-switch opt.ppi.voiThres
+switch opt.ppi.voiThreshold
     case 3, pval = 0.001; 
     case 2, pval = 0.01;
     case 1, pval = 0.05;
@@ -93,8 +87,7 @@ batchParams.roi{2}.mask.threshold = 0;
 % iX referes to the order in which the rois are created
 batchParams.expression = 'i1 & i2';
 
-% By serendipity (I press extra buttons while generating the batch),
-% the batch includes a figure
+% Optional parameters to generate and save a figure
 % Add those parameters as matlabbatch{2}
 % batchFig = struct;
 % batchFig.fname = [subName + "_VOI_" + batchParams.name + "_figure"];
@@ -106,30 +99,31 @@ matlabbatch{1}.spm.util.voi = batchParams;
 
 end
 
-%% PPI
+
+
+
+%% Case PPI
 function matlabbatch = fillBatchPPI(opt, voiID, conID)
 
-% Get subject number
-subName = ['sub-', opt.thisSub];
-
-% Create temp struct
+% Initialize the batch 
 batchParams = struct;
 
 % - SPM.mat file on which to work
-% Among the stats folders created so far, get the one with a PPI node
-% (hoping there is only one)
-stats = dir(fullfile(opt.dir.stats, subName, ['*ppi*']));
+% Pick the stats folders with a PPI node
+stats = dir(fullfile(opt.dir.stats, opt.subName, ['*ppi*']));
 spmPath = fullfile(stats.folder, stats.name, 'SPM.mat');
 batchParams.spmmat = {spmPath};
 
 % - VOI 
 % From the list of VOIs, take the one specified
-% In the case of Fedorenko parcels, split the hemisphere and name
-if startsWith(voiID, 'LH_'), voiName = voiID(4:end);
-else, voiName = voiID;
+% In the case of language parcels, split the hemisphere and name
+if startsWith(voiID, 'LH_')
+    voiName = voiID(4:end);
+else
+    voiName = voiID;
 end
 
-voiFolder = dir(fullfile(opt.dir.ppi, subName, 'VOIs', ['VOI_*_label-' voiName '_*.mat']));
+voiFolder = dir(fullfile(opt.dir.ppi, opt.subName, 'VOIs', ['VOI_*_label-' voiName '_*.mat']));
 voiPath = fullfile(voiFolder.folder, voiFolder.name);
 batchParams.type.ppi.voi = {voiPath};
 
@@ -153,7 +147,7 @@ batchParams.type.ppi.u = weights;
 
 % - output name
 % standard seems to be VOIx(contrast)
-batchParams.name = [subName '_hemi-L_label-' voiName '_x_(' contrast ')'];
+batchParams.name = [opt.subName '_hemi-L_label-' voiName '_x_(' contrast ')'];
 
 % - display result graphs?
 batchParams.disp = 1;
@@ -162,31 +156,31 @@ matlabbatch{1}.spm.stats.ppi = batchParams;
 
 end
 
-%% GLM - only PPI-interaction
-% GLM in the concatenation is taken care by bidspm-stats
+
+
+
+%% Case GLM
 function matlabbatch = fillBatchGLM(opt)
 
-% Get subject number
-subName = ['sub-', opt.thisSub];
+% Only for interaction, GLM in the concatenation is taken care by bidspm-stats
 
-% Specify the folers of each subject, to ease path names
-concatFolder = fullfile(opt.dir.ppi, subName, '1stLevelConcat');
-glmFolder = fullfile(opt.dir.ppi, subName, ['task-visualLocalizer_space-IXI549Space_FWHM-6_node-ppiInteractionGLM']);
+% Specify the folder path
+concatFolder = fullfile(opt.dir.ppi, opt.subName, '1stLevelConcat');
+glmFolder = fullfile(opt.dir.ppi, opt.subName, ...
+    ['task-',opt.taskName{1},'_space-',opt.space{1}, ...
+     '_FWHM-',num2str(opt.fwhm.func),'_script-',opt.ppi.script,'_node-ppiInteractionGLM']);
 
-% Create temp struct
+% Initialize batches structures
 batchSpec = struct;
 batchEst = struct;
 batchCon = struct;
 
-% 1. fMRI specification batch
+
+% 1) fMRI specification batch
 batchSpec.dir = {glmFolder};
-batchSpec.timing.units = 'secs';
-batchSpec.timing.RT = 1.75;
-batchSpec.fmri_t = 29;
-batchSpec.fmri_t0 = 14;
 
 % load the concatenated runs
-load(fullfile(concatFolder, [subName, '_concatenated-scans-list.mat']));
+load(fullfile(concatFolder, [opt.subName,'_task-',opt.taskName{1},'_concatenated-scans-list.mat']));
 batchSpec.sess.scans = runs.scans;
 
 batchSpec.sess.cond = struct('name', {}, 'onset', {}, 'duration', {}, 'tmod', {}, 'pmod', {}, 'orth', {});
@@ -204,7 +198,13 @@ batchSpec.sess.regress(3).val = [opt.ppi.interaction.regress3.val];
 batchSpec.sess.regress(4).name = opt.ppi.interaction.regress4.name;
 batchSpec.sess.regress(4).val = [opt.ppi.interaction.regress4.val];
 
-batchSpec.sess.multi_reg = {fullfile(concatFolder, [subName '_motion-regressors.mat'])};
+% Acquitistion parameters
+batchSpec.timing.units = 'secs';
+batchSpec.timing.RT = 1.75;
+batchSpec.fmri_t = 29;
+batchSpec.fmri_t0 = 14;
+
+batchSpec.sess.multi_reg = {fullfile(concatFolder, [opt.subName,'_task-',opt.taskName{1},'_motion-regressors.mat'])};
 batchSpec.sess.hpf = 277.777777777778;
 batchSpec.fact = struct('name', {}, 'levels', {});
 batchSpec.bases.hrf.derivs = [0 0];
@@ -218,9 +218,10 @@ batchSpec.cvi = 'FAST';
 matlabbatch{1}.spm.stats.fmri_spec = batchSpec;
 
 
-% fMRI estiamtion batch
+% 2) fMRI estimaion batch
 batchEst.spmmat(1) = cfg_dep('fMRI model specification: SPM.mat File', ...
-                             substruct('.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
+                             substruct('.','val', '{}',{1}, '.','val', '{}',{1}, ...
+                                       '.','val', '{}',{1}), substruct('.','spmmat'));
 batchEst.write_residuals = 0;
 batchEst.method.Classical = 1;
 
@@ -228,9 +229,10 @@ batchEst.method.Classical = 1;
 matlabbatch{2}.spm.stats.fmri_est = batchEst;
 
 
-% Contrasts manager batch
+% 3) Contrasts manager batch
 batchCon.spmmat(1) = cfg_dep('Model estimation: SPM.mat File', ...
-                             substruct('.','val', '{}',{2}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','spmmat'));
+                             substruct('.','val', '{}',{2}, '.','val', '{}',{1}, ...
+                                       '.','val', '{}',{1}), substruct('.','spmmat'));
 batchCon.consess{1}.tcon.name = 'PPI-interaction';
 batchCon.consess{1}.tcon.weights = [1 0 0 0 0 0 0 0 0 0 0];
 batchCon.consess{1}.tcon.sessrep = 'none';
@@ -238,7 +240,6 @@ batchCon.delete = 0;
 
 % Assign values to batch
 matlabbatch{3}.spm.stats.con = batchCon;
-
 
 end
 

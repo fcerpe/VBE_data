@@ -16,8 +16,6 @@
 % load these GLM-specific options
 opt = interactionOption(opt);
 
-% Get subject number
-subName = ['sub-', opt.thisSub];
 
 % Load the PPI.mat file and assign the values as regressors:
 % Regressor 1: Name = PPI-interaction, Value = PPI.ppi
@@ -38,11 +36,11 @@ matlabbatch = ppi_fillBatch(opt, 'GLM');
 % Save and run batch bidspm-style
 batchName = ['PPI-GLM_task-', char(opt.taskName), '_space-', char(opt.space), '_FWHM-', num2str(opt.fwhm.func)];
 
-status = saveAndRunWorkflow(matlabbatch, batchName, opt, opt.thisSub);
+status = saveAndRunWorkflow(matlabbatch, batchName, opt, opt.subjects{1});
 
-%% Update the step
-
+% Update the step
 opt.ppi.step = 2;
+
 
 
 
@@ -59,30 +57,36 @@ opt.ppi.glmStep = 'interaction';
 
 % Model specifies all the contrasts
 opt.model.file = fullfile(opt.dir.root, 'code', ...
-    'models', ['model-PPI-interaction-' opt.ppi.dataset '_smdl.json']);
+    'models', 'model-PPI-interaction-localizer_smdl.json');
 
-switch opt.ppi.dataset
+% nodeName = name of the Node in the BIDS stats model
+opt.results(1).nodeName = 'subject_level';
+% name of the contrast in the BIDS stats model
+opt.results(1).name = {'fw-sfw'};
+% Specify how you want your output (all the following are on false by default)
+opt.results(1).png = true();
+opt.results(1).csv = true();
+opt.results(1).p = 0.001;
+opt.results(1).MC = 'none';
+opt.results(1).k = 0;
+% those don't change across contrasts, try to put only once
+opt.results(1).binary = true();
+opt.results(1).montage.do = false();
+opt.results(1).nidm = true();
+opt.results(1).threshSpm = true();
 
-    case 'localzier'
-        opt.results(1).nodeName = 'subject_level';
-        opt.results(1).name = {'fw-sfw'};
-        opt.results(1).png = true();    opt.results(1).csv = true();
-        opt.results(1).p = 0.001;       opt.results(1).MC = 'none';
-        opt.results(1).k = 0;
-        opt.results(1).binary = true(); opt.results(1).montage.do = false();
-        opt.results(1).nidm = true();   opt.results(1).threshSpm = true();
-        
-        opt.results(2).nodeName = 'subject_level';
-        opt.results(2).name = {'bw-sbw'};
-        opt.results(2).png = true();    opt.results(2).csv = true();
-        opt.results(2).p = 0.001;       opt.results(2).MC = 'none';
-        opt.results(2).k = 0;
-        opt.results(2).binary = true(); opt.results(2).montage.do = false();
-        opt.results(2).nidm = true();   opt.results(2).threshSpm = true();
-
-    case 'mvpa'
-
-end
+opt.results(2).nodeName = 'subject_level';
+opt.results(2).name = {'bw-sbw'};
+opt.results(2).png = true();
+opt.results(2).csv = true();
+opt.results(2).p = 0.001;
+opt.results(2).MC = 'none';
+opt.results(2).k = 0;
+% those don't change across contrasts, try to put only once
+opt.results(2).binary = true();
+opt.results(2).montage.do = false();
+opt.results(2).nidm = true();
+opt.results(2).threshSpm = true();
 
 %% DO NOT TOUCH
 opt = checkOptions(opt);
@@ -90,27 +94,33 @@ saveOptions(opt);
 
 end
 
+
+
+
 %% 
 function opt = ppi_loadPpiAndRegressors(opt)
 
-subName = ['sub-', opt.thisSub];
-
-ppiFiles = dir(fullfile(opt.dir.ppi, subName, 'PPI-analysis', ['PPI_*label-VWFAfr_x_(' opt.ppi.contrast{1} ')*']));
+% Load the PPI made on the seed region (VWFA) and the specified contrast
+ppiFiles = dir(fullfile(opt.dir.ppi, opt.subName, 'PPI-analysis', ...
+                        ['PPI_*label-VWFAfr_x_(' opt.ppi.contrast{1} ')*']));
 load(fullfile(ppiFiles(1).folder, ppiFiles(1).name));
 
 % Pre-load regressors
+% Interaction
 opt.ppi.interaction.regress1.name = 'PPI-interaction';
 opt.ppi.interaction.regress1.val = PPI.ppi;
 
+% Physiological variable
 opt.ppi.interaction.regress2.name = 'VWFA-BOLD';
 opt.ppi.interaction.regress2.val = PPI.Y;
 
-opt.ppi.interaction.regress3.name = 'Psych_FW-SFW';
+% Psychological variable
+opt.ppi.interaction.regress3.name = 'Psych';
 opt.ppi.interaction.regress3.val = PPI.P;
 
 % Same regressor as opt.ppi.concat.regressor.R 
-oldReg = load(fullfile(opt.dir.ppi, subName, '1stLevelConcat' ,[subName '_block-regressor.mat']));
-
+oldReg = load(fullfile(opt.dir.ppi, opt.subName, '1stLevelConcat', ...
+                      [opt.subName,'_task-',opt.taskName{1},'_block-regressor.mat']));
 opt.ppi.interaction.regress4.name = 'Block 1';
 opt.ppi.interaction.regress4.val = oldReg.R;
 

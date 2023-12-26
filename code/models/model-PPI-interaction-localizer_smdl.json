@@ -88,8 +88,7 @@
           "trial_type.bw",
           "trial_type.sbw",
           "trial_type.ld",
-          "trial_type.sld",
-          "trial_type.response"
+          "trial_type.sld"
         ]
       }
     },

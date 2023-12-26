@@ -41,7 +41,6 @@ for iSub = 1:numel(opt.subjects)
         report = vertcat(report, ...
                                  {subName, maskTask, 'whole', mean(tSNRvol,'all','omitnan')});
 
-
     end
 
 end

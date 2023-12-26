@@ -1,4 +1,4 @@
-function opt = ppi_mvpa_option()
+function opt = ppi_option()
 % returns a structure that contains the options chosen by the user to run
 % PPI analysis (called trhough ppi_main)
 
@@ -8,22 +8,18 @@ end
 
 % suject to run in each group
 opt.subjects = {'006'}; 
-% Participants: '006', '007', '008', '009', '011', '013', '019', '020', '021', '022', '024', '027', '028'
-% 10, 18, 23 do not how PosTemp. Excluded
+opt.subList = {'006','007','008','009','010','011','013','018','019','020','021','022','024','027','028'};
+% Participants that have a L-PosTemp reponse for [FW > SFW] are included in
+% this analysis. Here's a full list:
+%  EXP   EXP   EXP   EXP   CTR   CTR   EXP   CTR   CTR   CTR   CTR   CTR   CTR   CTR   CTR
+% '006','007','008','009','010','011','013','018','019','020','021','022','024','027','028'
 
-% PPI OPTIONS
 % Areas to consider for the creation of VOIs: VWFA and Fedorenko's areas
 opt.ppi.voiList = {'VWFAfr', 'LH_PosTemp'}; 
 
 % Which script to consider (french, braille)
-opt.ppi.script = 'french';
-
-% Which betas shall we use to compute slopes and interactions?
-% - localizer: classic FW-SFW or BW-SBW constrasts
-% - mvpa: 4 linguistic categories, RW, PW, NW, FS
-opt.ppi.dataset = 'mvpa';
-% task to analyze
-opt.taskName = 'wordsDecoding';
+% Only one can be inputed at the same time 
+opt.ppi.script = 'braille';
 
 % Step. SPM Manual seems to do things twice: first we define one VOI and do
 % PPI, and compute a GLM around it.
@@ -33,7 +29,7 @@ opt.taskName = 'wordsDecoding';
 opt.ppi.step = 1;
 
 % we stay in native space (that of the T1)
-opt.space = 'MNI'; % 'individual', 'MNI'
+opt.space = 'IXI549Space'; % 'individual', 'IXI549Space', 'MNI152NLin2009cAsym'
 
 % description to add to folder name, to distinguish from GLM (see other
 % script)
@@ -42,6 +38,8 @@ opt.desc = 'PPI';
 % I like chatty outputs
 opt.verbosity = 2;
 
+% task to analyze
+opt.taskName = 'visualLocalizer';
 
 % PATHS
 % The directory where the data are located
@@ -66,16 +64,14 @@ opt.glm.QA.do = false;
 opt.pipeline.type = 'stats';
 
 % The functional smoothing 
-opt.fwhm.func = 2;
+opt.fwhm.func = 6;
 opt.fwhm.contrast = 0;
 
-% Model and results options are added in the GLM scripts 
-% - ppi_concatRunsAndRunGLM 
-% - ppi_interactionGLM
-
-% Model specifies all the contrasts
+% Model will change in 'ppi_concatRunsAndRunGLM' and 'ppi_interactionGLM'
+% but checkOptions() requires a placeholder
 opt.model.file = fullfile(opt.dir.root, 'code', ...
-    'models', 'model-PPI-1stLevelConcat-mvpa_smdl.json');
+    'models', 'model-PPI-1stLevelConcat-localizer_smdl.json');
+
 
 %% DO NOT TOUCH
 opt = checkOptions(opt);

@@ -1,150 +1,152 @@
 function [matlabbatch, opt] = ppi_bidsFFX(varargin)
-% MODIFIED VERSION OF bidsFFX OF BIDSPM
-%
-% - specify the subject level fMRI model
-% - estimates it
-% - do both in one go
-% - or compute the contrasts
-%
-% To run this workflows get the BOLD input images from derivatives BIDS dataset
-% that contains the preprocessed data and get the condition, onsets, durations
-% from the events files in the raw BIDS dataset.
-%
-% For the model specification, if ``opt.model.designOnly`` is set to ``true``,
-% then it is possible to specify a model with no data:
-% this can useful for debugging or to quickly inspect designs specification.
-%
-% For the model estimation, it is possible to do some rough QA, by setting
-% ``opt.QA.glm.do = true``.
-%
-% USAGE::
-%
-%   bidsFFX(action, opt, 'nodeName', 'run_level')
-%
-%
-% :param action: Action to be conducted
-% :type action: char
-%
-% - ``'specify'`` to specify the fMRI GLM
-% - ``'specifyAndEstimate'`` for fMRI design + estimate
-% - ``'contrasts'`` to estimate contrasts.
-%
-% :param opt: Options chosen for the analysis.
-%             See checkOptions.
-% :type opt: structure
-%
-% :param nodeName: Only for action ``'contrasts'``. Specifies which Node to
-%                  work on.
-% :type nodeName: char
-%
-% See also: setBatchSubjectLevelGLMSpec, setBatchSubjectLevelContrasts
-%
-%
+  % MODIFIED VERSION OF bidsFFX OF BIDSPM
+  %
+  % - specify the subject level fMRI model
+  % - estimates it
+  % - do both in one go
+  % - or compute the contrasts
+  %
+  % To run this workflows get the BOLD input images from derivatives BIDS dataset
+  % that contains the preprocessed data and get the condition, onsets, durations
+  % from the events files in the raw BIDS dataset.
+  %
+  % For the model specification, if ``opt.model.designOnly`` is set to ``true``,
+  % then it is possible to specify a model with no data:
+  % this can useful for debugging or to quickly inspect designs specification.
+  %
+  % For the model estimation, it is possible to do some rough QA, by setting
+  % ``opt.QA.glm.do = true``.
+  %
+  % USAGE::
+  %
+  %   bidsFFX(action, opt, 'nodeName', 'run_level')
+  %
+  %
+  % :param action: Action to be conducted
+  % :type action: char
+  %
+  % - ``'specify'`` to specify the fMRI GLM
+  % - ``'specifyAndEstimate'`` for fMRI design + estimate
+  % - ``'contrasts'`` to estimate contrasts.
+  %
+  % :param opt: Options chosen for the analysis.
+  %             See checkOptions.
+  % :type opt: structure
+  %
+  % :param nodeName: Only for action ``'contrasts'``. Specifies which Node to
+  %                  work on.
+  % :type nodeName: char
+  %
+  % See also: setBatchSubjectLevelGLMSpec, setBatchSubjectLevelContrasts
+  %
+  %
 
-% (C) Copyright 2020 bidspm developers
+  % (C) Copyright 2020 bidspm developers
 
-% TODO implement nodeName for 'specify', 'specifyAndEstimate'
-% - will require adapting the subject level folder name to take into account
-% the nodeName
+  % TODO implement nodeName for 'specify', 'specifyAndEstimate'
+  % - will require adapting the subject level folder name to take into account
+  % the nodeName
 
-%%
-allowedActions = @(x) ismember(x, {'specify', 'specifyAndEstimate', 'contrasts'});
+  %%
+  allowedActions = @(x) ismember(x, {'specify', 'specifyAndEstimate', 'contrasts'});
 
-args = inputParser;
+  args = inputParser;
 
-addRequired(args, 'action', allowedActions);
-addRequired(args, 'opt', @isstruct);
-addParameter(args, 'nodeName', '', @ischar);
+  addRequired(args, 'action', allowedActions);
+  addRequired(args, 'opt', @isstruct);
+  addParameter(args, 'nodeName', '', @ischar);
 
-parse(args, varargin{:});
+  parse(args, varargin{:});
 
-action = args.Results.action;
-opt = args.Results.opt;
-nodeName = args.Results.nodeName;
+  action = args.Results.action;
+  opt = args.Results.opt;
+  nodeName = args.Results.nodeName;
 
-%%
-opt.pipeline.type = 'stats';
+  %%
+  opt.pipeline.type = 'stats';
 
-opt.dir.input = opt.dir.preproc;
-opt.dir.output = opt.dir.stats;
+  opt.dir.input = opt.dir.preproc;
+  opt.dir.output = opt.dir.stats;
 
-description = 'subject level GLM';
+  description = 'subject level GLM';
 
-[BIDS, opt] = setUpWorkflow(opt, description);
+  [BIDS, opt] = setUpWorkflow(opt, description);
 
-checkRootNode(opt);
+  checkRootNode(opt);
 
-initBids(opt, 'description', description, 'force', false);
+  initBids(opt, 'description', description, 'force', false);
 
-iSub = 1;
+  for iSub = 1:numel(opt.subjects)
 
-subLabel = opt.thisSub;
+    subLabel = opt.subjects{iSub};
 
-printProcessingSubject(iSub, subLabel, opt);
-
-outputDir = getFFXdir(subLabel, opt);
-
-matlabbatch = {};
-
-switch action
-
-  case 'specify'
-
-    matlabbatch = setAction(action, matlabbatch, BIDS, opt, subLabel);
-
-  case 'estimate'
-
-    % TODO implement as currently subject level estimation
-    % only works with batch dependencies
-%     if noSPMmat(opt, subLabel, fullfile(outputDir, 'SPM.mat'))
-%       continue
-%     end
-    matlabbatch = setAction(action, matlabbatch, BIDS, opt, subLabel);
-
-  case 'specifyAndEstimate'
-
-    matlabbatch = setAction('specify', matlabbatch, BIDS, opt, subLabel);
-    matlabbatch = setAction('estimate', matlabbatch, BIDS, opt, subLabel);
-
-  case 'contrasts'
-
-    if isempty(nodeName)
-      matlabbatch = setBatchSubjectLevelContrasts(matlabbatch, opt, subLabel);
-    else
-      matlabbatch = setBatchSubjectLevelContrasts(matlabbatch, opt, subLabel, nodeName);
+    if ~subjectHasData(BIDS, opt, subLabel)
+      continue
     end
 
-end
+    printProcessingSubject(iSub, subLabel, opt);
 
-batchName = createBatchName(opt, action);
+    outputDir = getFFXdir(subLabel, opt);
 
-status = saveAndRunWorkflow(matlabbatch, batchName, opt, subLabel);
+    matlabbatch = {};
 
-if status && ...
-   opt.QA.glm.do && ....
-   ~opt.model.designOnly && ...
-   ismember(action, {'specifyAndEstimate', 'estimate'})
+    switch action
 
-  repetitionTime = matlabbatch{1}.spm.stats.fmri_spec.timing.RT;
-  plot_power_spectra_of_GLM_residuals(outputDir, repetitionTime);
+      case 'specify'
 
-  if ~opt.glm.keepResiduals
-    deleteResidualImages(getFFXdir(subLabel, opt));
+        matlabbatch = setAction(action, matlabbatch, BIDS, opt, subLabel);
+
+      case 'estimate'
+
+        % TODO implement as currently subject level estimation
+        % only works with batch dependencies
+        if noSPMmat(opt, subLabel, fullfile(outputDir, 'SPM.mat'))
+          continue
+        end
+        matlabbatch = setAction(action, matlabbatch, BIDS, opt, subLabel);
+
+      case 'specifyAndEstimate'
+
+        matlabbatch = setAction('specify', matlabbatch, BIDS, opt, subLabel);
+        matlabbatch = setAction('estimate', matlabbatch, BIDS, opt, subLabel);
+
+      case 'contrasts'
+
+        if isempty(nodeName)
+          matlabbatch = setBatchSubjectLevelContrasts(matlabbatch, opt, subLabel);
+        else
+          matlabbatch = setBatchSubjectLevelContrasts(matlabbatch, opt, subLabel, nodeName);
+        end
+
+    end
+
+    batchName = createBatchName(opt, action);
+
+    status = saveAndRunWorkflow(matlabbatch, batchName, opt, subLabel);
+
+    if status && ...
+       opt.QA.glm.do && ....
+       ~opt.model.designOnly && ...
+       ismember(action, {'specifyAndEstimate', 'estimate'})
+
+      repetitionTime = matlabbatch{1}.spm.stats.fmri_spec.timing.RT;
+      plot_power_spectra_of_GLM_residuals(outputDir, repetitionTime);
+
+      if ~opt.glm.keepResiduals
+        deleteResidualImages(getFFXdir(subLabel, opt));
+      end
+
+    end
+
+    if status
+      renamePng(getFFXdir(subLabel, opt));
+    end
+
   end
-
-end
-
-if status
-  renamePng(getFFXdir(subLabel, opt));
-end
 
   cleanUpWorkflow(opt);
 
-
 end
-
-
-
 
 function checkRootNode(opt)
   %
@@ -238,7 +240,7 @@ function matlabbatch = setAction(action, matlabbatch, BIDS, opt, subLabel)
                                                                         'before estimation', ...
                                                                         subLabel)));
     case 'estimate'
-      matlabbatch = setBatchEstimateModel(matlabbatch, opt);
+      matlabbatch = setBatchEstimateModel(matlabbatch, opt, subLabel);
       matlabbatch = setBatchPrintFigure(matlabbatch, opt, ...
                                         fullfile(outputDir, ...
                                                  designMatrixFigureName(opt, ...

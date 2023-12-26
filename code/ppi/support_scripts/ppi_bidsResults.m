@@ -192,7 +192,7 @@ function matlabbatch = ppi_bidsResults(varargin)
   if all(ismember(listNodeLevels, 'dataset'))
     indexData = false;
   end
-  [~, opt] = setUpWorkflow(opt, 'computing GLM results', [], indexData);
+  [~, opt] = setUpWorkflow(opt, 'computing GLM results', '', indexData);
 
   BIDS = [];
 
