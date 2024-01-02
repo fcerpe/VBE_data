@@ -7,7 +7,7 @@ function opt = stats_option_fmriprep_localizer()
 
 opt = [];
 
-opt.subjects = {'007','008','013'}; 
+opt.subjects = {'006','007','008','009','010','011','012','013','018','019','020','021','022','023','024','026','027','028'}; 
 % participants: 
 % '006','007','008','009','010','011','012','013','018','019','020','021','022','023','024','026','027','028'
 
@@ -39,7 +39,7 @@ opt.dir.stats = fullfile(opt.dir.root, 'outputs', 'derivatives', 'bidspm-stats')
 
 % Model specifies all the contrasts
 opt.model.file = fullfile(opt.dir.root, 'code', ...
-    'models', 'model-visualLocalizer-univariate-noResp_smdl.json');
+    'models', 'model-visualLocalizer-univariate_smdl.json');
 
 opt.pipeline.type = 'stats';
 
