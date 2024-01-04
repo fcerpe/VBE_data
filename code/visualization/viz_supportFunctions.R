@@ -111,7 +111,7 @@ viz_dataset_stats <- function(dataIn) {
   else {
     # No 'modality', it's within
     statsOut <- dataIn %>% 
-      group_by(mask, decodingCondition, script, numDecoding, cluster) %>% 
+      group_by(mask, decodingCondition, script, numDecoding, comparison, cluster) %>% 
       summarize(mean_accuracy = mean(accuracy), sd_accuracy = sd(accuracy), se_accuracy = sd(accuracy)/sqrt(6), .groups = 'keep') 
   }
     
@@ -125,7 +125,6 @@ viz_dataset_stats <- function(dataIn) {
 
 # Univariate activation
 viz_plot_univariate <- function(dataIn, specs) {
-  
 }
 
 
@@ -222,12 +221,80 @@ viz_plot_multiclass <- function(dataIn, statsIn, specs) {
 
 # Cross-script decoding
 viz_plot_cross <- function(dataIn, specs) {
-  
 }
   
 # Visualize ANOVA results - much like JASP
-viz_plot_anova <- function(dataIn, specs) {
+viz_plot_anova <- function(dataIn, specs, scrCond) {
   
+  # Compose filename and path to save figure
+  savename <- paste(specs, "_plot-ANOVA-",scrCond,".png", sep="")
+  
+  # Pick conditions based on script
+  # Only needed for either script, in case of both we need to modify the plotting script 
+  switch(scrCond, 
+         french = {
+           limits = c("french_experts", "french_controls")
+           values = c("#69B5A2", "#699ae5")
+           labels = c("Experts", "Controls")
+           nums = 1:6
+           labels_x = c("RW - PW", "RW - NW", "RW - FS", "PW - NW", "PW - FS", "NW - FS")
+         }, 
+         braille = {
+           limits = c("braille_experts", "braille_controls")
+           values = c("#FF9E4A", "#da5F49")
+           labels = c("Experts", "Controls")
+           nums = 7:12
+           labels_x = c("RW - PW", "RW - NW", "RW - FS", "PW - NW", "PW - FS", "NW - FS")
+         })
+  
+  # Make plot
+  if(scrCond == "both"){
+    ggplot(dataIn, aes(x = comparison, y = mean_accuracy, color = cluster)) +
+      scale_color_manual(name = " ", 
+                         limits = c("french_experts", "french_controls", "braille_experts", "braille_controls"),
+                         values = c("#69B5A2", "#699ae5",  "#FF9E4A", "#da5F49"), 
+                         labels = c("Experts", "Controls", "Experts", "Controls"), 
+                         aesthetics = c("colour", "fill")) +
+      geom_point(size = 3) +
+      geom_line(aes(group = cluster), size = 1) +
+      theme_classic() +                                                              
+      ylim(0.3, 1) +                                                                    
+      theme(axis.text.x = element_text(angle = 45,  vjust=1, hjust=1, size = 10), 
+            axis.ticks = element_blank(),
+            axis.title.x = element_text(size = 15), axis.title.y = element_text(size = 15)) +
+      facet_grid(~factor(script, levels = c("french", "braille")), 
+                 labeller = label_value) +
+      scale_x_discrete(limits = rev, 
+                       labels = c("RW - PW", "RW - NW", "RW - FS", "PW - NW", "PW - FS", "NW - FS",
+                                  "RW - PW", "RW - NW", "RW - FS", "PW - NW", "PW - FS", "NW - FS")) +
+      labs(x = "Decoding pair", y = "Accuracy") 
+  }
+  else {
+  ggplot(dataIn, aes(x = numDecoding, y = mean_accuracy, color = cluster)) +
+    scale_color_manual(name = " ",
+                       limits = limits,
+                       values = values,
+                       labels = labels, 
+                       aesthetics = c("colour", "fill")) +
+    geom_point(size = 3) +
+    geom_line(aes(group = cluster), size = 1) +
+    
+    # Style options
+    theme_classic() +                                                              
+    ylim(0.3, 1) +                                                                    
+    theme(axis.text.x = element_text(angle = 45,  vjust=1, hjust=1, size = 10), 
+          axis.ticks = element_blank(),
+          axis.title.x = element_text(size = 15), 
+          axis.title.y = element_text(size = 15)) +
+    
+    # Labels
+    scale_x_continuous(breaks = nums,
+                       labels = labels_x) +
+    labs(x = "Decoding pair", y = "Accuracy") 
+  }
+  
+  # Save plot 
+  ggsave(savename, width = 3000, height = 1800, dpi = 320, units = "px")
 }
 
   
@@ -247,7 +314,7 @@ viz_plot_anova <- function(dataIn, specs) {
 # Assumptions on the dataset:
 # - clean input  
 # - the right number of scripts are present  
-viz_rmANOVA <- function(tableIn, nbScripts) {
+viz_stats_rmANOVA <- function(tableIn, nbScripts) {
   
   # nbScripts determines how many within factors do we have
   if (nbScripts == 1) {
@@ -261,13 +328,17 @@ viz_rmANOVA <- function(tableIn, nbScripts) {
   viz_rmANOVA <- anovaOut
 }
 
+viz_stata_summary <- function(dataIn) {
+  # Make nice table to export 
+}
+
 
 
 ### MISC
 
 # Compose name with specs of decoding analysed
 # Creates first part of filename to be used in plots
-viz_misc_specs <- function(decoding, modality, group, space, area) {
+viz_make_specs <- function(decoding, modality, group, space, area) {
   
   specs <- paste("decoding-",decoding,"_modality-",modality,"_group-",group,"_space-",space,
                  "_area-", area, sep="")

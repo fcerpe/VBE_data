@@ -23,8 +23,7 @@ source("viz_supportFunctions.R")
 # - do stats
 viz_processROI <- function(method, area) {
   
-  
-  
+  # -------------------------------------#
   ### Pairwise decoding 
   
   ## Import
@@ -53,38 +52,94 @@ viz_processROI <- function(method, area) {
   pairwise_br <- pairwise %>% filter(script == "braille")
   
   # Run ANOVAs
-  pairwise_anova_fr <- viz_rmANOVA(pairwise_fr, 1)
-  pairwise_anova_br <- viz_rmANOVA(pairwise_br, 1)
-  pairwise_anova_both <- viz_rmANOVA(pairwise, 2)
+  pairwise_anova_fr <- viz_stats_rmANOVA(pairwise_fr, 1)
+  pairwise_anova_br <- viz_stats_rmANOVA(pairwise_br, 1)
+  pairwise_anova_both <- viz_stats_rmANOVA(pairwise, 2)
   
-  # so far so good
+  
+  ## RSA - coming soon
   
   ## Plots
   # Generate filename
-  name_specs <- viz_misc_specs(decoding, modality, group, space, area)
+  name_specs <- viz_make_specs(decoding, modality, group, space, area)
   
   # Summarize information for plot
   pairwise_stats <- viz_dataset_stats(pairwise)
+  
+  pairwise_stats_fr <- viz_dataset_stats(pairwise_fr)
+  pairwise_stats_br <- viz_dataset_stats(pairwise_br)
+
   
   # Pairwise decoding
   viz_plot_pairwise(pairwise, pairwise_stats, name_specs)
   
   # Visualize ANOVAs
-  # viz_plot_anova(pairwise_anova_both, name_specs)
-  # viz_plot_anova(pairwise_anova_fr, name_specs)
-  # viz_plot_anova(pairwise_anova_br, name_specs)
+  viz_plot_anova(pairwise_stats_fr, name_specs, "french")
+  viz_plot_anova(pairwise_stats_br, name_specs, "braille")
+  viz_plot_anova(pairwise_stats, name_specs, "both")
   
   
+  # -------------------------------------#
+  ### Multiclass decoding 
+  
+  ## Load correct file
+  decoding <- "multiclass"
+  
+  multiclass <- viz_dataset_import(decoding, modality, group, space, roi)
+  multiclass <- viz_dataset_clean(multiclass)
+  
+  if(method == 'expansion')
+    multiclass <- multiclass %>% filter(mask == area)
   
   
+  ## Stats - coming soon, permutations needed
   
   
+  ## Plots
+  # Generate filename
+  name_specs <- viz_make_specs(decoding, modality, group, space, area)
+  
+  # Summarize information for plot
+  multiclass_stats <- viz_dataset_stats(multiclass)
+  
+  viz_plot_multiclass(multiclass, multiclass_stats, name_specs)  
   
   
+  # -------------------------------------#
+  ### Cross-script decoding 
+  
+  ## Load correct file
+  decoding <- "pairwise"
+  modality <- "cross"
+  group <- "experts"
+  
+  cross <- viz_dataset_import(decoding, modality, group, space, roi)
+  cross <- viz_dataset_clean(cross)
+  
+  if(method == 'expansion')
+    cross <- cross %>% filter(mask == area)
   
   
+  ## Stats - coming soon?
   
   
+  ## Plots
+  # Generate filename
+  name_specs <- viz_make_specs(decoding, modality, group, space, area)
+  
+  # Summarize information for plot
+  cross_stats <- viz_dataset_stats(cross)
+  
+  viz_plot_cross(cross, cross_stats, name_specs)  
+  
+  # TO DO
+  # - adjust filename of plots (add figures/)
+  # - add multiclass plot
+  # - add cross decoding plot
+  # - add mds 
+  # - add rsa, needs to be thougth
+  # - test
+  # - add univariate plot
   
   
   
@@ -101,11 +156,4 @@ viz_processROI <- function(method, area) {
   # Additional plot: univariate activationfor the eight different stimuli conditions
   # Univariate activation
   # viz_plot_univariate(pairwise, name_specs)
-  
-  
-  # DELETE WHEN DONE
-  # print("method", method)
-  # print("area", area)
-  # viz_processROI <- 0
-  
 }
