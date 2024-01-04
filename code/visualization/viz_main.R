@@ -1,21 +1,36 @@
 ### VISUAL BRAILLE EXPERTISE - DATA VISUALIZATION
 #
 # Main script to visualize results and perfrom statistical analysis in R  
+
+### Set up working directory and libraries 
+
+# Add all necessary libraries
+library("readxl")
+library("tidyverse")
+library("reshape2")
+library("gridExtra")
+library("pracma")
+library("dplyr")
+library("data.table")
+
+source("viz_processROI.R")
+
+
+
+### Start pipeline
 # 
-# If run completely, runs across ROIs:
+# For each of the following ROIs:
 # - VWFA
 # - l- and r-LO
 # - l-PosTemp
 # - V1
 #
-# and perfroms the following:
-#
-# 1. extract decoding accuracy reuslts for  
+# 1. extract decoding accuracy results for  
 #    * multiclass decoding,
 #    * pairwise decoding,
 #    * cross decoding (only in the experts subgroup)
 #
-# 2. creates rperesentational dissimilarity matrices (RDMs) of the pariwise 
+# 2. creates representational dissimilarity matrices (RDMs) of the pairwise 
 #    decoding accuracies
 #
 # 3. visualize (all plots are saved in data_viz/figures)
@@ -31,40 +46,22 @@
 #    * rmANOVA on pairwise decodings for both scripts
 
 
+# VWFA
+viz_processROI("expansion", "VWFA")
 
-### Set up working directory and libraries 
+# left LO
+viz_processROI("expansion", "lLO")
 
-# Working directory is here
-setwd(".")
+# right LO
+viz_processROI("expansion", "rLO")
 
-# Add all necessary libraries
-library("readxl")
-library("tidyverse")
-library("reshape2")
-library("gridExtra")
-library("pracma")
-library("dplyr")
-library("data.table")
+# left Posterior Temporal
+viz_processROI("language", "lPosTemp")
 
-
-### Specify options
-
-# which ROIs?
-# - expansion = VWFA, lLO, rLO 
-# - language = l-PosTemp
-# - earlyVisual = V1
-roi = "expansion"
-
-# which space? 
-# - IXI549Space = bidSPM pipeline
-# - MNI152NLin2009cAsym = fmriprep pipeline
-space = "IXI549Space"
+# V1
+viz_processROI("earlyVisual", "V1")
 
 
-
-### Start pipeline
-
-# TBD
 
 
 

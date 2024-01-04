@@ -61,6 +61,7 @@ stats_run(opt);
 opt = stats_option_fmriprep_localizer();
 
 % fmriprep does not perfrom smoothing, need to do it manually
+% If you are using datalad to store this data, it must be unlocked 
 bidsSmoothing(opt);
 
 % run GLM
@@ -72,6 +73,7 @@ stats_run(opt);
 opt = stats_option_fmriprep_decoding();
 
 % Apply smoothing
+% If you are using datalad to store this data, it must be unlocked 
 bidsSmoothing(opt)
 
 % run GLM
