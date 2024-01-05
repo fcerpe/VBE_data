@@ -223,7 +223,7 @@ viz_plot_multiclass <- function(dataIn, statsIn, specs) {
 viz_plot_cross <- function(dataIn, specs) {
 }
   
-# Visualize ANOVA results - much like JASP
+# Visualize ANOVA results - pariwise decodings
 viz_plot_anova <- function(dataIn, specs, scrCond) {
   
   # Compose filename and path to save figure
@@ -249,6 +249,8 @@ viz_plot_anova <- function(dataIn, specs, scrCond) {
   
   # Make plot
   if(scrCond == "both"){
+
+    # Plot with pairwise slopes 
     ggplot(dataIn, aes(x = comparison, y = mean_accuracy, color = cluster)) +
       scale_color_manual(name = " ", 
                          limits = c("french_experts", "french_controls", "braille_experts", "braille_controls"),
@@ -291,13 +293,49 @@ viz_plot_anova <- function(dataIn, specs, scrCond) {
     scale_x_continuous(breaks = nums,
                        labels = labels_x) +
     labs(x = "Decoding pair", y = "Accuracy") 
+    
   }
   
   # Save plot 
   ggsave(savename, width = 3000, height = 1800, dpi = 320, units = "px")
 }
 
+# Visualize ANOVA both scripts
+# JASP creates a plot with the average decoding for each script-group
+viz_plot_anova_both <- function(dataIn, specs) {
+ 
+  # Compose filename and path to save figure
+  savename <- paste(specs, "_plot-ANOVA-groups.png", sep="")
   
+  # Compose extra stats
+  statsIn <- dataIn %>% 
+                    group_by(script, cluster) %>% 
+                    summarize(group_accuracy = mean(mean_accuracy), .groups = 'keep') 
+  statsIn$numScript <- c(2,2,1,1)
+  statsIn$group <- c("controls", "experts", "controls", "experts")
+  
+  # Plot
+  ggplot(statsIn, aes(x = script, y = group_accuracy, color = group)) +
+    scale_color_manual(name = " ",
+                       limits = c("experts", "controls"),
+                       values = c("#E7CB3F", "#D25BAE"),
+                       labels = c("Experts", "Controls"),
+                       aesthetics = c("colour", "fill")) +
+    geom_point(size = 3) +
+    geom_line(aes(group = group), size = 1) +
+    theme_classic() +                                                              
+    ylim(0.3, 0.8) +                                                                    
+    theme(axis.text.x = element_text(angle = 45,  vjust=1, hjust=1, size = 10), 
+          axis.ticks = element_blank(),
+          axis.title.x = element_text(size = 15), axis.title.y = element_text(size = 15)) +
+    scale_x_discrete(limits = rev, labels = c("French", "Braille")) +
+    labs(x = "Script", y = "Accuracy") 
+  
+  # Save plot 
+  ggsave(savename, width = 3000, height = 1800, dpi = 320, units = "px")
+}
+
+
 
 
 ### RSA
@@ -328,8 +366,32 @@ viz_stats_rmANOVA <- function(tableIn, nbScripts) {
   viz_rmANOVA <- anovaOut
 }
 
-viz_stata_summary <- function(dataIn) {
-  # Make nice table to export 
+viz_stats_summary <- function(dataIn, analysis, specs) {
+  
+  ## Import and process matrix
+  dataAnova <- dataIn$ANOVA
+  
+  # Change to a more inclusive name
+  names(dataAnova)[which(names(dataAnova) == "p<.05")] <- "significance"
+  
+  # Assign asterisks:
+  # p < 0.05,  *
+  # p < 0.01,  **
+  # p < 0.001, ***
+  dataAnova$significance <- ifelse(dataAnova$p < 0.001, "***", 
+                              ifelse(dataAnova$p < 0.01, "**",  
+                                ifelse(dataAnova$p < 0.05, "*", "ns")))
+  
+  # Save p-values as character, to ease csv file
+  # dataANOVA$p <- as.character(dataAnova$p)
+  
+  # Get filename
+  savename <- paste(specs, "_analysis-", analysis, ".csv", sep="")
+  
+  # Save as csv
+  write.csv(dataAnova, savename, row.names = FALSE)
+  
+  
 }
 
 

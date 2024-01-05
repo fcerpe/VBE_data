@@ -2,28 +2,27 @@
 #
 # Support function to manage one ROI fully  
 
-
-# Add all necessary libraries
-library("readxl")
-library("tidyverse")
-library("reshape2")
-library("gridExtra")
-library("pracma")
-library("dplyr")
-library("data.table")
-library("ez")
-
-source("viz_supportFunctions.R")
-
-
-
 # Process one ROI:
 # - load files
 # - plot results
 # - do stats
 viz_processROI <- function(method, area) {
   
-  # -------------------------------------#
+  # Add all necessary libraries
+  library("readxl")
+  library("tidyverse")
+  library("reshape2")
+  library("gridExtra")
+  library("pracma")
+  library("dplyr")
+  library("data.table")
+  library("ez")
+  
+  source("viz_supportFunctions.R")
+  
+  
+  # ---------------------------------------------------------------------------#
+  
   ### Pairwise decoding 
   
   ## Import
@@ -56,21 +55,25 @@ viz_processROI <- function(method, area) {
   pairwise_anova_br <- viz_stats_rmANOVA(pairwise_br, 1)
   pairwise_anova_both <- viz_stats_rmANOVA(pairwise, 2)
   
-  
-  ## RSA - coming soon
-  
-  ## Plots
   # Generate filename
   name_specs <- viz_make_specs(decoding, modality, group, space, area)
   
+  # Make summary table to show 
+  viz_stats_summary(pairwise_anova_fr, "french", specs)
+  viz_stats_summary(pairwise_anova_br, "braille", specs)
+  viz_stats_summary(pairwise_anova_both, "both", specs)
+  
+
+  ## RSA - coming soon
+  
+  
+  ## Plots
   # Summarize information for plot
   pairwise_stats <- viz_dataset_stats(pairwise)
-  
   pairwise_stats_fr <- viz_dataset_stats(pairwise_fr)
   pairwise_stats_br <- viz_dataset_stats(pairwise_br)
 
-  
-  # Pairwise decoding
+  # Decoding
   viz_plot_pairwise(pairwise, pairwise_stats, name_specs)
   
   # Visualize ANOVAs
@@ -79,67 +82,71 @@ viz_processROI <- function(method, area) {
   viz_plot_anova(pairwise_stats, name_specs, "both")
   
   
-  # -------------------------------------#
+  # ---------------------------------------------------------------------------#
+  
   ### Multiclass decoding 
   
   ## Load correct file
-  decoding <- "multiclass"
+  # decoding <- "multiclass"
+  # 
+  # multiclass <- viz_dataset_import(decoding, modality, group, space, roi)
+  # multiclass <- viz_dataset_clean(multiclass)
+  # 
+  # if(method == 'expansion')
+  #   multiclass <- multiclass %>% filter(mask == area)
+  # 
+  # 
+  # ## Stats - coming soon, permutations needed
+  # 
+  # 
+  # ## Plots
+  # # Generate filename
+  # name_specs <- viz_make_specs(decoding, modality, group, space, area)
+  # 
+  # # Summarize information for plot
+  # multiclass_stats <- viz_dataset_stats(multiclass)
+  # 
+  # viz_plot_multiclass(multiclass, multiclass_stats, name_specs)  
   
-  multiclass <- viz_dataset_import(decoding, modality, group, space, roi)
-  multiclass <- viz_dataset_clean(multiclass)
   
-  if(method == 'expansion')
-    multiclass <- multiclass %>% filter(mask == area)
+  # ---------------------------------------------------------------------------#
   
-  
-  ## Stats - coming soon, permutations needed
-  
-  
-  ## Plots
-  # Generate filename
-  name_specs <- viz_make_specs(decoding, modality, group, space, area)
-  
-  # Summarize information for plot
-  multiclass_stats <- viz_dataset_stats(multiclass)
-  
-  viz_plot_multiclass(multiclass, multiclass_stats, name_specs)  
-  
-  
-  # -------------------------------------#
   ### Cross-script decoding 
   
   ## Load correct file
-  decoding <- "pairwise"
-  modality <- "cross"
-  group <- "experts"
-  
-  cross <- viz_dataset_import(decoding, modality, group, space, roi)
-  cross <- viz_dataset_clean(cross)
-  
-  if(method == 'expansion')
-    cross <- cross %>% filter(mask == area)
-  
-  
-  ## Stats - coming soon?
-  
-  
-  ## Plots
-  # Generate filename
-  name_specs <- viz_make_specs(decoding, modality, group, space, area)
-  
-  # Summarize information for plot
-  cross_stats <- viz_dataset_stats(cross)
-  
-  viz_plot_cross(cross, cross_stats, name_specs)  
+  # decoding <- "pairwise"
+  # modality <- "cross"
+  # group <- "experts"
+  # 
+  # cross <- viz_dataset_import(decoding, modality, group, space, roi)
+  # cross <- viz_dataset_clean(cross)
+  # 
+  # if(method == 'expansion')
+  #   cross <- cross %>% filter(mask == area)
+  # 
+  # 
+  # ## Stats - coming soon?
+  # 
+  # 
+  # ## Plots
+  # # Generate filename
+  # name_specs <- viz_make_specs(decoding, modality, group, space, area)
+  # 
+  # # Summarize information for plot
+  # cross_stats <- viz_dataset_stats(cross)
+  # 
+  # viz_plot_cross(cross, cross_stats, name_specs)  
+  # 
   
   # TO DO
-  # - adjust filename of plots (add figures/)
   # - add multiclass plot
   # - add cross decoding plot
   # - add mds 
-  # - add rsa, needs to be thougth
+  # - add rsa, needs to be thought
   # - test
   # - add univariate plot
+  # - adjust filename of plots (add figures/)
+  
   
   
   
