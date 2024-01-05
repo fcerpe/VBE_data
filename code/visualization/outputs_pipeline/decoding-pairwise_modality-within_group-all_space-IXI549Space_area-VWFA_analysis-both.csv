@@ -1,0 +1,8 @@
+"Effect","DFn","DFd","F","p","significance","ges"
+"group",1,16,13.133,"0.002","**",0.165
+"comparison",5,80,15.967,"0","***",0.209
+"script",1,16,8.171,"0.011","*",0.076
+"group:comparison",5,80,3.143,"0.012","*",0.049
+"group:script",1,16,7.283,"0.016","*",0.068
+"comparison:script",5,80,3.108,"0.013","*",0.061
+"group:comparison:script",5,80,1.06,"0.389","ns",0.022
