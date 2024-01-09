@@ -44,7 +44,7 @@ for iSub = 1:numel(opt.subjects)
         %% Preliminary calculations
     
         % Get the subject's peaks
-        mni = roi_getMNIcoords(opt.subjects);
+        mni = roi_getMNIcoords(opt);
     
         % Sum the masks: 
         % value of 2 indicate activation in both areas

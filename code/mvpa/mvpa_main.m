@@ -52,9 +52,9 @@ opt = mvpa_option();
 % - pairwise comparison cross-script
 [expansionPairwiseWithin, expansionMulticlass, expansionPairwiseCross, opt] = mvpa_decoding(opt);
 
-% Multidimensional scaling 
-mds_main 
-% TO BE FIXED
+% Perfrom multidimensional scaling and save results to be exported 
+% for visualization
+opt = mvpa_multidimensional_scaling(opt); 
 
 %% Language areas decoding
 % Perform within-script and cross-script decoding in language areas
@@ -78,7 +78,7 @@ opt = mvpa_option_languageROIs();
 % Load options
 opt = mvpa_option_earlyVisual();
 
-% Perform all the decodings in one function:
+% Perform all the decodings in one function
 % (you know the gist by now)
 [visualPairwiseWithin, visualMulticlass, visualPairwiseCross, opt] = mvpa_decoding(opt);
 

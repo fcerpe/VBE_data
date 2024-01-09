@@ -30,7 +30,7 @@
 neurosynthMasks = dir("masks/neurosynth/r*");
 
 % Get the peaks for each sub / area
-mni = roi_getMNIcoords(opt.subjects);
+mni = roi_getMNIcoords(opt);
 
 % Get information over the ROIs
 % - names: VWFA, lLO, rLO

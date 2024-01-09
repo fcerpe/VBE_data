@@ -33,7 +33,7 @@ doPermut = 1; %if you don't want to run permutation part, change to 0
 nbIter = 100; % number of iterations for the permutation part
 
 % ext = '.nii';
-% %ext = '.img';
+% ext = '.img';
 
 %% Load data
 % % % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

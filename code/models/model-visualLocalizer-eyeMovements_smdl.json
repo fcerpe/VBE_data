@@ -41,7 +41,8 @@
             "trial_type.sbw",
             "trial_type.ld",
             "trial_type.sld",
-            "trial_type.response"
+            "trial_type.response",
+            "trial_type.displacement"
           ],
           "Model": "DoubleGamma"
         },
@@ -93,40 +94,12 @@
           "Test": "t"
         },
         {
-          "Name": "frWords_gt_scrLines",
+          "Name": "disp_gt_nothing",
           "ConditionList": [
-            "trial_type.fw",
-            "trial_type.sld"
+            "trial_type.displacement"
           ],
           "Weights": [
-            1,
-            -1
-          ],
-          "Test": "t"
-        },
-        {
-          "Name": "allWords_gt_scrLines",
-          "ConditionList": [
-            "trial_type.fw",
-            "trial_type.bw",
-            "trial_type.sld"
-          ],
-          "Weights": [
-            0.5,
-            0.5,
-            -1
-          ],
-          "Test": "t"
-        },
-        {
-          "Name": "allFrench_gt_nothing",
-          "ConditionList": [
-            "trial_type.fw",
-            "trial_type.bw"
-          ],
-          "Weights": [
-            0.5,
-            0.5
+            1
           ],
           "Test": "t"
         }

@@ -47,7 +47,7 @@ stats_run(opt);
 % Add eyes displacement to the confounds table.
 % This should be ran only once, be careful in adding too many columns to
 % the same file 
-stats_addEyeMovements;
+% stats_addEyeMovements;
 
 % get GLM-specific options
 opt = stats_option_eyeMovements();

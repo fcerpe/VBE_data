@@ -39,7 +39,7 @@ opt.dir.stats = fullfile(opt.dir.root, 'outputs', 'derivatives', 'bidspm-stats')
 
 % Model specifies all the contrasts
 opt.model.file = fullfile(opt.dir.root, 'code', ...
-    'models', 'model-visualLocalizerEyeMovements_smdl.json');
+    'models', 'model-visualLocalizer-eyeMovements_smdl.json');
 
 opt.pipeline.type = 'stats';
 
@@ -173,53 +173,15 @@ opt.results(11).binary = true(); opt.results(11).montage.do = false();
 opt.results(11).nidm = true();   opt.results(11).threshSpm = true();
 
 opt.results(12).nodeName = 'subject_level';
-opt.results(12).name = {'allFrench_gt_nothing'};
-opt.results(12).png = false();   opt.results(12).csv = false();
+opt.results(12).name = {'disp_gt_nothing'};
+opt.results(12).png = true();   opt.results(12).csv = true();
 opt.results(12).p = 0.001;       opt.results(12).MC = 'none';
 opt.results(12).k = 0;
-opt.results(12).binary = true(); opt.results(12).montage.do = false();
-opt.results(12).nidm = true();   opt.results(12).threshSpm = true();
-
-opt.results(13).nodeName = 'subject_level';
-opt.results(13).name = {'allFrench_gt_nothing'};
-opt.results(13).png = false();   opt.results(13).csv = false();
-opt.results(13).p = 0.05;        opt.results(13).MC = 'none';
-opt.results(13).k = 0;
-opt.results(13).binary = true(); opt.results(13).montage.do = false();
-opt.results(13).nidm = true();   opt.results(13).threshSpm = true();
-
-% opt.results(4).nodeName = 'subject_level';
-% opt.results(4).name = {'frWords_gt_scrLines'};
-% opt.results(4).png = true();
-% opt.results(4).csv = true();
-% opt.results(4).p = 0.001;
-% opt.results(4).MC = 'none';
-% opt.results(4).k = 0;
-% % those don't change across contrasts, try to put only once
-% opt.results(4).binary = true();
-% opt.results(4).montage.do = true();
-% opt.results(4).montage.background = struct('suffix', 'T1w', 'desc', 'preproc', 'modality', 'anat');
-% opt.results(4).montage.slices = -20:2:0;
-% opt.results(4).montage.orientation = 'axial'; % also 'sagittal', 'coronal'
-% opt.results(4).nidm = true();
-% opt.results(4).threshSpm = true();
-
-% opt.results(5).nodeName = 'subject_level';
-% opt.results(5).name = {'allWords_gt_scrLines'};
-% opt.results(5).png = true();
-% opt.results(5).csv = true();
-% opt.results(5).p = 0.001;
-% opt.results(5).MC = 'none';
-% opt.results(5).k = 0;
-% % those don't change across contrasts, try to put only once
-% opt.results(5).binary = true();
-% opt.results(5).montage.do = true();
-% opt.results(5).montage.background = struct('suffix', 'T1w', 'desc', 'preproc', 'modality', 'anat');
-% opt.results(5).montage.slices = -20:2:0;
-% opt.results(5).montage.orientation = 'axial'; % also 'sagittal', 'coronal'
-% opt.results(5).nidm = true();
-% opt.results(5).threshSpm = true();
-
+% those don't change across contrasts, try to put only once
+opt.results(12).binary = true();
+opt.results(12).montage.do = false();
+opt.results(12).nidm = true();
+opt.results(12).threshSpm = true();
 % % Specify how you want your output (all the following are on false by default)
 
 %% DO NOT TOUCH

@@ -1,4 +1,4 @@
-function opt = mvpa_option_earlyVisual()
+ function opt = mvpa_option_earlyVisual()
 % returns a structure that contains the options chosen by the user to run
 % bidsConcat and also Decoding (two scripts)
 
@@ -8,7 +8,7 @@ end
 
 % Sujects to run 
 opt.subjects = {'006','007','008','009','010','011','012','013',...
-                '018','019','020','021','022','023','024','026','027','028'};
+                '018','019','020','021','023','024','026','027','028'};
 % Group name for filename
 opt.groupName = 'all';
 
@@ -116,7 +116,7 @@ opt.fwhm.contrast = 0;
 % opt.mvpa.ratioToKeep = 300; % 100 150 250 350 420
 
 % set which type of ffx results you want to use
-opt.mvpa.map4D = {'beta','tmap'};
+opt.mvpa.map4D = {'beta'};
 
 % design info
 opt.mvpa.nbRun = 12;

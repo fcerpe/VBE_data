@@ -35,7 +35,7 @@ for iSub = 1:numel(opt.subjects)
         % - L and R, AntTemp, PosTemp, AngG, IFG, IFGorb, MFG
         case 'language'
             atlas_filename = [opt.dir.rois, '/sub-',num2str(subID),...
-                              '/rsub-',num2str(subID),'_hemi-*_space-',opt.space{1},'_atlas-fedorenko_contrast-french*.nii'];
+                              '/rsub-',num2str(subID),'_hemi-*_space-',opt.space{1},'_atlas-language_contrast-french*.nii'];
             atlas_files = dir(atlas_filename);
             
             % Check that, among all the fedorenko masks,

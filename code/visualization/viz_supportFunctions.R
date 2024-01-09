@@ -424,7 +424,7 @@ viz_plot_anova_group <- function(dataIn, specs) {
     geom_point(size = 3) +
     geom_line(aes(group = group), size = 1) +
     theme_classic() +                                                              
-    ylim(0.3, 0.8) +                                                                    
+    ylim(0.3, 0.85) +                                                                    
     theme(axis.text.x = element_text(angle = 45,  vjust=1, hjust=1, size = 10), 
           axis.ticks = element_blank(),
           axis.title.x = element_text(size = 15), axis.title.y = element_text(size = 15)) +
@@ -432,7 +432,7 @@ viz_plot_anova_group <- function(dataIn, specs) {
     labs(x = "Script", y = "Accuracy") 
   
   # Save plot 
-  ggsave(savename, width = 3000, height = 1800, dpi = 320, units = "px")
+  ggsave(savename, width = 1500, height = 1500, dpi = 320, units = "px")
 }
 
 
