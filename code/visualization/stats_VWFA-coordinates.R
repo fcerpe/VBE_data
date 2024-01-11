@@ -1,13 +1,11 @@
 
-setwd("~/Desktop/GitHub/VisualBraille_data/code/stats")
-
 library("readxl")
 library("tidyverse")
 library("reshape2")
 library("gridExtra")
 
 # Read the table containing experts' VWFA coordinates
-coordinates <- as.data.frame(read_excel("experts_vwfa_coordinates.xlsx"))
+coordinates <- as.data.frame(read_excel("../stats/reports/experts_vwfa_coordinates.xlsx"))
 
 
 

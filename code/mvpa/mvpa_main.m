@@ -56,6 +56,7 @@ opt = mvpa_option();
 % for visualization
 opt = mvpa_multidimensional_scaling(opt); 
 
+
 %% Language areas decoding
 % Perform within-script and cross-script decoding in language areas
 % Subject pool and areas from roi_createLanguageRois

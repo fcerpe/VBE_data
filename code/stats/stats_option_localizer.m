@@ -17,7 +17,7 @@ opt.taskName = 'visualLocalizer';
 opt.verbosity = 2;
 
 % space to analyse
-opt.space = 'MNI';
+opt.space = 'IXI549Space';
 
 % Drastically improve analysis speed with a simple trick!  
 % the F in false stands fo fast
@@ -36,10 +36,11 @@ opt.dir.preproc = fullfile(opt.dir.root, 'outputs', 'derivatives', 'bidspm-prepr
 opt.dir.input = opt.dir.preproc;
 opt.dir.roi = fullfile(opt.dir.root, 'outputs', 'derivatives', 'cpp_spm-rois');
 opt.dir.stats = fullfile(opt.dir.root, 'outputs', 'derivatives', 'bidspm-stats');
+opt.dir.fmriprep = fullfile(opt.dir.root, 'outputs', 'derivatives', 'fmriprep');
 
 % Model specifies all the contrasts
 opt.model.file = fullfile(opt.dir.root, 'code', ...
-    'models', 'model-visualLocalizer-univariate-noResp_smdl.json');
+    'models', 'model-visualLocalizer-univariate_smdl.json');
 
 opt.pipeline.type = 'stats';
 
