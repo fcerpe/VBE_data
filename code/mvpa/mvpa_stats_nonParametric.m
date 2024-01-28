@@ -1,4 +1,4 @@
-function mvpa_stats_nonParametric(opt, argument)
+function opt = mvpa_stats_nonParametric(opt)
 %% Non-parametric statistics
 %
 % Compute non-paramteric statistical significance of multiclass mvpa decoding,
@@ -26,7 +26,7 @@ function mvpa_stats_nonParametric(opt, argument)
 % To identify the file, we only need to know which decoding (multiclass)
 % was performed on which ROIs (expansion / language / early visual)
 fileToLoad = dir(fullfile(opt.dir.cosmo, ...
-                          ['decoding-', opt.decodingCondition, '_*_rois-', opt.roiMethod, '_nbvoxels-*.mat']));
+                          ['decoding-', opt.decodingCondition, '_modality-within*_rois-', opt.roiMethod, '_nbvoxels-*.mat']));
 
 % Load file
 res = load(fullfile(fileToLoad.folder, fileToLoad.name));

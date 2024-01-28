@@ -5,15 +5,8 @@
 ### Set up working directory and libraries 
 
 # Add all necessary libraries
-library("readxl")
-library("tidyverse")
-library("reshape2")
-library("gridExtra")
-library("pracma")
-library("dplyr")
-library("data.table")
-
 source("viz_processROI.R")
+# source("viz_additionalAnalyses.R")
 
 
 
@@ -40,7 +33,7 @@ source("viz_processROI.R")
 #    * representational similarity analysis (RSA) of pairwise decodings
 #    * multidimensional scaling for both groups
 # 
-# 4. perfrom statistical anlyses
+# 4. perform statistical analyses
 #    * repeated measures ANOVA (rmANOVA) on pairwise decodings for French script
 #    * rmANOVA on pairwise decodings for Braille script
 #    * rmANOVA on pairwise decodings for both scripts
@@ -63,9 +56,12 @@ viz_processROI("earlyVisual", "V1")
 
 
 
+### Additional stats and plots
 
-
-
+# Some stats and plots are standalone (e.g. PPI)
+# to they don't fit in the pipeline
+# Can be run altogether or individually in 'visualization/viz_additionalAnalyses.R'
+# viz_additionalAnalyses()
 
 
 

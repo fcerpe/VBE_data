@@ -11,14 +11,12 @@ bidspm;
 % Start a new report - to be transferred to R for data viz
 report = {'subject', 'task', 'run', 'mask', 'tSNR'};
 
-revertToSpace = {'IXI549Space', 'MNI152NLin2009cAsym'};
+revertToSpace = {'IXI549Space'};
 
 %% 
 
 % If there is no stats folder for tsnr, launch unpacking and move files
-
 % If there is no individual space ROI, launch reverting ROI
-
 % Launch calculation of tSNR 
 
 for iSub = 1:numel(opt.subjects)
@@ -148,7 +146,7 @@ for iSub = 1:numel(opt.subjects)
                 newSpace = 'individual';
 
             case 'n'
-                nameSplit = strsplit(roiToRename(iR).name, {'nat_', 'space-','_atlas-'});
+                nameSplit = strsplit(roiToRename(iR).name, {'nat_', '_space-','_atlas-'});
                 newSpace = 'T1w';
         end
 
@@ -162,7 +160,6 @@ for iSub = 1:numel(opt.subjects)
 
 
 end
-
 
 % inform the user
 fprintf('\nDone. Saving report\n');

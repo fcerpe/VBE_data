@@ -13,6 +13,9 @@ opt.subjects = {'006','007','008','009','010','011','013','018','019','020','021
 % Group name for filename
 opt.groupName = 'all';
 
+% Which groups can be processed? 
+opt.groups = {'experts', 'controls'};
+
 % Also, determine sub groups, for cross-script decoding
 opt.subGroups.experts = {'006','007','008','009','013'};
 opt.subGroups.controls = {'010','011','018','019','020','021','023','024','027','028'};

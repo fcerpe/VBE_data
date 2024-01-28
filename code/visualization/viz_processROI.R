@@ -1,25 +1,14 @@
 ### VBE - Process one ROI 
 #
 # Support function to manage one ROI fully  
+source("viz_supportFunctions.R")
+
 
 # Process one ROI:
 # - load files
 # - plot results
 # - do stats
 viz_processROI <- function(method, area) {
-  
-  # Add all necessary libraries
-  library("readxl")
-  library("tidyverse")
-  library("reshape2")
-  library("gridExtra")
-  library("pracma")
-  library("dplyr")
-  library("data.table")
-  library("ez")
-  
-  source("viz_supportFunctions.R")
-  
   
   # ---------------------------------------------------------------------------#
   
@@ -63,9 +52,6 @@ viz_processROI <- function(method, area) {
   viz_stats_summary(pairwise_anova_br, "braille", name_specs)
   viz_stats_summary(pairwise_anova_both, "both", name_specs)
   
-
-  ## RSA - coming soon
-  
   
   ## Plots
   # Summarize information for plot
@@ -75,6 +61,9 @@ viz_processROI <- function(method, area) {
 
   # Decoding
   viz_plot_pairwise(pairwise, pairwise_stats, name_specs)
+  
+  # RSA 
+  viz_plot_rsa(pairwise, pairwise_stats, name_specs)
   
   # Visualize ANOVAs
   viz_plot_anova(pairwise_stats_fr, name_specs, "french")
@@ -97,8 +86,8 @@ viz_processROI <- function(method, area) {
     multiclass <- multiclass %>% filter(mask == area)
 
 
-  ## Stats - coming soon, permutations needed
-
+  ## Stats - permutations done in MATLAB
+  
 
   ## Plots
   # Generate filename
@@ -125,43 +114,25 @@ viz_processROI <- function(method, area) {
   if(method == 'expansion')
     cross <- cross %>% filter(mask == area)
 
-
-  ## Stats - coming soon?
-
-
-  ## Plots
   # Generate filename
   name_specs <- viz_make_specs(decoding, modality, group, space, area)
-
+  
+  
+  ## Stats
+  # One-way ANOVA
+  cross_anova <- viz_stats_crossANOVA(cross)
+  viz_stats_summary(cross_anova, "both", name_specs)
+  
+  
+  ## Plots
   # Summarize information for plot
   cross_stats <- viz_dataset_stats(cross)
 
+  # Plot: all modalities, only both, two directions
   viz_plot_cross(cross, cross_stats, name_specs)
   
+  # Visualize ANOVAs
+  viz_plot_anova_cross(cross_stats, name_specs)
   
-  # TO DO
-  # - add multiclass plot
-  # - add cross decoding plot
-  # - add mds 
-  # - add rsa, needs to be thought
-  # - test
-  # - add univariate plot
-  # - adjust filename of plots (add figures/)
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  # Additional plot: univariate activationfor the eight different stimuli conditions
-  # Univariate activation
-  # viz_plot_univariate(pairwise, name_specs)
+
 }

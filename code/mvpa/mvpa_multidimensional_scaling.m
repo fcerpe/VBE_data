@@ -13,8 +13,6 @@ function opt = mvpa_multidimensional_scaling(opt)
 %   organization of both scripts
 opt = mvpa_option();
 
-groups = {'experts', 'controls'};
-
 % - Work only on beta images
 opt.mvpa.map4D = {'beta'};
 
@@ -39,11 +37,11 @@ opt.mvpa.map4D = {'beta'};
 opt = mvpa_masks_choose(opt);
 opt.maskLabel = {'VWFAfr'};
 
-for iGrp = 1:numel(groups)
+for iGrp = 1:numel(opt.groups)
 
     % Set the group and their subjects
-    eval(['opt.subjects = opt.subGroups.' groups{iGrp} ';']);
-    opt.groupName = groups{iGrp};
+    eval(['opt.subjects = opt.subGroups.' opt.groups{iGrp} ';']);
+    opt.groupName = opt.groups{iGrp};
 
     % Set the filenames 
     savefileMat = fullfile(opt.dir.cosmo, ...

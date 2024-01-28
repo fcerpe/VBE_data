@@ -6,8 +6,6 @@ function [pairwise, multiclass, cross, opt] = mvpa_decoding(opt)
 %
 % Before running also performs feature selection on the nb of voxels
 
-% Features selection: pick the smallest voxel size to perform mvpa
-opt = mvpa_masks_selectFeatures(opt);
 
 % Manual fix: in early visual area, although sub-006's mask is 108 voxels,
 % the valuable ones are 81. 
@@ -15,14 +13,18 @@ if strcmp(opt.roiMethod, 'earlyVisual')
 
     % Manually cast feature selection to 81 voxels
     opt.mvpa.ratioToKeep = 81;
+
+else
+    % Features selection: pick the smallest voxel size to perform mvpa
+    opt = mvpa_masks_selectFeatures(opt);
 end
 
 
 % Pairwise decoding within script 
 pairwise = mvpa_decoding_pairwise(opt);
 
-% Non-parametric stats on decoding permutations
-mvpa_stats_nonParamteric(opt, 'pairwise');
+% RSA and relative non-parametric stats
+mvpa_stats_RSA(opt);
 
 
 % Multiclass decoding
@@ -32,7 +34,7 @@ opt.mvpa.permutate = 1;
 multiclass = mvpa_decoding_multiclass(opt);
 
 % Non-parametric stats on decoding permutations
-mvpa_stats_nonParamteric(opt, 'mulitclass');
+mvpa_stats_nonParametric(opt);
 
 
 % Cross-script decoding
@@ -44,5 +46,8 @@ opt.decodingModality = 'cross';
 opt.mvpa.permutate = 0;
 
 cross = mvpa_decoding_cross(opt);
+
+% RSA and relative non-parametric stats
+mvpa_stats_RSA(opt);
 
 end

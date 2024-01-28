@@ -12,7 +12,7 @@
 # - plot mean accuracies for multiclass decoding
 # - plot mean accuracies for pairwise decodings
 # - plot mean accuracies for cross decoding
-# - plot univariate activationss for a given area and the type of stimuli
+# - plot univariate activations for a given area and the type of stimuli
 #
 # STATS
 # - perfrom rmANOVA on one script
@@ -31,6 +31,13 @@ library("pracma")
 library("dplyr")
 library("data.table")
 library("ez")
+
+
+
+# TO DO
+# - add MDS plot
+# - add univariate plot
+# - adjust filename of plots (move to derivatives/figures/)
 
 
 
@@ -76,9 +83,9 @@ viz_dataset_clean <- function(dataIn) {
   
   # Add script information
   dataIn <- dataIn %>% mutate(script = case_when(
-    substr(decodingCondition, 1, 1) == "f" ~ "french",
-    substr(decodingCondition, 1, 1) == "b" ~ "braille",
-    TRUE ~ NA_character_))
+                              substr(decodingCondition, 1, 1) == "f" ~ "french",
+                              substr(decodingCondition, 1, 1) == "b" ~ "braille",
+                              TRUE ~ NA_character_))
   
   # Add number of decoding
   dataIn$numDecoding <- as.integer(factor(dataIn$decodingCondition, levels = unique(dataIn$decodingCondition)))
@@ -123,7 +130,7 @@ viz_dataset_stats <- function(dataIn) {
 
 ### PLOT FUNCTIONS
 
-# Univariate activation
+# Univariate activation - TBD
 viz_plot_univariate <- function(dataIn, specs) {
 }
 
@@ -220,7 +227,8 @@ viz_plot_multiclass <- function(dataIn, statsIn, specs) {
   
 }
 
-# Cross-script decoding
+
+# Cross-script decoding - mean accuracy
 viz_plot_cross <- function(dataIn, statsIn, specs) {
   
   ## Compose three plots: 
@@ -322,8 +330,9 @@ viz_plot_cross <- function(dataIn, statsIn, specs) {
   # Save plot
   ggsave(savename_all, width = 3000, height = 1800, dpi = 320, units = "px")
 }
+
   
-# Visualize ANOVA results - pariwise decodings
+# ANOVA results - pairwise decodings
 viz_plot_anova <- function(dataIn, specs, scrCond) {
   
   # Compose filename and path to save figure
@@ -400,7 +409,8 @@ viz_plot_anova <- function(dataIn, specs, scrCond) {
   ggsave(savename, width = 3000, height = 1800, dpi = 320, units = "px")
 }
 
-# Visualize ANOVA both scripts
+
+# ANOVA both scripts
 # JASP creates a plot with the average decoding for each script-group
 viz_plot_anova_group <- function(dataIn, specs) {
  
@@ -436,17 +446,84 @@ viz_plot_anova_group <- function(dataIn, specs) {
 }
 
 
+# ANOVA results - pairwise decodings
+viz_plot_anova_cross <- function(dataIn, specs) {
+  
+  # Compose filename and path to save figure
+  savename <- paste(specs, "_plot-ANOVA-both.png", sep="")
+  
+  # Filter data to keep only 'both' direction
+  dataIn <- dataIn %>% filter(modality == "both")
+  
+  limits = c("both")
+  values = c("#8372AC")
+  labels = c("Average of both train-test directions")
+  nums = 1:6
+  labels_x = c("RW - PW", "RW - NW", "RW - FS", "PW - NW", "PW - FS", "NW - FS")
+         
+  # Make plot
+  ggplot(dataIn, aes(x = numDecoding, y = mean_accuracy, color = modality)) +
+    scale_color_manual(name = " ",
+                       limits = limits,
+                       values = values,
+                       labels = labels, 
+                       aesthetics = c("colour", "fill")) +
+    geom_point(size = 3) +
+    geom_line(size = 1) +
+    
+    # Style options
+    theme_classic() +                                                              
+    ylim(0.3, 1) +                                                                    
+    theme(axis.text.x = element_text(angle = 45,  vjust=1, hjust=1, size = 10), 
+          axis.ticks = element_blank(),
+          axis.title.x = element_text(size = 15), 
+          axis.title.y = element_text(size = 15)) +
+      
+    # Labels
+    scale_x_continuous(breaks = nums,
+                       labels = labels_x) +
+    labs(x = "Decoding pair", y = "Accuracy") 
+  
+  # Save plot 
+  ggsave(savename, width = 3000, height = 1800, dpi = 320, units = "px")
+}
 
 
-### RSA
-# RSA - stats
+# Multidimensional scaling - TBD
+viz_plot_mds <- function(dataIn, specs) {
+}
+
+
+# Pairwise decoding - RDMs
+viz_plot_rsa <- function(dataIn, statsIn, specs) {
+  
+  nameList <- c(paste(specs, "_plot-rdm-expfr.png", sep=""), 
+                paste(specs, "_plot-rdm-expbr.png", sep=""), 
+                paste(specs, "_plot-rdm-ctrfr.png", sep=""), 
+                paste(specs, "_plot-rdm-ctrbr.png", sep=""),
+                paste(specs, "_plot-rdm-model.png", sep=""))
+  
+  viz_build_RDM(statsIn, "#69B5A2", "french_experts")
+  ggsave(nameList[1], width = 2000, height = 1600, dpi = 320, units = "px")
+  
+  viz_build_RDM(statsIn, "#699ae5", "french_controls")
+  ggsave(nameList[2], width = 2000, height = 1600, dpi = 320, units = "px")
+  
+  viz_build_RDM(statsIn, "#FF9E4A", "braille_experts")
+  ggsave(nameList[3], width = 2000, height = 1600, dpi = 320, units = "px")
+  
+  viz_build_RDM(statsIn, "#da5F49", "braille_controls")
+  ggsave(nameList[4], width = 2000, height = 1600, dpi = 320, units = "px")
+  
+  # Extra: make model RDM
+  viz_build_RDM(statsIn, "black", "model")
+  ggsave(nameList[5], width = 2000, height = 1600, dpi = 320, units = "px")
+  
+}
 
 
 
-
-
-
-### STATS FUNCTIONS
+### STATS 
 
 # repeated measures ANOVA
 # Assumptions on the dataset:
@@ -463,9 +540,30 @@ viz_stats_rmANOVA <- function(dataIn, nbScripts) {
                         type = 3) 
   }
   # Return result
-  viz_rmANOVA <- anovaOut
+  viz_stats_rmANOVA <- anovaOut
 }
 
+
+# One-way ANOVA on cross-decoding accuracies
+viz_stats_crossANOVA <- function(dataIn) {
+  
+  # Filter data to keep only 'both' direction
+  dataIn <- dataIn %>% filter(modality == "both")
+  
+  anovaOut <- ezANOVA(data = dataIn, 
+                      dv = accuracy, 
+                      wid = subID, 
+                      within = comparison, 
+                      type = 3, 
+                      return_aov = TRUE)
+  
+  
+  # Return result
+  viz_stats_crossANOVA <- anovaOut
+}
+
+
+# Summarize rmANOVA results into readable table
 viz_stats_summary <- function(dataIn, analysis, specs) {
   
   ## Import stats
@@ -506,6 +604,11 @@ viz_stats_summary <- function(dataIn, analysis, specs) {
 }
 
 
+# RSA: correlations with model
+viz_stats_rsa <- function(dataIn, statsIn, specs) {
+}
+
+
 
 ### MISC
 
@@ -513,16 +616,63 @@ viz_stats_summary <- function(dataIn, analysis, specs) {
 # Creates first part of filename to be used in plots
 viz_make_specs <- function(decoding, modality, group, space, area) {
   
-  specs <- paste("outputs_pipeline/decoding-",decoding,"_modality-",modality,"_group-",group,"_space-",space,
+  specs <- paste("figures/decoding-",decoding,"_modality-",modality,"_group-",group,"_space-",space,
                  "_area-", area, sep="")
   
   viz_misc_specs <- specs
 }
 
 
-
-
-
+viz_build_RDM <- function(statsIn, thisColor, thisCluster) {
+  
+  # Select the relevant decodings
+  temp <- statsIn %>% filter(cluster == thisCluster)
+  
+  # If model is requested, manually make matrix
+  
+  if (thisCluster == "model") {
+    a <- c(1/3, 2/3, 1/3, 3/3, 2/3, 1/3)
+  } else {
+    a <- temp$mean_accuracy
+  } 
+  
+  # Add values to template RDM 
+  # make labels
+  x <- c("RW", "PW", "NW", "FS")
+  y <- c("FS", "NW", "PW", "RW")
+  
+  # Manually re-arrange matrices 
+  template = c(
+    a[4], a[2], a[1], 0, 
+    a[5], a[3], 0,    a[1],
+    a[6], 0,    a[3], a[2], 
+    0,    a[6], a[5], a[4])
+  
+  rdm_template <- expand.grid(X=x, Y=y)
+  rdm_template$accuracy <- template
+  
+  # Plot with selected color 
+  ggplot(rdm_template, aes(X, Y, fill= accuracy)) + 
+    geom_tile() + 
+    theme_classic() +
+    theme(axis.title.x=element_blank(), 
+          axis.ticks.x=element_blank(), 
+          axis.line.x = element_blank(), 
+          axis.text.x = element_text(face="bold", colour="black", size = 20), 
+          axis.title.y=element_blank(), 
+          axis.ticks.y=element_blank(),
+          axis.line.y = element_blank(),
+          axis.text.y = element_text(face="bold", colour="black", size = 20)) + 
+    scale_fill_gradient2(high = thisColor, 
+                         limit = c(0,1), 
+                         na.value = "white",) + 
+    guides(fill = guide_colourbar(barwidth = 0.7, 
+                                  barheight = 20, 
+                                  ticks = FALSE)) + 
+    labs(title = thisCluster)
+  coord_fixed()
+  
+}
 
 
 

@@ -74,6 +74,17 @@ opt = stats_option_localizer();
 stats_reports_tSNR;
 
 
+%% Calculate DICE coeffiecients 
+% In localizer activation, calculate overlap between between [FW > SFW] 
+% and [BW > SBW] contrasts
+
+% load options 
+opt = stats_option_localizer();
+
+% Calculate DICE 
+stats_reports_DICEcoeff;
+
+
 
 
 
