@@ -85,18 +85,23 @@ viz_processROI <- function(method, area) {
   if(method == 'expansion')
     multiclass <- multiclass %>% filter(mask == area)
 
+  # Generate filename
+  name_specs <- viz_make_specs(decoding, modality, group, space, area)
+  
 
-  ## Stats - permutations done in MATLAB
+  ## Stats - permutations done in MATLAB, rest is here
+  
+  # T-tests on differences between decodings
+  viz_stats_multiclass(multiclass, name_specs)
   
 
   ## Plots
-  # Generate filename
-  name_specs <- viz_make_specs(decoding, modality, group, space, area)
-
+  
   # Summarize information for plot
   multiclass_stats <- viz_dataset_stats(multiclass)
 
   viz_plot_multiclass(multiclass, multiclass_stats, name_specs)
+  
   
   
   # ---------------------------------------------------------------------------#

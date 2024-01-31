@@ -133,6 +133,7 @@ opt.mvpa.child_classifier = @cosmo_classify_libsvm;
 opt.mvpa.feature_selector = @cosmo_anova_feature_selector;
 
 % permute the accuracies ?
-opt.mvpa.permutate = 0;
+% By default, do them. Worst case we don't use them
+opt.mvpa.permutate = 1;
 
 end

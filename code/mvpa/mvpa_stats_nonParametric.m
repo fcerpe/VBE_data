@@ -26,7 +26,9 @@ function opt = mvpa_stats_nonParametric(opt)
 % To identify the file, we only need to know which decoding (multiclass)
 % was performed on which ROIs (expansion / language / early visual)
 fileToLoad = dir(fullfile(opt.dir.cosmo, ...
-                          ['decoding-', opt.decodingCondition, '_modality-within*_rois-', opt.roiMethod, '_nbvoxels-*.mat']));
+                          ['decoding-', opt.decodingCondition, ...
+                           '_modality-', opt.decodingModality, ...
+                           '*_rois-', opt.roiMethod, '_nbvoxels-*.mat']));
 
 % Load file
 res = load(fullfile(fileToLoad.folder, fileToLoad.name));
@@ -41,6 +43,15 @@ nbVoxels = unique([res.choosenVoxNb]);
 
 % - which decoding conditions are tested
 decodingCondition = unique({res.decodingCondition});
+
+% Determine if we are processing cross-script or within-script decodings
+% In case, trim the results to only include the "both" direction of
+% decoding
+if isfield(res, 'modality')
+    res = res(strcmp('both',{res(:).modality}));
+
+    opt.groups = {'experts'};
+end
 
 % Specify case-specific parameters
 nbIterations = 100000;
@@ -84,15 +95,17 @@ for iGrp = 1:numel(opt.groups)
             end
 
             % Notify the user
-            fprintf(['Working on CONDITION - ', decName, '\n']);
+            fprintf(['Working on CONDITION - ', thisDec{1}, '\n']);
     
     
             % Create null distribution
     
             % Different numbers of subjects based on the area
             % How many subjects have decoding results for the current mask
-            whichSubs = ismember({res.subID}, groupSubs)              & strcmp({res.image}, opt.mvpa.map4D{1})  & ...
-                     strcmp({res.decodingCondition}, thisDec{1}) & strcmp({res.mask}, thisROI);
+            whichSubs = ismember({res.subID}, groupSubs) & ...
+                                 strcmp({res.image}, opt.mvpa.map4D{1}) & ...
+                                 strcmp({res.decodingCondition}, thisDec{1}) & ...
+                                 strcmp({res.mask}, thisROI);
 
             subs = {res(whichSubs).subID};
 

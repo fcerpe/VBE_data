@@ -609,6 +609,85 @@ viz_stats_rsa <- function(dataIn, statsIn, specs) {
 }
 
 
+# Multiclass t-tests for differences
+viz_stats_multiclass <- function(dataIn, specs) {
+  
+  savename <- paste(specs, "_stats-ttest-multiclass.csv", sep="")
+  
+  expfr <- dataIn %>% filter(cluster == "french_experts")
+  expbr <- dataIn %>% filter(cluster == "braille_experts")
+  ctrfr <- dataIn %>% filter(cluster == "french_controls")
+  ctrbr <- dataIn %>% filter(cluster == "braille_controls")
+  
+  tests_table <- data.table(group1 = character(), group2 = character(), ttest = numeric(), pvalue = numeric())
+  
+  # Manually calculate t-tests
+  # EXP-FR and EXP-BR
+  ttest = t.test(expfr$accuracy, expbr$accuracy, alternative = "two.sided", paired = T)
+  result <- data.table(group1 = expfr$cluster[1], group2 = expbr$cluster[1],
+                       ttest = ttest[[1]], pvalue = ttest[3])
+  tests_table <- rbind(tests_table, result)
+  
+  # EXP-FR and CTR-FR
+  ttest = t.test(expfr$accuracy, ctrfr$accuracy, alternative = "two.sided", paired = F)
+  result <- data.table(group1 = expfr$cluster[1], group2 = ctrfr$cluster[1],
+                       ttest = ttest[[1]], pvalue = ttest[3])
+  tests_table <- rbind(tests_table, result)
+  
+  # EXP-FR and CTR-BR
+  ttest = t.test(expfr$accuracy, ctrbr$accuracy, alternative = "two.sided", paired = F)
+  result <- data.table(group1 = expfr$cluster[1], group2 = ctrbr$cluster[1],
+                       ttest = ttest[[1]], pvalue = ttest[3])
+  tests_table <- rbind(tests_table, result)
+  
+  # EXP-BR and CTR-FR
+  ttest = t.test(expbr$accuracy, ctrfr$accuracy, alternative = "two.sided", paired = F)
+  result <- data.table(group1 = expbr$cluster[1], group2 = ctrfr$cluster[1],
+                       ttest = ttest[[1]], pvalue = ttest[3])
+  tests_table <- rbind(tests_table, result)
+  
+  # EXP-BR and CTR-BR
+  ttest = t.test(expbr$accuracy, ctrbr$accuracy, alternative = "two.sided", paired = F)
+  result <- data.table(group1 = expbr$cluster[1], group2 = ctrbr$cluster[1],
+                       ttest = ttest[[1]], pvalue = ttest[3])
+  tests_table <- rbind(tests_table, result)
+  
+  # CTR-FR and CTR-BR
+  ttest = t.test(ctrfr$accuracy, ctrbr$accuracy, alternative = "two.sided", paired = T)
+  result <- data.table(group1 = ctrfr$cluster[1], group2 = ctrbr$cluster[1],
+                       ttest = ttest[[1]], pvalue = ttest[3])
+  tests_table <- rbind(tests_table, result)
+  
+  # One-sample tests
+  ttest = t.test(expfr$accuracy, mu = 0.25, alternative = "two.sided")
+  result <- data.table(group1 = expfr$cluster[1], group2 = "One-sample",
+                       ttest = ttest[[1]], pvalue = ttest[3])
+  tests_table <- rbind(tests_table, result) 
+  
+  ttest = t.test(expbr$accuracy, mu = 0.25, alternative = "two.sided")
+  result <- data.table(group1 = expbr$cluster[1], group2 = "One-sample",
+                       ttest = ttest[[1]], pvalue = ttest[3])
+  tests_table <- rbind(tests_table, result) 
+  
+  ttest = t.test(ctrfr$accuracy, mu = 0.25, alternative = "two.sided")
+  result <- data.table(group1 = ctrfr$cluster[1], group2 = "One-sample",
+                       ttest = ttest[[1]], pvalue = ttest[3])
+  tests_table <- rbind(tests_table, result) 
+  
+  ttest = t.test(ctrbr$accuracy, mu = 0.25, alternative = "two.sided")
+  result <- data.table(group1 = ctrbr$cluster[1], group2 = "One-sample",
+                       ttest = ttest[[1]], pvalue = ttest[3])
+  tests_table <- rbind(tests_table, result)  
+  
+  
+  # Save table in outputs
+  tests_table <- data.frame(lapply(tests_table, as.character), stringsAsFactors = F)
+  write.csv(tests_table, savename, row.names = F)
+  
+  
+  
+}
+
 
 ### MISC
 
