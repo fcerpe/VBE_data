@@ -19,3 +19,5 @@ data <- as.table(univariate)
 
 # Perform CHI-square test 
 chisq.test(univariate)
+
+print("calling works")

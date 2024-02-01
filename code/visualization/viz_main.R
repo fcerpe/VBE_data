@@ -1,12 +1,12 @@
 ### VISUAL BRAILLE EXPERTISE - DATA VISUALIZATION
 #
-# Main script to visualize results and perfrom statistical analysis in R  
+# Main script to visualize results and perform statistical analysis in R  
 
 ### Set up working directory and libraries 
 
 # Add all necessary libraries
 source("viz_processROI.R")
-# source("viz_additionalAnalyses.R")
+source("viz_additionalAnalyses.R")
 
 
 
@@ -15,7 +15,7 @@ source("viz_processROI.R")
 # For each of the following ROIs:
 # - VWFA
 # - l- and r-LO
-# - l-PosTemp
+# - l-PTL
 # - V1
 #
 # 1. extract decoding accuracy results for  
@@ -58,9 +58,17 @@ viz_processROI("earlyVisual", "V1")
 
 ### Additional stats and plots
 
-# Some stats and plots are standalone (e.g. PPI)
-# to they don't fit in the pipeline
-# Can be run altogether or individually in 'visualization/viz_additionalAnalyses.R'
+# Perform one-time stats / analyses that are not part of the pipeline
+# (can be also run individually within 'viz_additionalAnalyses.R')
+#
+# List of analyses included:
+# - univariate sensitivity for Braille in all the areas, divided by group
+# - behavioural analyses for the MVPA 1-back task
+# - Chi-square between groups for Braille activation
+# - selection of which linguistic ROIs to include in PPI
+# - PPI, visualization of slopes and ANOVA between VWFA and l-PTL
+# - tSNR calculation, both whole-brain and in VWFA
+
 # viz_additionalAnalyses()
 
 
