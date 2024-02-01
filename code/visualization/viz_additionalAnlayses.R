@@ -29,6 +29,10 @@ viz_additionalAnalyses <- function() {
   # responses to MVPA task - correct answers, missed targets, false detections
   stats_behaviouralResponses()
   
+  # Comparison between groups in terms of Braille activation
+  # Chi-square test on the number of subjects in each group that present VWFA 
+  # activation for Braille
+  stats_brailleActivations()
   
   # Language ROI selection
   # visualization of how many subject show activation in all the parcels from 

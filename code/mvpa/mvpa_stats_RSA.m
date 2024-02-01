@@ -58,7 +58,8 @@ nbIterations = 100000;
 %               3: CTR-FR
 %               4: CTR-BR
 %               5: MODEL
-rdmComparisons = [1 2; 1 3; 1 4; 2 3; 2 4; 3 4; 1 5; 2 5; 3 5; 4 5];
+rdmComparisons = [1 2; 1 3; 1 4; 2 3; 2 4; 3 4];
+modelComparisons = [1 5; 2 5; 3 5; 4 5];
 
 % Set output structure
 statsResults = struct('mask', [], ...
@@ -129,55 +130,50 @@ for iRoi = 1:numel(roiList)
             % to create null distribution 
             for iIter = 1:nbIterations
 
-                subG1sample(iSG1, iIter) = shuffleRDMs(subRDM, groupRDM);
+                subG1sample(iSG1, iIter) = shuffleRDMs(subRDM, groupRDM, 0);
             end
         end
 
-        if ~strcmp(g2name, 'MODEL')
 
-            % Correlate each Group2 subejct's RDM with Group1 average RDM
-            fprintf(['\nCorrelations of ', g2name,' subejcts RDMs with the average RDM of ', g1name, '\n']);
-    
-            % Pre-allocate space in which to save subject's bootstraps
-            subG2sample = zeros(numel(g2subs), nbIterations);
-    
-            % Pre-allocate space in which to save subject's actual accuracy
-            subG2corrs = zeros(numel(g2subs), 1);
-    
-            for iSG2 = 1:numel(g2subs)
-    
-                % Tell the user
-                fprintf(['- computing correlation between sub-', g2subs{iSG2}, ' and the mean of ', g1name, '\n']);
-    
-                % Find RDM values (array of decoding accuracies) for this
-                % subject, area, image, script
-                subRDM = computeSubjectRDM(res, g2subs{iSG2}, opt.mvpa.map4D{1}, thisROI, g2script);
-    
-                % Adjust group's subject pool: 
-                % if it's the same group, mean of G2 should not include this sub
-                otherSubs = isSameGroup(g2name, g1name, g2subs{iSG2}, g1subs);
-                
-                % Find values for group RDM
-                groupRDM = computeGroupRDM(res, otherSubs, opt.mvpa.map4D{1}, thisROI, g1script);
-    
-                % Compute correlation between
-                % - G1 subject's RDM 
-                % - G2 group RDM (minus G1 sub if from the same group)
-                thisCorr = corr([subRDM' groupRDM]);
-                subG2corrs(iSG2) = thisCorr(2);
-             
-                % Randomize order of RDM elements and compute 10k correlations,
-                % to create null distribution 
-                for iIter = 1:nbIterations
-    
-                    subG2sample(iSG2, iIter) = shuffleRDMs(subRDM, groupRDM);
-                end
+        % Correlate each Group2 subejct's RDM with Group1 average RDM
+        fprintf(['\nCorrelations of ', g2name,' subejcts RDMs with the average RDM of ', g1name, '\n']);
+
+        % Pre-allocate space in which to save subject's bootstraps
+        subG2sample = zeros(numel(g2subs), nbIterations);
+
+        % Pre-allocate space in which to save subject's actual accuracy
+        subG2corrs = zeros(numel(g2subs), 1);
+
+        for iSG2 = 1:numel(g2subs)
+
+            % Tell the user
+            fprintf(['- computing correlation between sub-', g2subs{iSG2}, ' and the mean of ', g1name, '\n']);
+
+            % Find RDM values (array of decoding accuracies) for this
+            % subject, area, image, script
+            subRDM = computeSubjectRDM(res, g2subs{iSG2}, opt.mvpa.map4D{1}, thisROI, g2script);
+
+            % Adjust group's subject pool:
+            % if it's the same group, mean of G2 should not include this sub
+            otherSubs = isSameGroup(g2name, g1name, g2subs{iSG2}, g1subs);
+
+            % Find values for group RDM
+            groupRDM = computeGroupRDM(res, otherSubs, opt.mvpa.map4D{1}, thisROI, g1script);
+
+            % Compute correlation between
+            % - G1 subject's RDM
+            % - G2 group RDM (minus G1 sub if from the same group)
+            thisCorr = corr([subRDM' groupRDM]);
+            subG2corrs(iSG2) = thisCorr(2);
+
+            % Randomize order of RDM elements and compute 10k correlations,
+            % to create null distribution
+            for iIter = 1:nbIterations
+
+                subG2sample(iSG2, iIter) = shuffleRDMs(subRDM, groupRDM, 0);
             end
-
-        else
-            subG2corrs = subG1corrs;
-            subG2sample = subG1sample;
         end
+
 
         % Tell the user
         fprintf('\nCalculating averages and null distribution\n')
@@ -224,7 +220,92 @@ for iRoi = 1:numel(roiList)
 
     end
 
-    fprintf('\n\nDone computing correlations\n\n');
+    fprintf('\n\nDone computing correlations between neural matrices\n\n');
+
+
+    % Correlations between neural matrices and model
+    for iMCom = 1:length(modelComparisons)
+
+        % Extract Group1 information
+        [g1name, g1script, g1subs] = getGroupInformation(res, thisROI, opt, modelComparisons, iMCom, 1);
+
+        % Extract model information, could use the proper function but we
+        % only need one static value
+        modelName = 'MODEL';
+
+        % Correlate each Group1 subejct's RDM with Model RDM
+        fprintf(['\n\nComputing correlations between ', g1name, ' and model\n\n']);
+        fprintf(['Correlations of ', g1name,' subejcts RDMs with the model RDM\n']);
+
+        % Pre-allocate space in which to save subject's bootstraps
+        subG1sample = zeros(numel(g1subs), nbIterations);
+
+        % Pre-allocate space in which to save subject's actual accuracy
+        subG1corrs = zeros(numel(g1subs), 1);
+
+        for iS = 1:numel(g1subs)
+            
+            % Tell the user
+            fprintf(['- computing correlation between sub-', g1subs{iS}, ' and theoretical model\n']);
+
+            % Find RDM values (array of decoding accuracies) for this
+            % subject, area, image, script
+            subRDM = computeSubjectRDM(res, g1subs{iS}, opt.mvpa.map4D{1}, thisROI, g1script);
+
+            % Adjust group's subject pool: 
+            % if it's the same group, mean of G2 should not include this sub
+            
+            % Find values for group RDM
+            modelRDM = computeModelRDM();
+
+            % Compute correlation between
+            % - G1 subject's RDM 
+            % - model RDM
+            subG1corrs(iS) = corr(subRDM', modelRDM, 'Tail', 'right');
+         
+            % Randomize order of RDM elements and compute 10k correlations,
+            % to create null distribution 
+            for iIter = 1:nbIterations
+                subG1sample(iS, iIter) = shuffleRDMs(subRDM, modelRDM, 1);
+            end
+        end
+
+        % Tell the user
+        fprintf('\nCalculating averages and null distribution\n')
+
+        % Compute average correlation between subjects of Group1 and model
+        avgG1 = mean(subG1corrs);
+
+
+        % Compute averages within the premutations to obtain null 
+        % distribution for this correlations
+        % Average all subjects for the iteration
+        % - result is a 1 x [NbIterations] distribution
+        nullDistribution = mean(subG1sample);
+        
+
+        fprintf('\nCalculating statistical significance of results\n')
+
+        % Statistical significance
+        %
+        % Check how many times the observed group average accuracy is lower than
+        % the random one
+        subObservedPvalue = sum(avgG1 < nullDistribution) / nbIterations;
+
+        % Add information to the output variable
+        statsResults(statsIdx).mask = thisROI{1};
+        statsResults(statsIdx).image = opt.mvpa.map4D{1};
+        statsResults(statsIdx).group1 = g1name;
+        statsResults(statsIdx).group2 = modelName;
+        statsResults(statsIdx).correlation = avgG1;
+        statsResults(statsIdx).pValueUncorr = subObservedPvalue;
+
+        statsIdx = statsIdx +1;
+
+    end
+
+    fprintf('\n\nDone computing correlations with model\n\n');
+
 
 end
 
@@ -320,7 +401,7 @@ if ~strcmp(sub, 'none')
     rdm = [results(whichAccuracies).accuracy];
 else
     % use model RDM
-    rdm = [1/3, 2/3, 1/3, 3/3, 2/3, 1/3];
+    rdm = [1/3, 2/3, 3/3, 1/3, 2/3, 1/3];
 end
 
 end
@@ -330,20 +411,24 @@ end
 function rdm = computeGroupRDM(results, subs, image, roi, script)
 
 % All the subs are actual subs
-if ~ismember('none', subs)
-    whichAccuracies = ismember({results.subID}, subs) & ...
-                                    strcmp({results.image}, image) & ...
-                                    strcmp({results.mask}, roi) & ...
-                                    startsWith({results.decodingCondition}, script);
-    
-    groupSelection = [results(whichAccuracies).accuracy];
-    groupReshaped = reshape(groupSelection, 6, []);
-    
-    rdm = mean(groupReshaped,2);
-else
-    % use model RDM
-    rdm = [1/3, 2/3, 1/3, 3/3, 2/3, 1/3]';
+whichAccuracies = ismember({results.subID}, subs) & ...
+    strcmp({results.image}, image) & ...
+    strcmp({results.mask}, roi) & ...
+    startsWith({results.decodingCondition}, script);
+
+groupSelection = [results(whichAccuracies).accuracy];
+groupReshaped = reshape(groupSelection, 6, []);
+
+rdm = mean(groupReshaped,2);
 end
+
+
+% Compute model RDM
+% Only linguistic model implemented, just one RDM possible
+function rdm = computeModelRDM()
+
+% use model RDM
+rdm = [1/3, 2/3, 3/3, 1/3, 2/3, 1/3]';
 
 end
 
@@ -361,7 +446,7 @@ end
 
 % Compute permutations on the subject and group RDMs, then correlate
 % matrices
-function corrOut = shuffleRDMs(subRDM, groupRDM)
+function corrOut = shuffleRDMs(subRDM, groupRDM, model)
 
 % Shuffle subject RDM
 permSubRDM = datasample(subRDM, length(subRDM), 'Replace', false);
@@ -369,10 +454,16 @@ permSubRDM = datasample(subRDM, length(subRDM), 'Replace', false);
 % Shuffle group RDM
 permGrpRDM = datasample(groupRDM, length(groupRDM), 'Replace', false);
 
-% Correlate RDMs
-permCorr = corr([permSubRDM' permGrpRDM]);
+if model
+    % Correlate RDMs - model
+    corrOut = corr(permSubRDM', permGrpRDM, 'Tail', 'right');
+else
+    % Correlate RDMs 
+    permCorr = corr([permSubRDM' permGrpRDM]);
+    corrOut = permCorr(2);
+end
 
-corrOut = permCorr(2);
+
 
 end
 
