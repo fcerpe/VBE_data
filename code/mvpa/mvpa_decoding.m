@@ -46,6 +46,6 @@ opt.mvpa.permutate = 1;
 cross = mvpa_decoding_cross(opt);
 
 % RSA and relative non-parametric stats
-mvpa_stats_nonParametric(opt);
+% mvpa_stats_nonParametric(opt);
 
 end

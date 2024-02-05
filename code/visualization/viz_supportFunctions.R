@@ -44,7 +44,7 @@ library("ez")
 ### IMPORT FUNCTIONS
 
 # Load a csv and save it as dataframe
-viz_dataset_import <- function(decoding, modality, group, space, roi) {
+dataset_import <- function(decoding, modality, group, space, roi) {
   
   # CoSMoMVPA folder is common to all files
   cosmoFolder <- "../../outputs/derivatives/CoSMoMVPA/"
@@ -68,7 +68,7 @@ viz_dataset_import <- function(decoding, modality, group, space, roi) {
 # Process dataframe 
 # What are the common aspects to fix? 
 # What are specifics of different analyses?
-viz_dataset_clean <- function(dataIn) {
+dataset_clean <- function(dataIn) {
   
   # Rename 'VWFAfr' to 'VWFA' 
   dataIn$mask <- ifelse(dataIn$mask == "VWFAfr", "VWFA", dataIn$mask)
@@ -103,12 +103,12 @@ viz_dataset_clean <- function(dataIn) {
   #                             chosenVoxNb, ffxSmooth, roiSource, betas
   dataIn <- dataIn %>% select(-one_of(c("image", "maskVoxNb", "choosenVoxNb", "ffxSmooth", "roiSource")))
   
-  viz_cleanDataset <- dataIn
+  cleanDataset <- dataIn
 }
 
 
 # Summarize information for plots
-viz_dataset_stats <- function(dataIn) {
+dataset_stats <- function(dataIn) {
   
   if ("modality" %in% colnames(dataIn)) {
     # 'modality' is present, cross-decoding condition
@@ -123,7 +123,7 @@ viz_dataset_stats <- function(dataIn) {
   }
     
   # Assign result
-  viz_dataset_stats <- statsOut
+  dataset_stats <- statsOut
 }
 
 
@@ -131,21 +131,21 @@ viz_dataset_stats <- function(dataIn) {
 ### PLOT FUNCTIONS
 
 # Univariate activation - TBD
-viz_plot_univariate <- function(dataIn, specs) {
+plot_univariate <- function(dataIn, specs) {
 }
 
 
-# Pairwise decoding - mean accuracy 
-viz_plot_pairwise <- function(dataIn, statsIn, specs) {
+# Pairwise decoding - accuracy 
+plot_pairwise <- function(dataIn, statsIn, specs) {
   
   # Compose filename and path to save figure
-  savename <- paste(specs, "_plot-mean-accuracy.png", sep="")
+  savename <- paste("../../outputs/derivatives/figures/MVPA/", specs, "_plot-pairwise.png", sep="")
   
   # Get the plot
   ggplot(statsIn, aes(x = decodingCondition, y = mean_accuracy)) + 
     scale_color_manual(name = "    ",
                        limits = c("french_experts",   "french_controls",  "braille_experts",    "braille_controls"),
-                       values = c("#69B5A2",         "#699ae5",         "#FF9E4A",          "#da5F49"),
+                       values = c("#69B5A2",         "#4C75B3",         "#FF9E4A",          "#da5F49"),
                        labels = c("expert - french", "control - french", "expert - braille", "control - braille")) +
     
     # Mean and SE bars
@@ -188,16 +188,68 @@ viz_plot_pairwise <- function(dataIn, statsIn, specs) {
 }
 
 
-# Multiclass decoding - mean accuracy
-viz_plot_multiclass <- function(dataIn, statsIn, specs) {
+# Pairwise decoding - average of conditions
+plot_pairwise_average <- function(dataIn, specs) {
+  
+  # Calculate custom stats: 
+  # average of pairwise decoding is first calculated on the subject, 
+  # then subjects from the same group are clustered together
+  subAverages <- dataIn %>% group_by(subID, group, script, cluster) %>% 
+    summarize(mean_accu = mean(accuracy), sd_accu = sd(accuracy), se_accu = sd(accuracy)/sqrt(6), .groups = 'keep') 
+  
+  statsIn <- subAverages %>% group_by(cluster) %>% 
+    summarize(mean_accuracy = mean(mean_accu), sd_accuracy = sd(mean_accu), se_accuracy = sd(mean_accu)/sqrt(6), .groups = 'keep') 
   
   # Compose filename and path to save figure
-  savename <- paste(specs, "_plot-mean-accuracy.png", sep="")
+  savename <- paste("../../outputs/derivatives/figures/MVPA/", specs, "_plot-pairwise-average.png", sep="")
+  
+  
+  ggplot(statsIn, aes(x = cluster, y = mean_accuracy)) + 
+    scale_color_manual(name = "    ",
+                       limits = c("french_experts",   "french_controls",  "braille_experts",    "braille_controls"),
+                       values = c("#69B5A2",         "#4C75B3",         "#FF9E4A",          "#da5F49"),
+                       labels = c("expert - french", "control - french", "expert - braille", "control - braille")) +
+    # Mean and SE bars
+    geom_pointrange(aes(x = cluster, 
+                        y = mean_accuracy, 
+                        ymin = mean_accuracy - se_accuracy, 
+                        ymax = mean_accuracy + se_accuracy, 
+                        colour = cluster),
+                    position = position_dodge(1), size = .75, linewidth = 1.7) +
+    # Individual data clouds 
+    geom_point(data = subAverages, 
+               aes(x = cluster, 
+                   y = mean_accu, 
+                   colour = cluster),
+               position = position_jitter(w = 0.3, h = 0.01),
+               alpha = 0.3) +
+    geom_hline(yintercept = 0.50, size = .25, linetype = "dashed") +                
+    theme_classic() +                                                              
+    ylim(0.2,1) +                                                                    
+    theme(axis.text.x = element_blank(), 
+          axis.ticks = element_blank(),
+          axis.title.x = element_text(size = 15), 
+          axis.title.y = element_text(size = 15)) +
+    scale_x_discrete(limits=rev) +
+    labs(y = "Accuracy", title = "average of pairwise decodings")      
+  
+  ggsave(savename, width = 2500, height = 1800, dpi = 320, units = "px")
+  
+  
+  
+}
+
+
+# Multiclass decoding - mean accuracy
+plot_multiclass <- function(dataIn, statsIn, specs) {
+  
+  # Compose filename and path to save figure
+  savename <- paste("../../outputs/derivatives/figures/MVPA/", specs, "_plot-mean-accuracy.png", sep="")
   
   ggplot(statsIn, aes(x = decodingCondition, y = mean_accuracy)) + 
     scale_color_manual(name = "    ",
                        limits = c("french_experts",   "french_controls",  "braille_experts",    "braille_controls"),
-                       values = c("#69B5A2",         "#699ae5",         "#FF9E4A",          "#da5F49"),
+                       values = c("#69B5A2",         "#4C75B3",         "#FF9E4A",          "#da5F49"),
                        labels = c("expert - french", "control - french", "expert - braille", "control - braille")) +
     # Mean and SE bars
     geom_pointrange(aes(x = decodingCondition, 
@@ -229,7 +281,7 @@ viz_plot_multiclass <- function(dataIn, statsIn, specs) {
 
 
 # Cross-script decoding - mean accuracy
-viz_plot_cross <- function(dataIn, statsIn, specs) {
+plot_cross <- function(dataIn, statsIn, specs) {
   
   ## Compose three plots: 
   # - only average of directions
@@ -237,16 +289,16 @@ viz_plot_cross <- function(dataIn, statsIn, specs) {
   # - all options, both directions + average
   
   # Compose filenames and path to save figure
-  savename_mean <- paste(specs, "_plot-mean-accuracy_direction-average.png", sep="")
-  savename_both <- paste(specs, "_plot-mean-accuracy_direction-both.png", sep="")
-  savename_all <- paste(specs, "_plot-mean-accuracy_direction-all.png", sep="")
+  savename_mean <- paste("../../outputs/derivatives/figures/MVPA/", specs, "_plot-pairwise_direction-average.png", sep="")
+  savename_both <- paste("../../outputs/derivatives/figures/MVPA/", specs, "_plot-pairwise_direction-both.png", sep="")
+  savename_all <- paste("../../outputs/derivatives/figures/MVPA/", specs, "_plot-pairwise_direction-all.png", sep="")
   
   
   ## Plot: only average
   ggplot(subset(statsIn, modality == "both"), aes(x = decodingCondition, y = mean_accuracy)) + 
     scale_color_manual(name = "condtions",
                        limits = c("both"),
-                       values = c("#8372AC"),
+                       values = c("#8B70CA"),
                        labels = c("average")) +
     # Mean and SE bars
     geom_pointrange(aes(x = decodingCondition, 
@@ -307,7 +359,7 @@ viz_plot_cross <- function(dataIn, statsIn, specs) {
   ## Plot: all
   ggplot(statsIn, aes(x = decodingCondition, y = mean_accuracy)) + 
     scale_color_manual(name = "condtions", limits = c("tr-braille_te-french", "tr-french_te-braille", "both"),
-                       values = c("#69B5A2", "#FF9E4A", "#8372AC"),
+                       values = c("#69B5A2", "#FF9E4A", "#8B70CA"),
                        labels = c("train on BR, test on FR", "train on FR, test on BR", "average")) +
     # Mean and SE bars
     geom_pointrange(aes(x = decodingCondition, y = mean_accuracy, 
@@ -331,19 +383,68 @@ viz_plot_cross <- function(dataIn, statsIn, specs) {
   ggsave(savename_all, width = 3000, height = 1800, dpi = 320, units = "px")
 }
 
+
+# Cross-script decoding - average of conditions
+plot_cross_average <- function(dataIn, specs) {
+  
+  dataIn <- dataIn %>% filter(modality == "both")
+  
+  subAverages <- dataIn %>% group_by(subID, group, script, cluster) %>% 
+    summarize(mean_accu = mean(accuracy), sd_accu = sd(accuracy), se_accu = sd(accuracy)/sqrt(6), .groups = 'keep') 
+  
+  statsIn <- subAverages %>% group_by(cluster) %>% 
+    summarize(mean_accuracy = mean(mean_accu), sd_accuracy = sd(mean_accu), se_accuracy = sd(mean_accu)/sqrt(6), .groups = 'keep') 
+  
+  # Compose filenames and path to save figure
+  savename <- paste("../../outputs/derivatives/figures/MVPA/", specs, "_plot-pairwise-average_direction-both.png", sep="")
+  
+  ## Plot: only average
+  ggplot(statsIn, aes(x = cluster, y = mean_accuracy)) + 
+    scale_color_manual(name = "condtions",
+                       limits = c("NA_experts"),
+                       values = c("#8B70CA"),
+                       labels = c("average")) +
+    # Mean and SE bars
+    geom_pointrange(aes(x = cluster, 
+                        y = mean_accuracy, 
+                        ymin = mean_accuracy - se_accuracy, 
+                        ymax = mean_accuracy + se_accuracy, 
+                        colour = cluster),
+                    position = position_dodge(1), size = 1, linewidth = 2) +
+    # Individual data clouds 
+    geom_point(data = subAverages,
+               aes(x = cluster,
+                   y = mean_accu,
+                   colour = cluster),
+               position = position_jitter(w = 0.3, h = 0.01),
+               alpha = 0.5) +
+    geom_hline(yintercept = 0.5, size = .5, linetype = "dashed") +            
+    theme_classic() +                                                          
+    ylim(0.15,1) +                                                                    
+    theme(axis.text.x = element_text(size = 10), axis.title.x = element_text(size = 15),
+          axis.text.y = element_text(size = 10), axis.title.y = element_text(size = 15),
+          axis.ticks = element_blank()) +      
+    scale_x_discrete(limits=rev,                                                
+                     labels = c("  ")) +
+    labs(x = "Decoding pair", y = "Decoding accuracy", title = "Cross-script decoding")
+  
+  # Save plot
+  ggsave(savename, width = 1200, height = 1800, dpi = 320, units = "px")
+}
+
   
 # ANOVA results - pairwise decodings
-viz_plot_anova <- function(dataIn, specs, scrCond) {
+plot_anova <- function(dataIn, specs, scrCond) {
   
   # Compose filename and path to save figure
-  savename <- paste(specs, "_plot-ANOVA-",scrCond,".png", sep="")
+  savename <- paste("../../outputs/derivatives/figures/ANOVAs/", specs, "_plot-ANOVA-",scrCond,".png", sep="")
   
   # Pick conditions based on script
   # Only needed for either script, in case of both we need to modify the plotting script 
   switch(scrCond, 
          french = {
            limits = c("french_experts", "french_controls")
-           values = c("#69B5A2", "#699ae5")
+           values = c("#69B5A2", "#4C75B3")
            labels = c("Experts", "Controls")
            nums = 1:6
            labels_x = c("RW - PW", "RW - NW", "RW - FS", "PW - NW", "PW - FS", "NW - FS")
@@ -363,7 +464,7 @@ viz_plot_anova <- function(dataIn, specs, scrCond) {
     ggplot(dataIn, aes(x = comparison, y = mean_accuracy, color = cluster)) +
       scale_color_manual(name = " ", 
                          limits = c("french_experts", "french_controls", "braille_experts", "braille_controls"),
-                         values = c("#69B5A2", "#699ae5",  "#FF9E4A", "#da5F49"), 
+                         values = c("#69B5A2", "#4C75B3",  "#FF9E4A", "#da5F49"), 
                          labels = c("Experts", "Controls", "Experts", "Controls"), 
                          aesthetics = c("colour", "fill")) +
       geom_point(size = 3) +
@@ -412,10 +513,10 @@ viz_plot_anova <- function(dataIn, specs, scrCond) {
 
 # ANOVA both scripts
 # JASP creates a plot with the average decoding for each script-group
-viz_plot_anova_group <- function(dataIn, specs) {
+plot_anova_group <- function(dataIn, specs) {
  
   # Compose filename and path to save figure
-  savename <- paste(specs, "_plot-ANOVA-groups.png", sep="")
+  savename <- paste("../../outputs/derivatives/figures/ANOVAs/", specs, "_plot-ANOVA-groups.png", sep="")
   
   # Compose extra stats
   statsIn <- dataIn %>% 
@@ -447,16 +548,16 @@ viz_plot_anova_group <- function(dataIn, specs) {
 
 
 # ANOVA results - pairwise decodings
-viz_plot_anova_cross <- function(dataIn, specs) {
+plot_anova_cross <- function(dataIn, specs) {
   
   # Compose filename and path to save figure
-  savename <- paste(specs, "_plot-ANOVA-both.png", sep="")
+  savename <- paste("../../outputs/derivatives/figures/ANOVAs/", specs, "_plot-ANOVA-both.png", sep="")
   
   # Filter data to keep only 'both' direction
   dataIn <- dataIn %>% filter(modality == "both")
   
   limits = c("both")
-  values = c("#8372AC")
+  values = c("#8B70CA")
   labels = c("Average of both train-test directions")
   nums = 1:6
   labels_x = c("RW - PW", "RW - NW", "RW - FS", "PW - NW", "PW - FS", "NW - FS")
@@ -490,33 +591,33 @@ viz_plot_anova_cross <- function(dataIn, specs) {
 
 
 # Multidimensional scaling - TBD
-viz_plot_mds <- function(dataIn, specs) {
+plot_mds <- function(dataIn, specs) {
 }
 
 
 # Pairwise decoding - RDMs
-viz_plot_rsa <- function(dataIn, statsIn, specs) {
+plot_rsa <- function(dataIn, statsIn, specs) {
   
-  nameList <- c(paste(specs, "_plot-rdm-expfr.png", sep=""), 
-                paste(specs, "_plot-rdm-expbr.png", sep=""), 
-                paste(specs, "_plot-rdm-ctrfr.png", sep=""), 
-                paste(specs, "_plot-rdm-ctrbr.png", sep=""),
-                paste(specs, "_plot-rdm-model.png", sep=""))
+  nameList <- c(paste("../../outputs/derivatives/figures/RSA/", specs, "_plot-rdm-expfr.png", sep=""), 
+                paste("../../outputs/derivatives/figures/RSA/", specs, "_plot-rdm-expbr.png", sep=""), 
+                paste("../../outputs/derivatives/figures/RSA/", specs, "_plot-rdm-ctrfr.png", sep=""), 
+                paste("../../outputs/derivatives/figures/RSA/", specs, "_plot-rdm-ctrbr.png", sep=""),
+                paste("../../outputs/derivatives/figures/RSA/", specs, "_plot-rdm-model.png", sep=""))
   
-  viz_build_RDM(statsIn, "#69B5A2", "french_experts")
+  build_RDM(statsIn, "#69B5A2", "french_experts")
   ggsave(nameList[1], width = 2000, height = 1600, dpi = 320, units = "px")
   
-  viz_build_RDM(statsIn, "#699ae5", "french_controls")
+  build_RDM(statsIn, "#4C75B3", "french_controls")
   ggsave(nameList[2], width = 2000, height = 1600, dpi = 320, units = "px")
   
-  viz_build_RDM(statsIn, "#FF9E4A", "braille_experts")
+  build_RDM(statsIn, "#FF9E4A", "braille_experts")
   ggsave(nameList[3], width = 2000, height = 1600, dpi = 320, units = "px")
   
-  viz_build_RDM(statsIn, "#da5F49", "braille_controls")
+  build_RDM(statsIn, "#da5F49", "braille_controls")
   ggsave(nameList[4], width = 2000, height = 1600, dpi = 320, units = "px")
   
   # Extra: make model RDM
-  viz_build_RDM(statsIn, "black", "model")
+  build_RDM(statsIn, "black", "model")
   ggsave(nameList[5], width = 2000, height = 1600, dpi = 320, units = "px")
   
 }
@@ -529,7 +630,7 @@ viz_plot_rsa <- function(dataIn, statsIn, specs) {
 # Assumptions on the dataset:
 # - clean input  
 # - the right number of scripts are present  
-viz_stats_rmANOVA <- function(dataIn, nbScripts) {
+stats_rmANOVA <- function(dataIn, nbScripts) {
   
   # nbScripts determines how many within factors do we have
   if (nbScripts == 1) {
@@ -540,12 +641,12 @@ viz_stats_rmANOVA <- function(dataIn, nbScripts) {
                         type = 3) 
   }
   # Return result
-  viz_stats_rmANOVA <- anovaOut
+  stats_rmANOVA <- anovaOut
 }
 
 
 # One-way ANOVA on cross-decoding accuracies
-viz_stats_crossANOVA <- function(dataIn) {
+stats_anova_cross <- function(dataIn) {
   
   # Filter data to keep only 'both' direction
   dataIn <- dataIn %>% filter(modality == "both")
@@ -559,12 +660,12 @@ viz_stats_crossANOVA <- function(dataIn) {
   
   
   # Return result
-  viz_stats_crossANOVA <- anovaOut
+  stats_anova_cross <- anovaOut
 }
 
 
 # Summarize rmANOVA results into readable table
-viz_stats_summary <- function(dataIn, analysis, specs) {
+stats_summary <- function(dataIn, analysis, specs) {
   
   ## Import stats
   dataAnova <- dataIn$ANOVA
@@ -591,8 +692,8 @@ viz_stats_summary <- function(dataIn, analysis, specs) {
   dataAnova$p <- as.character(dataAnova$p)
   
   # Get filename
-  savename <- paste(specs, "_analysis-", analysis, ".csv", sep="")
-  savename_pdf <- paste(specs, "_analysis-", analysis, ".pdf", sep="")
+  savename <- paste("../../outputs/derivatives/results/ANOVAs/", specs, "_stats-ANOVA-", analysis, ".csv", sep="")
+  savename_pdf <- paste("../../outputs/derivatives/results/ANOVAs/", specs, "_stats-ANOVA-", analysis, ".pdf", sep="")
   
   # Save as csv
   write.csv(dataAnova, savename, row.names = FALSE)
@@ -604,105 +705,193 @@ viz_stats_summary <- function(dataIn, analysis, specs) {
 }
 
 
-# RSA: correlations with model
-viz_stats_rsa <- function(dataIn, statsIn, specs) {
+# RSA: correlations with model - DONE IN MATLAB
+# stats_rsa <- function(dataIn, statsIn, specs) {}
+
+
+# Pairwise averages: t-tests against chance and against other averages
+stats_pairwise_average <- function(dataIn, specs) {
+  
+  subAverages <- dataIn %>% group_by(subID, group, script, cluster) %>% 
+    summarize(mean_accu = mean(accuracy), sd_accu = sd(accuracy), se_accu = sd(accuracy)/sqrt(6), 
+              .groups = 'keep') 
+  
+  savename <- paste("../../outputs/derivatives/results/MVPA/", specs, "_stats-ttest-pairwise-averages.csv", sep="")
+  
+  expfr <- subAverages %>% filter(cluster == "french_experts")
+  expbr <- subAverages %>% filter(cluster == "braille_experts")
+  ctrfr <- subAverages %>% filter(cluster == "french_controls")
+  ctrbr <- subAverages %>% filter(cluster == "braille_controls")
+  
+  tests_table <- data.table(g1name = character(), g1accuracy = numeric(), 
+                            g2name = character(), g2accuracy = numeric(), 
+                            ttest = numeric(), pvalUncorr = numeric())
+  
+  # Manually calculate t-tests
+  result <- compare_accuracies(expfr$cluster[1], expfr$mean_accu, expbr$cluster[1], expbr$mean_accu, NA, TRUE)
+  tests_table <- rbind(tests_table, result)
+  
+  result <- compare_accuracies(expfr$cluster[1], expfr$mean_accu, ctrfr$cluster[1], ctrfr$mean_accu, NA, FALSE)
+  tests_table <- rbind(tests_table, result) 
+  
+  result <- compare_accuracies(expfr$cluster[1], expfr$mean_accu, ctrbr$cluster[1], ctrbr$mean_accu, NA, FALSE)
+  tests_table <- rbind(tests_table, result) 
+  
+  result <- compare_accuracies(expbr$cluster[1], expbr$mean_accu, ctrfr$cluster[1], ctrfr$mean_accu, NA, FALSE)
+  tests_table <- rbind(tests_table, result) 
+  
+  result <- compare_accuracies(expbr$cluster[1], expbr$mean_accu, ctrbr$cluster[1], ctrbr$mean_accu, NA, FALSE)
+  tests_table <- rbind(tests_table, result) 
+  
+  result <- compare_accuracies(ctrfr$cluster[1], ctrfr$mean_accu, ctrbr$cluster[1], ctrbr$mean_accu, NA, TRUE)
+  tests_table <- rbind(tests_table, result) 
+  
+  # One-sample tests
+  result <- compare_accuracies(expfr$cluster[1], expfr$mean_accu, "one-sample", NA, 0.5, NA)
+  tests_table <- rbind(tests_table, result) 
+  
+  result <- compare_accuracies(expbr$cluster[1], expbr$mean_accu, "one-sample", NA, 0.5, NA)
+  tests_table <- rbind(tests_table, result) 
+  
+  result <- compare_accuracies(ctrfr$cluster[1], ctrfr$mean_accu, "one-sample", NA, 0.5, NA)
+  tests_table <- rbind(tests_table, result) 
+  
+  result <- compare_accuracies(ctrbr$cluster[1], ctrbr$mean_accu, "one-sample", NA, 0.5, NA)
+  tests_table <- rbind(tests_table, result)   
+  
+  
+  # Adjust p-values for false detection rate
+  tests_table$pvalFDR <- p.adjust(tests_table$pvalUncorr, "fdr")
+  
+  # Save table in outputs
+  tests_table <- data.frame(lapply(tests_table, as.character), stringsAsFactors = F)
+  write.csv(tests_table, savename, row.names = F)
 }
 
 
-# Multiclass t-tests for differences
-viz_stats_multiclass <- function(dataIn, specs) {
+# Multiclass: t-tests against chance and against other averages
+stats_multiclass <- function(dataIn, specs) {
   
-  savename <- paste(specs, "_stats-ttest-multiclass.csv", sep="")
+  savename <- paste("../../outputs/derivatives/results/MVPA/", specs, "_stats-ttest-multiclass.csv", sep="")
   
   expfr <- dataIn %>% filter(cluster == "french_experts")
   expbr <- dataIn %>% filter(cluster == "braille_experts")
   ctrfr <- dataIn %>% filter(cluster == "french_controls")
   ctrbr <- dataIn %>% filter(cluster == "braille_controls")
   
-  tests_table <- data.table(group1 = character(), group2 = character(), ttest = numeric(), pvalue = numeric())
+  tests_table <- data.table(g1name = character(), g1accuracy = numeric(), 
+                            g2name = character(), g2accuracy = numeric(), 
+                            ttest = numeric(), pvalUncorr = numeric())
   
   # Manually calculate t-tests
-  # EXP-FR and EXP-BR
-  ttest = t.test(expfr$accuracy, expbr$accuracy, alternative = "two.sided", paired = T)
-  result <- data.table(group1 = expfr$cluster[1], group2 = expbr$cluster[1],
-                       ttest = ttest[[1]], pvalue = ttest[3])
-  tests_table <- rbind(tests_table, result)
+  result <- compare_accuracies(expfr$cluster[1], expfr$accuracy, expbr$cluster[1], expbr$accuracy, NA, TRUE)
+  tests_table <- rbind(tests_table, result) 
   
-  # EXP-FR and CTR-FR
-  ttest = t.test(expfr$accuracy, ctrfr$accuracy, alternative = "two.sided", paired = F)
-  result <- data.table(group1 = expfr$cluster[1], group2 = ctrfr$cluster[1],
-                       ttest = ttest[[1]], pvalue = ttest[3])
-  tests_table <- rbind(tests_table, result)
+  result <- compare_accuracies(expfr$cluster[1], expfr$accuracy, ctrfr$cluster[1], ctrfr$accuracy, NA, FALSE)
+  tests_table <- rbind(tests_table, result) 
   
-  # EXP-FR and CTR-BR
-  ttest = t.test(expfr$accuracy, ctrbr$accuracy, alternative = "two.sided", paired = F)
-  result <- data.table(group1 = expfr$cluster[1], group2 = ctrbr$cluster[1],
-                       ttest = ttest[[1]], pvalue = ttest[3])
-  tests_table <- rbind(tests_table, result)
+  result <- compare_accuracies(expfr$cluster[1], expfr$accuracy, ctrbr$cluster[1], ctrbr$accuracy, NA, FALSE)
+  tests_table <- rbind(tests_table, result) 
   
-  # EXP-BR and CTR-FR
-  ttest = t.test(expbr$accuracy, ctrfr$accuracy, alternative = "two.sided", paired = F)
-  result <- data.table(group1 = expbr$cluster[1], group2 = ctrfr$cluster[1],
-                       ttest = ttest[[1]], pvalue = ttest[3])
-  tests_table <- rbind(tests_table, result)
+  result <- compare_accuracies(expbr$cluster[1], expbr$accuracy, ctrfr$cluster[1], ctrfr$accuracy, NA, FALSE)
+  tests_table <- rbind(tests_table, result) 
   
-  # EXP-BR and CTR-BR
-  ttest = t.test(expbr$accuracy, ctrbr$accuracy, alternative = "two.sided", paired = F)
-  result <- data.table(group1 = expbr$cluster[1], group2 = ctrbr$cluster[1],
-                       ttest = ttest[[1]], pvalue = ttest[3])
-  tests_table <- rbind(tests_table, result)
+  result <- compare_accuracies(expbr$cluster[1], expbr$accuracy, ctrbr$cluster[1], ctrbr$accuracy, NA, FALSE)
+  tests_table <- rbind(tests_table, result) 
   
-  # CTR-FR and CTR-BR
-  ttest = t.test(ctrfr$accuracy, ctrbr$accuracy, alternative = "two.sided", paired = T)
-  result <- data.table(group1 = ctrfr$cluster[1], group2 = ctrbr$cluster[1],
-                       ttest = ttest[[1]], pvalue = ttest[3])
-  tests_table <- rbind(tests_table, result)
+  result <- compare_accuracies(ctrfr$cluster[1], ctrfr$accuracy, ctrbr$cluster[1], ctrbr$accuracy, NA, TRUE)
+  tests_table <- rbind(tests_table, result) 
   
   # One-sample tests
-  ttest = t.test(expfr$accuracy, mu = 0.25, alternative = "two.sided")
-  result <- data.table(group1 = expfr$cluster[1], group2 = "One-sample",
-                       ttest = ttest[[1]], pvalue = ttest[3])
+  result <- compare_accuracies(expfr$cluster[1], expfr$accuracy, "one-sample", NA, 0.25, NA)
   tests_table <- rbind(tests_table, result) 
   
-  ttest = t.test(expbr$accuracy, mu = 0.25, alternative = "two.sided")
-  result <- data.table(group1 = expbr$cluster[1], group2 = "One-sample",
-                       ttest = ttest[[1]], pvalue = ttest[3])
+  result <- compare_accuracies(expbr$cluster[1], expbr$accuracy, "one-sample", NA, 0.25, NA)
   tests_table <- rbind(tests_table, result) 
   
-  ttest = t.test(ctrfr$accuracy, mu = 0.25, alternative = "two.sided")
-  result <- data.table(group1 = ctrfr$cluster[1], group2 = "One-sample",
-                       ttest = ttest[[1]], pvalue = ttest[3])
+  result <- compare_accuracies(ctrfr$cluster[1], ctrfr$accuracy, "one-sample", NA, 0.25, NA)
   tests_table <- rbind(tests_table, result) 
   
-  ttest = t.test(ctrbr$accuracy, mu = 0.25, alternative = "two.sided")
-  result <- data.table(group1 = ctrbr$cluster[1], group2 = "One-sample",
-                       ttest = ttest[[1]], pvalue = ttest[3])
-  tests_table <- rbind(tests_table, result)  
+  result <- compare_accuracies(ctrbr$cluster[1], ctrbr$accuracy, "one-sample", NA, 0.25, NA)
+  tests_table <- rbind(tests_table, result)   
   
+  
+  # Adjust p-values for false detection rate
+  tests_table$pvalFDR <- p.adjust(tests_table$pvalUncorr, "fdr")
   
   # Save table in outputs
   tests_table <- data.frame(lapply(tests_table, as.character), stringsAsFactors = F)
   write.csv(tests_table, savename, row.names = F)
-  
-  
-  
 }
+
+
+# Cross-decoding: t-tests against chance and against other averages
+stats_cross <- function(dataIn, specs) {
+  
+  savename <- paste("../../outputs/derivatives/results/MVPA/", specs, "_stats-ttest-cross.csv", sep="")
+  
+  both <- dataIn %>% filter(modality == "both")
+  RP <- both %>% filter(comparison == "rw_v_pw")
+  RN <- both %>% filter(comparison == "rw_v_nw")
+  RF <- both %>% filter(comparison == "rw_v_fs")
+  PN <- both %>% filter(comparison == "pw_v_nw")
+  PF <- both %>% filter(comparison == "pw_v_fs")
+  NF <- both %>% filter(comparison == "nw_v_fs")
+  
+  subAverages <- dataIn %>% group_by(subID, group, script, cluster) %>% 
+    summarize(mean_accu = mean(accuracy), sd_accu = sd(accuracy), se_accu = sd(accuracy)/sqrt(6), .groups = 'keep') 
+  
+  tests_table <- data.table(g1name = character(), g1accuracy = numeric(), 
+                            g2name = character(), g2accuracy = numeric(), 
+                            ttest = numeric(), pvalUncorr = numeric())
+  
+  # Manually calculate one-sample t-tests
+  result <- compare_accuracies(RP$comparison[1], RP$accuracy, "one-sample", NA, 0.5, NA)
+  tests_table <- rbind(tests_table, result)  
+  
+  result <- compare_accuracies(RN$comparison[1], RN$accuracy, "one-sample", NA, 0.5, NA)
+  tests_table <- rbind(tests_table, result)  
+  
+  result <- compare_accuracies(RF$comparison[1], RF$accuracy, "one-sample", NA, 0.5, NA)
+  tests_table <- rbind(tests_table, result)  
+  
+  result <- compare_accuracies(PN$comparison[1], PN$accuracy, "one-sample", NA, 0.5, NA)
+  tests_table <- rbind(tests_table, result)  
+  
+  result <- compare_accuracies(PF$comparison[1], PF$accuracy, "one-sample", NA, 0.5, NA)
+  tests_table <- rbind(tests_table, result)  
+  
+  result <- compare_accuracies(NF$comparison[1], NF$accuracy, "one-sample", NA, 0.5, NA)
+  tests_table <- rbind(tests_table, result)  
+  
+  result <- compare_accuracies("average", subAverages$mean_accu, "one-sample", NA, 0.5, NA)
+  tests_table <- rbind(tests_table, result)  
+  
+  
+  # Adjust p-values for false detection rate
+  tests_table$pvalFDR <- p.adjust(tests_table$pvalUncorr, "fdr")
+  
+  # Save table in outputs
+  tests_table <- data.frame(lapply(tests_table, as.character), stringsAsFactors = F)
+  write.csv(tests_table, savename, row.names = F)
+}
+
 
 
 ### MISC
 
 # Compose name with specs of decoding analysed
 # Creates first part of filename to be used in plots
-viz_make_specs <- function(decoding, modality, group, space, area) {
+make_specs <- function(decoding, modality, group, space, area) {
   
-  specs <- paste("figures/decoding-",decoding,"_modality-",modality,"_group-",group,"_space-",space,
+  specs <- paste("decoding-",decoding,"_modality-",modality,"_group-",group,"_space-",space,
                  "_area-", area, sep="")
   
-  viz_misc_specs <- specs
+  misc_specs <- specs
 }
 
 
-viz_build_RDM <- function(statsIn, thisColor, thisCluster) {
+build_RDM <- function(statsIn, thisColor, thisCluster) {
   
   # Select the relevant decodings
   temp <- statsIn %>% filter(cluster == thisCluster)
@@ -754,6 +943,42 @@ viz_build_RDM <- function(statsIn, thisColor, thisCluster) {
 }
 
 
-
+compare_accuracies <- function(g1name, g1accu, g2name, g2accu, chance, pair) {
+  
+  # if group2 is specified, two-sided t-test between groups
+  # otherwise, one-sample t-test against specified chance level
+  if (length(g2accu) > 1) {
+    
+    # compute average of the accuracy vectors
+    g1mean <- mean(g1accu)
+    g2mean <- mean(g2accu)
+    
+    # compute t-test between vectors
+    ttest = t.test(g1accu, g2accu, alternative = "two.sided", paired = pair)
+    
+    # compose result array
+    result <- data.table(g1name = g1name, g1accuracy = g1mean, 
+                         g2name = g2name, g2accuracy = g2mean, 
+                         ttest = ttest[[1]], pvalUncorr = ttest[3])
+    
+  } else {
+    
+    # compute average of the accuracy vector
+    g1mean <- mean(g1accu)
+    
+    # compute t-test against chance
+    ttest = t.test(g1accu, mu = chance, alternative = "greater")
+    
+    # compose result array
+    result <- data.table(g1name = g1name, g1accuracy = g1mean, 
+                         g2name = g2name, g2accuracy = NA, 
+                         ttest = ttest[[1]], pvalUncorr = ttest[3])
+  }
+  
+  # Assign result and return
+  compare_accuracies <- result
+  
+  
+}
 
 
