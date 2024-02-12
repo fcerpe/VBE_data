@@ -15,9 +15,9 @@
 # - plot univariate activations for a given area and the type of stimuli
 #
 # STATS
-# - perfrom rmANOVA on one script
-# - perfrom rmANOVA on one script
-# - perfrom RSA and bootstrap
+# - perform rmANOVA on one script
+# - perform rmANOVA on one script
+# - perform RSA and bootstrap
 
 
 ### Set up working directory and libraries 
@@ -434,10 +434,12 @@ plot_cross_average <- function(dataIn, specs) {
 
   
 # ANOVA results - pairwise decodings
-plot_anova <- function(dataIn, specs, scrCond) {
+plot_anova <- function(dataIn, statsIn, specs, scrCond) {
   
   # Compose filename and path to save figure
-  savename <- paste("../../outputs/derivatives/figures/ANOVAs/", specs, "_plot-ANOVA-",scrCond,".png", sep="")
+  savename <- paste("../../outputs/derivatives/figures/ANOVAs/", specs, "_plot-ANOVA-", scrCond, ".png", sep="")
+  savename_extra <- paste("../../outputs/derivatives/figures/ANOVAs/", specs, "_plot-ANOVA-with-decoding.png", sep="")
+  
   
   # Pick conditions based on script
   # Only needed for either script, in case of both we need to modify the plotting script 
@@ -459,9 +461,58 @@ plot_anova <- function(dataIn, specs, scrCond) {
   
   # Make plot
   if(scrCond == "both"){
+    
+    ## Plot with slopes overlapped to actual decoding plot
+    ggplot(statsIn, aes(x = decodingCondition, y = mean_accuracy, color = cluster)) + 
+      scale_color_manual(name = "    ",
+                         limits = c("french_experts",   "french_controls",  "braille_experts",    "braille_controls"),
+                         values = c("#69B5A2",         "#4C75B3",         "#FF9E4A",          "#da5F49"),
+                         labels = c("expert - french", "control - french", "expert - braille", "control - braille"),
+                         aesthetics = c("colour", "fill")) +
+      # Mean and SE bars
+      geom_pointrange(aes(x = decodingCondition, 
+                          y = mean_accuracy, 
+                          ymin = mean_accuracy - se_accuracy, 
+                          ymax = mean_accuracy + se_accuracy, 
+                          colour = cluster),
+                      position = position_dodge(1), size = .75, linewidth = 1.7) +
+      
+      # Conjunction line between comparisons
+      geom_line(aes(group = cluster), size = 1) +
+      
+      # Individual data clouds 
+      geom_point(data = dataIn, aes(x = reorder(decodingCondition, cluster),
+                                    y = accuracy,
+                                    colour = cluster),
+                 position = position_jitter(w = 0.3, h = 0.01),
+                 alpha = 0.3,
+                 legend = F) +
+      
+      # Chance-level
+      geom_hline(yintercept = 0.5, size = .25, linetype = "dashed") +  
+      
+      # Style options
+      theme_classic() +                                                              
+      ylim(0.3,1) +                                                                    
+      theme(axis.text.x = element_text(angle = 45,  vjust=1, hjust=1, size = 10), 
+            axis.ticks = element_blank(),
+            axis.title.x = element_text(size = 15), 
+            axis.title.y = element_text(size = 15)) +
+      
+      # Labels
+      scale_x_discrete(limits=rev,                                                   
+                       labels = c("\nFRW - FPW"," ", "\nFRW - FNW"," ", "\nFRW - FFS"," ", 
+                                  "\nFPW - FNW"," ", "\nFPW - FFS"," ", "\nFNW - FFS"," ",
+                                  "\nBRW - BPW"," ", "\nBRW - BNW"," ", "\nBRW - BFS"," ", 
+                                  "\nBPW - BNW"," ", "\nBPW - BFS"," ", "\nBNW - BFS"," ")) +
+      labs(x = "Decoding pair", y = "Accuracy")
+    
+    # Save plot 
+    ggsave(savename_extra, width = 3000, height = 1800, dpi = 320, units = "px")
+    
 
-    # Plot with pairwise slopes 
-    ggplot(dataIn, aes(x = comparison, y = mean_accuracy, color = cluster)) +
+    ## Plot with pairwise slopes 
+    ggplot(statsIn, aes(x = comparison, y = mean_accuracy, color = cluster)) +
       scale_color_manual(name = " ", 
                          limits = c("french_experts", "french_controls", "braille_experts", "braille_controls"),
                          values = c("#69B5A2", "#4C75B3",  "#FF9E4A", "#da5F49"), 
@@ -482,7 +533,7 @@ plot_anova <- function(dataIn, specs, scrCond) {
       labs(x = "Decoding pair", y = "Accuracy") 
   }
   else {
-  ggplot(dataIn, aes(x = numDecoding, y = mean_accuracy, color = cluster)) +
+  ggplot(statsIn, aes(x = numDecoding, y = mean_accuracy, color = cluster)) +
     scale_color_manual(name = " ",
                        limits = limits,
                        values = values,
@@ -591,7 +642,62 @@ plot_anova_cross <- function(dataIn, specs) {
 
 
 # Multidimensional scaling - TBD
-plot_mds <- function(dataIn, specs) {
+plot_mds <- function() {
+  
+  mds_experts <- read.csv("../../outputs/derivatives/results/MDS/mds-pairwise_group-experts_space-IXI549Space_rois-VWFAfr.csv", header = F)
+  mds_controls <- read.csv("../../outputs/derivatives/results/MDS/mds-pairwise_group-controls_space-IXI549Space_rois-VWFAfr.csv", header = F)
+  
+  mds_experts$script <- c("FR","FR","FR","FR","BR","BR","BR","BR")
+  mds_controls$script <- c("FR","FR","FR","FR","BR","BR","BR","BR")
+  
+  # Generalize stimulus: remove 'F' and 'B' at the start
+  mds_experts$V1 <- c("RW","PW","NW","FS","RW","PW","NW","FS")
+  mds_controls$V1 <- c("RW","PW","NW","FS","RW","PW","NW","FS")
+  
+  
+  ## Experts
+  ggplot(mds_experts, aes(x = V2, y = V3)) + 
+    scale_color_manual(name = "    ",
+                       limits = c("FR",   "BR"),
+                       values = c("#69B5A2", "#FF9E4A"),
+                       labels = c(" ", " "), ) +
+    
+    # geom_point(aes(colour = script), size = 4, alpha = 1) +
+    geom_text(label = mds_experts$V1, size = 4.5, aes(colour = script)) +
+    
+    # Style options
+    theme_classic() +                                                              
+    xlim(-0.7,0.9) + ylim(-0.8,0.8) +                                                                     
+    theme(axis.text = element_blank(), 
+          axis.ticks = element_blank(),
+          axis.line = element_blank(),
+          axis.title = element_blank())
+  
+  # Save plot 
+  ggsave("../../outputs/derivatives/figures/MDS/mds_group-experts_graph-labels.png", width = 1500, height = 1500, dpi = 320, units = "px")
+  
+  
+  ## Controls
+  ggplot(mds_controls, aes(x = V2, y = V3)) + 
+    scale_color_manual(name = "    ",
+                       limits = c("FR",   "BR"),
+                       values = c("#4C75B3", "#da5F49"),
+                       labels = c(" ", " "), ) +
+    
+    geom_point(aes(colour = script), size = 4, alpha = 1) +
+    # geom_text(label = mds_controls$V1, size = 4.5, aes(colour = script)) +
+    
+    # Style options
+    theme_classic() +                                                              
+    xlim(-0.7,0.9) + ylim(-0.8,0.8) +                                                                     
+    theme(axis.text = element_blank(), 
+          axis.ticks = element_blank(),
+          axis.line = element_blank(),
+          axis.title = element_blank())
+  
+  # Save plot 
+  ggsave("../../outputs/derivatives/figures/MDS/mds_group-controls_graph-dots.png", width = 1500, height = 1500, dpi = 320, units = "px")
+  
 }
 
 
@@ -933,7 +1039,7 @@ build_RDM <- function(statsIn, thisColor, thisCluster) {
           axis.text.y = element_text(face="bold", colour="black", size = 20)) + 
     scale_fill_gradient2(high = thisColor, 
                          limit = c(0,1), 
-                         na.value = "white",) + 
+                         na.value = "white") + 
     guides(fill = guide_colourbar(barwidth = 0.7, 
                                   barheight = 20, 
                                   ticks = FALSE)) + 

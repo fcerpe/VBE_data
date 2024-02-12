@@ -33,19 +33,19 @@ viz_processROI <- function(method, area) {
   if(method == 'expansion')
     pairwise <- pairwise %>% filter(mask == area)
   
-  
-  ## Stats
   # Separate scripts
   pairwise_fr <- pairwise %>% filter(script == "french")
   pairwise_br <- pairwise %>% filter(script == "braille")
+  
+  
+  ## Stats
+  # Generate filename
+  name_specs <- make_specs(decoding, modality, group, space, area)
   
   # Run ANOVAs
   pairwise_anova_fr <- stats_rmANOVA(pairwise_fr, 1)
   pairwise_anova_br <- stats_rmANOVA(pairwise_br, 1)
   pairwise_anova_both <- stats_rmANOVA(pairwise, 2)
-  
-  # Generate filename
-  name_specs <- make_specs(decoding, modality, group, space, area)
   
   # Make summary table to show 
   stats_summary(pairwise_anova_fr, "french", name_specs)
@@ -71,9 +71,9 @@ viz_processROI <- function(method, area) {
   plot_rsa(pairwise, pairwise_stats, name_specs)
   
   # Visualize ANOVAs
-  plot_anova(pairwise_stats_fr, name_specs, "french")
-  plot_anova(pairwise_stats_br, name_specs, "braille")
-  plot_anova(pairwise_stats, name_specs, "both")
+  plot_anova(pairwise, pairwise_stats_fr, name_specs, "french")
+  plot_anova(pairwise, pairwise_stats_br, name_specs, "braille")
+  plot_anova(pairwise, pairwise_stats, name_specs, "both")
   plot_anova_group(pairwise_stats, name_specs)
   
   
