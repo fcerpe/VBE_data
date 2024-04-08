@@ -54,7 +54,7 @@ opt = mvpa_option();
 
 % Perfrom multidimensional scaling and save results to be exported 
 % for visualization
-opt = mvpa_multidimensional_scaling(opt); 
+opt = mvpa_multidimensional_scaling(); 
 
 
 %% Language areas decoding

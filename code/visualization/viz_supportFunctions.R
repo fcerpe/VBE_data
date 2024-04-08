@@ -169,19 +169,19 @@ plot_pairwise <- function(dataIn, statsIn, specs) {
     
     # Style options
     theme_classic() +                                                              
-    ylim(0,1) +                                                                    
-    theme(axis.text.x = element_text(angle = 45,  vjust=1, hjust=1, size = 10), 
+    ylim(0.2,1) +        
+    theme(axis.text.x = element_text(vjust=1, hjust=0, size = 10), 
           axis.ticks = element_blank(),
-          axis.title.x = element_text(size = 15), 
-          axis.title.y = element_text(size = 15)) +
+          axis.title.x = element_text(size = 15), axis.title.y = element_text(size = 15)) +
     
     # Labels
     scale_x_discrete(limits=rev,                                                   
-                     labels = c("\nFRW - FPW"," ", "\nFRW - FNW"," ", "\nFRW - FFS"," ", 
-                                "\nFPW - FNW"," ", "\nFPW - FFS"," ", "\nFNW - FFS"," ",
-                                "\nBRW - BPW"," ", "\nBRW - BNW"," ", "\nBRW - BFS"," ", 
-                                "\nBPW - BNW"," ", "\nBPW - BFS"," ", "\nBNW - BFS"," ")) +
-    labs(x = "Decoding pair", y = "Accuracy")      
+                     labels = c("FRW\nFPW"," ", "FRW\nFNW"," ", "FRW\nFFS"," ", 
+                                "FPW\nFNW"," ", "FPW\nFFS"," ", "FNW\nFFS"," ",
+                                "BRW\nBPW"," ", "BRW\nBNW"," ", "BRW\nBFS"," ", 
+                                "BPW\nBNW"," ", "BPW\nBFS"," ", "BNW\nBFS"," ")) +
+    
+    labs(x = "", y = "Decoding accuracy")          
   
   # Save plot
   ggsave(savename, width = 3000, height = 1800, dpi = 320, units = "px")
@@ -323,10 +323,10 @@ plot_cross <- function(dataIn, statsIn, specs) {
           axis.ticks = element_blank()) +      
     scale_x_discrete(limits=rev,                                                
                      labels = c("RW\nPW", "RW\nNW", "RW\nFS","PW\nNW", "PW\nFS","NW\nFS")) +
-    labs(x = "Decoding pair", y = "Decoding accuracy", title = "Cross-script decoding")
+    labs(x = " ", y = "Decoding accuracy", title = "Cross-script decoding")
   
   # Save plot
-  ggsave(savename_mean, width = 3000, height = 1800, dpi = 320, units = "px")
+  ggsave(savename_mean, width = 2500, height = 1800, dpi = 320, units = "px")
   
   
   ## Plot: both directions
@@ -350,7 +350,7 @@ plot_cross <- function(dataIn, statsIn, specs) {
           axis.text.y = element_text(size = 10), axis.title.y = element_text(size = 15),
           axis.ticks = element_blank()) +      
     scale_x_discrete(limits=rev, labels = c("RW\nPW", "RW\nNW", "RW\nFS","PW\nNW", "PW\nFS","NW\nFS")) +
-    labs(x = "Decoding pair", y = "Decoding accuracy", title = "Cross-script decoding")
+    labs(x = " ", y = "Decoding accuracy", title = "Cross-script decoding")
   
   # Save plot
   ggsave(savename_both, width = 3000, height = 1800, dpi = 320, units = "px")
@@ -377,7 +377,7 @@ plot_cross <- function(dataIn, statsIn, specs) {
           axis.text.y = element_text(size = 10), axis.title.y = element_text(size = 15),
           axis.ticks = element_blank()) +      
     scale_x_discrete(limits=rev, labels = c("RW\nPW", "RW\nNW", "RW\nFS","PW\nNW", "PW\nFS","NW\nFS")) +
-    labs(x = "Decoding pair", y = "Decoding accuracy", title = "Cross-script decoding")
+    labs(x = " ", y = "Decoding accuracy", title = "Cross-script decoding")
   
   # Save plot
   ggsave(savename_all, width = 3000, height = 1800, dpi = 320, units = "px")
@@ -831,7 +831,7 @@ stats_pairwise_average <- function(dataIn, specs) {
   
   tests_table <- data.table(g1name = character(), g1accuracy = numeric(), 
                             g2name = character(), g2accuracy = numeric(), 
-                            ttest = numeric(), pvalUncorr = numeric())
+                            ttest = numeric(), df = numeric(), pvalUncorr = numeric())
   
   # Manually calculate t-tests
   result <- compare_accuracies(expfr$cluster[1], expfr$mean_accu, expbr$cluster[1], expbr$mean_accu, NA, TRUE)
@@ -887,7 +887,7 @@ stats_multiclass <- function(dataIn, specs) {
   
   tests_table <- data.table(g1name = character(), g1accuracy = numeric(), 
                             g2name = character(), g2accuracy = numeric(), 
-                            ttest = numeric(), pvalUncorr = numeric())
+                            ttest = numeric(), df = numeric(), pvalUncorr = numeric())
   
   # Manually calculate t-tests
   result <- compare_accuracies(expfr$cluster[1], expfr$accuracy, expbr$cluster[1], expbr$accuracy, NA, TRUE)
@@ -949,7 +949,7 @@ stats_cross <- function(dataIn, specs) {
   
   tests_table <- data.table(g1name = character(), g1accuracy = numeric(), 
                             g2name = character(), g2accuracy = numeric(), 
-                            ttest = numeric(), pvalUncorr = numeric())
+                            ttest = numeric(), df = numeric(), pvalUncorr = numeric())
   
   # Manually calculate one-sample t-tests
   result <- compare_accuracies(RP$comparison[1], RP$accuracy, "one-sample", NA, 0.5, NA)
@@ -1065,7 +1065,7 @@ compare_accuracies <- function(g1name, g1accu, g2name, g2accu, chance, pair) {
     # compose result array
     result <- data.table(g1name = g1name, g1accuracy = g1mean, 
                          g2name = g2name, g2accuracy = g2mean, 
-                         ttest = ttest[[1]], pvalUncorr = ttest[3])
+                         ttest = ttest[[1]], df = ttest[2], pvalUncorr = ttest[3])
     
   } else {
     
@@ -1078,7 +1078,7 @@ compare_accuracies <- function(g1name, g1accu, g2name, g2accu, chance, pair) {
     # compose result array
     result <- data.table(g1name = g1name, g1accuracy = g1mean, 
                          g2name = g2name, g2accuracy = NA, 
-                         ttest = ttest[[1]], pvalUncorr = ttest[3])
+                         ttest = ttest[[1]], df = ttest[2], pvalUncorr = ttest[3])
   }
   
   # Assign result and return

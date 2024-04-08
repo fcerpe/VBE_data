@@ -14,7 +14,7 @@
 # * make general plot function
 # * check scripts in this function for overlap with previous dataset cleanings
 # * give up and put scripts here, as much modular as possible
-# * save Chi2 as csv result
+# * save Chi2 as csv result ~
 
 # Figures:
 # TBD
@@ -25,7 +25,68 @@
 # differences in univariate activation for BW and SBW (localizer stimuli) 
 # in different areas
 # With and without eye movements
-# stats_brailleSensitivity()
+stats_brailleSensitivity <- function() {
+  
+  # Load report
+  braille <- read.csv("../stats/reports/braille_sensitivity_tmaps_eyeMovements.txt")
+  
+  # cast as dataframe
+  braille <- as.data.frame(braille)
+  
+  # modify subject column to only keep number
+  braille$subject <- as.numeric(gsub('sub-0*', '', braille$subject))
+  
+  # rename activation field to avoid confusion 
+  braille$activation <- braille$mean_activation
+  braille <- subset(braille, select = -c(5))
+  
+  # Add number of decoding pair, to place the horizontal lines 
+  braille$contrast <- t(repmat(c(1,2), 1,nrow(braille)/2))
+  
+  # cluster group and condition together, for viz
+  braille$cluster <- ifelse(braille$contrast == 1, 
+                            ifelse(braille$group == "expert", "EI", "CI"),
+                            ifelse(braille$group == "expert", "ES", "CS"))
+  
+  # calculate stats for error bars
+  stats_braille <- braille %>% group_by(group, area, cluster, condition, contrast) %>% 
+    summarize(mean_activation = mean(activation), sd_activation = sd(activation), se_activation = sd(activation)/sqrt(6),
+              .groups = 'keep') 
+  
+  stats_braille[order(stats_braille$group, decreasing = TRUE), ]
+  
+  
+  # Plot bars 
+  # - with subject labels 
+  ggplot(stats_braille, 
+         aes(x = cluster, y = mean_activation, fill = cluster, color = group)) + 
+    geom_col(aes(x = cluster, y = mean_activation), 
+             position = "dodge", 
+             size = 1) +
+    geom_errorbar(aes(ymin = mean_activation - se_activation, ymax = mean_activation + se_activation), 
+                  width = 0) +
+    scale_fill_manual(values = c("CI" = "#da5F49", "CS" = "#FFFFFF", "EI" = "#FF9E4A", "ES" = "#FFFFFF"), 
+                      labels = c("controls - braille", 
+                                 "controls - scrambled", 
+                                 "experts - braille", 
+                                 "experts - scrambled")) +
+    scale_color_manual(values = c("control" = "#da5F49", "expert" = "#FF9E4A"), 
+                       guide = "none") +
+    
+    # Individual data clouds
+    geom_point(data = braille, aes(x = cluster,  y = activation),
+               color = "#555555", 
+               alpha = 0.4) +
+    theme_classic() +                                                              
+    theme(axis.ticks = element_blank()) +
+    facet_grid(~factor(area, levels = c("VWFA", "lLO", "rLO", "V1", "lPosTemp")), 
+               labeller = label_value) +
+    scale_x_discrete(labels = stats_braille$condition) +
+    labs(x = "Stimulus condition", y = "Mean univariate activation", title = "Univariate acitvation for BW and SBW")
+  
+  ggsave("../../outputs/derivatives/figures/braille-selectivity_group-all_area-all_plot-eyeMovements.png", width = 3000, height = 1800, dpi = 320, units = "px")
+  
+}
   
   
 # Behavioural analysis
@@ -118,7 +179,14 @@ plot_legends <- function() {
                    lab = c("Braille - Experts", "Braille - Controls"), 
                    val = c("#FF9E4A", "#da5F49"), 
                    savename = "../../outputs/derivatives/figures/plot-legend_group-neural_order-just-braille_shape-squares.png")
-    
+  
+  # - cross-decoding
+  make_legend_square(tab = mockTable, 
+                     lim = c("braille_experts"),
+                     lab = c("Average cross-decoding"), 
+                     val = c("#8B70CA"), 
+                     savename = "../../outputs/derivatives/figures/plot-legend_group-cross_order-just-avg_shape-squares.png")
+  
   
   ## CIRCLE LEGENDS
   # - four group*script pairs (exp-fr, ctr-fr, exp-br, ctr-br)
@@ -150,6 +218,13 @@ plot_legends <- function() {
                    lab = c("Braille - Experts", "Braille - Controls"), 
                    val = c("#FF9E4A", "#da5F49"), 
                    savename = "../../outputs/derivatives/figures/plot-legend_group-neural_order-just-braille_shape-circles.png")
+  
+  # - cross-decoding
+  make_legend_circle(tab = mockTable, 
+                     lim = c("braille_experts"),
+                     lab = c("Average cross-decoding"), 
+                     val = c("#8B70CA"), 
+                     savename = "../../outputs/derivatives/figures/plot-legend_group-cross_order-just-avg_shape-circles.png")
   
 }
 

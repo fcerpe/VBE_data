@@ -1,4 +1,4 @@
-%% Calculate DICE coefficients 
+ %% Calculate DICE coefficients 
 %
 % DICE coefficient is a measure of overlap between sets (voxels in our
 % case). 

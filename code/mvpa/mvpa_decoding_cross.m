@@ -111,7 +111,7 @@ for iSub = 1:numel(opt.subjects)
                         % Demean every pattern to remove univariate effect differences
                         meanPattern = mean(ds.samples,2);  
                         meanPattern = repmat(meanPattern,1,size(ds.samples,2)); 
-                        ds.samples  = ds.samples - meanPattern; 
+                        ds.samples = ds.samples - meanPattern; 
 
                         % slice the ds according to your targets
                         ds = cosmo_slice(ds, ds.sa.targets == decodingPairs(iPair,1) | ds.sa.targets == decodingPairs(iPair,2));

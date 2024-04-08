@@ -1,4 +1,4 @@
-function opt = mvpa_multidimensional_scaling(opt)
+function opt = mvpa_multidimensional_scaling()
 % Main function to perfrom multidimensional scaling
 %
 % From 4D maps for each subejct, extract relationships between conditions
