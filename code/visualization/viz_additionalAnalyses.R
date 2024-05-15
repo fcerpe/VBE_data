@@ -25,10 +25,111 @@
 # differences in univariate activation for BW and SBW (localizer stimuli) 
 # in different areas
 # With and without eye movements
+stats_eyeMovements <- function() {
+  
+  # Load report
+  eye <- read.csv("../stats/reports/braille_sensitivity_tmaps_eyeMovements.txt")
+  
+  # cast as dataframe
+  eye <- as.data.frame(eye)
+  
+  # modify subject column to only keep number
+  eye$subject <- as.numeric(gsub('sub-0*', '', eye$subject))
+  
+  # rename activation field to avoid confusion 
+  eye$activation <- eye$mean_activation
+  eye <- subset(eye, select = -c(5))
+  
+  # Add number of decoding pair, to place the horizontal lines 
+  eye$contrast <- t(repmat(c(1,2), 1,nrow(eye)/2))
+  
+  # cluster group and condition together, for viz
+  eye$cluster <- ifelse(eye$contrast == 1, 
+                        ifelse(eye$group == "expert", "EI", "CI"),
+                        ifelse(eye$group == "expert", "ES", "CS"))
+  
+  # calculate stats for error bars
+  stats_eye <- eye %>% group_by(group, area, cluster, condition, contrast) %>% 
+    summarize(mean_activation = mean(activation), sd_activation = sd(activation), se_activation = sd(activation)/sqrt(6),
+              .groups = 'keep') 
+  
+  stats_eye[order(stats_eye$group, decreasing = TRUE), ]
+  
+  
+  # Plot bars 
+  # - with subject labels 
+  ggplot(stats_eye, 
+         aes(x = cluster, y = mean_activation, fill = cluster, color = group)) + 
+    geom_col(aes(x = cluster, y = mean_activation), 
+             position = "dodge", 
+             size = 1) +
+    geom_errorbar(aes(ymin = mean_activation - se_activation, ymax = mean_activation + se_activation), 
+                  width = 0, color = "black") +
+    scale_fill_manual(values = c("CI" = "#da5F49", "CS" = "#FFFFFF", "EI" = "#FF9E4A", "ES" = "#FFFFFF"), 
+                      labels = c("controls - braille", 
+                                 "controls - scrambled", 
+                                 "experts - braille", 
+                                 "experts - scrambled")) +
+    scale_color_manual(values = c("control" = "#da5F49", "expert" = "#FF9E4A"), 
+                       guide = "none") +
+    
+    # Individual data clouds
+    geom_point(data = eye, aes(x = cluster,  y = activation), position = position_jitter(w = 0.3, h = 0.01),
+               color = "#999999", 
+               alpha = 0.4) +
+    theme_classic() +               
+    theme(axis.text.x = element_text(size = 12, family = "Avenir", color = "black"), 
+          axis.text.y = element_text(size = 12, family = "Avenir", color = "black"), 
+          axis.ticks = element_blank(),
+          axis.title.x = element_text(size = 12, family = "Avenir", color = "black", vjust = 0), 
+          axis.title.y = element_text(size = 12, family = "Avenir", color = "black", vjust = 0),
+          legend.position = "none") +
+    facet_grid(~factor(area, levels = c("VWFA", "lLO", "rLO", "V1", "lPosTemp")), 
+               labeller = label_value) +
+    scale_x_discrete(labels = "") +
+    labs(x = "Area", y = "Univariate activation")
+  
+  ggsave("../../outputs/derivatives/figures/braille-selectivity_group-all_area-all_plot-eyeMovements.png", width = 3000, height = 1800, dpi = 500, units = "px")
+  
+  # Create subsets based on group and area
+  tests_eye <- split(eye, list(eye$group, eye$area, eye$condition))
+  
+  # Initialize an empty dataframe to store t-test results
+  t_test_results <- data.frame(
+    group1 = character(), group2 = character(), stat = numeric(), p_value = numeric(), df = numeric())
+  
+  for (iGroup in c(1:10)) {
+    
+    group1 <- tests_eye[[iGroup]]$activation
+    group2 <- tests_eye[[iGroup+10]]$activation
+    
+    t_result <- t.test(group1, group2, paired = TRUE)
+    
+    t_test_results <- rbind(t_test_results, data.frame(
+      group1 = paste(unique(tests_eye[[iGroup]]$group), 
+                     unique(tests_eye[[iGroup]]$area), 
+                     unique(tests_eye[[iGroup]]$condition), sep="_"),
+      group2 = paste(unique(tests_eye[[iGroup+10]]$group), 
+                     unique(tests_eye[[iGroup+10]]$area), 
+                     unique(tests_eye[[iGroup+10]]$condition), sep="_"),
+      stat = t_result$statistic,
+      p_value = t_result$p.value,
+      df = t_result$parameter[[1]]
+    ))
+  }
+  
+  t_test_results$pvalFDR <- p.adjust(t_test_results$p_value, "fdr")
+  
+  t_test_results <- data.frame(lapply(t_test_results, as.character), stringsAsFactors = F)
+  
+  write.csv(t_test_results, '../../outputs/derivatives/results/braille-selectivity_group-all_area-all_analysis-eyeMovements-ttests.csv', row.names = F)
+}
+  
+
 stats_brailleSensitivity <- function() {
   
   # Load report
-  braille <- read.csv("../stats/reports/braille_sensitivity_tmaps_eyeMovements.txt")
+  braille <- read.csv("../stats/reports/braille_sensitivity_tmaps.txt")
   
   # cast as dataframe
   braille <- as.data.frame(braille)
@@ -64,7 +165,7 @@ stats_brailleSensitivity <- function() {
              position = "dodge", 
              size = 1) +
     geom_errorbar(aes(ymin = mean_activation - se_activation, ymax = mean_activation + se_activation), 
-                  width = 0) +
+                  width = 0, color = "black") +
     scale_fill_manual(values = c("CI" = "#da5F49", "CS" = "#FFFFFF", "EI" = "#FF9E4A", "ES" = "#FFFFFF"), 
                       labels = c("controls - braille", 
                                  "controls - scrambled", 
@@ -74,21 +175,59 @@ stats_brailleSensitivity <- function() {
                        guide = "none") +
     
     # Individual data clouds
-    geom_point(data = braille, aes(x = cluster,  y = activation),
-               color = "#555555", 
+    geom_point(data = eye, aes(x = cluster,  y = activation), position = position_jitter(w = 0.3, h = 0.01),
+               color = "#999999", 
                alpha = 0.4) +
-    theme_classic() +                                                              
-    theme(axis.ticks = element_blank()) +
+    theme_classic() +               
+    theme(axis.text.x = element_text(size = 12, family = "Avenir", color = "black"), 
+          axis.text.y = element_text(size = 12, family = "Avenir", color = "black"), 
+          axis.ticks = element_blank(),
+          axis.title.x = element_text(size = 12, family = "Avenir", color = "black", vjust = 0), 
+          axis.title.y = element_text(size = 12, family = "Avenir", color = "black", vjust = 0),
+          legend.position = "none") +
     facet_grid(~factor(area, levels = c("VWFA", "lLO", "rLO", "V1", "lPosTemp")), 
                labeller = label_value) +
-    scale_x_discrete(labels = stats_braille$condition) +
-    labs(x = "Stimulus condition", y = "Mean univariate activation", title = "Univariate acitvation for BW and SBW")
+    scale_x_discrete(labels = "") +
+    labs(x = "Area", y = "Univariate activation")
   
-  ggsave("../../outputs/derivatives/figures/braille-selectivity_group-all_area-all_plot-eyeMovements.png", width = 3000, height = 1800, dpi = 320, units = "px")
+  ggsave("../../outputs/derivatives/figures/braille-selectivity_group-all_area-all_plot-bw-contrast.png", width = 3000, height = 1800, dpi = 500, units = "px")
   
-}
+  # Create subsets based on group and area
+  tests_braille <- split(braille, list(braille$group, braille$area, braille$condition))
   
+  # Initialize an empty dataframe to store t-test results
+  t_test_results <- data.frame(
+    group1 = character(), group2 = character(), stat = numeric(), p_value = numeric(), df = numeric())
   
+  for (iGroup in c(1:10)) {
+    
+    group1 <- tests_braille[[iGroup]]$activation
+    group2 <- tests_braille[[iGroup+10]]$activation
+    
+    t_result <- t.test(group1, group2, paired = TRUE)
+    
+    t_test_results <- rbind(t_test_results, data.frame(
+      group1 = paste(unique(tests_braille[[iGroup]]$group), 
+                     unique(tests_braille[[iGroup]]$area), 
+                     unique(tests_braille[[iGroup]]$condition), sep="_"),
+      group2 = paste(unique(tests_braille[[iGroup+10]]$group), 
+                     unique(tests_braille[[iGroup+10]]$area), 
+                     unique(tests_braille[[iGroup+10]]$condition), sep="_"),
+      stat = t_result$statistic,
+      p_value = t_result$p.value,
+      df = t_result$parameter[[1]]
+    ))
+  }
+  
+  # Adjust p-values for false detection rate
+  t_test_results$pvalFDR <- p.adjust(t_test_results$p_value, "fdr")
+  
+  # Save table in outputs
+  t_test_results <- data.frame(lapply(t_test_results, as.character), stringsAsFactors = F)
+  
+  write.csv(t_test_results, '../../outputs/derivatives/results/braille-selectivity_group-all_area-all_analysis-univariate-ttests.csv', row.names = F)
+}  
+
 # Behavioural analysis
 # responses to MVPA task - correct answers, missed targets, false detections
 # stats_behaviouralResponses()
@@ -97,7 +236,7 @@ stats_brailleSensitivity <- function() {
 # Comparison between groups in terms of Braille activation
 # Chi-square test on the number of subjects in each group that present VWFA 
 # activation for Braille
-stats_brailleActivations <- function() {
+stats_groupsDifference <- function() {
     
   # Analyses are done manually at this stage, no report / contrast to load
   # 
@@ -263,63 +402,6 @@ make_legend_circle <- function(tab, lim, lab, val, savename) {
   
 }
   
-# DOES NOT WORK
-make_legend_rsa <- function() {
-  
-  a <- data.frame(x = 1, ef = rep(0, 100), eb = rep(1, 100), cf = rep(2, 100), cb = rep(3, 100), mo = rep(4, 100))
-  
-  set.seed(123)
-  x <- rep(1:100, each = 4)
-  A <- rep(c("A",NA,NA,NA), times = 100)
-  B <- rep(c(NA,"B",NA,NA), times = 100)
-  C <- rep(c(NA,NA,"C",NA), times = 100)
-  D <- rep(c(NA,NA,NA,"D"), times = 100)
-  y <- runif(400, min = -1, max = 1)
-  cluster <- paste(x, condition, sep = "_")
-  
-  df <- data.frame(x, condition, y, cluster)
-  
-  ggplot(df, aes(x = x, y = y)) +
-    geom_point(aes(fill1 = A)) +
-    geom_point(data = subset(df, condition == "B"), aes(fill2 = B)) +
-    geom_point(data = subset(df, condition == "C"), aes(fill3 = C)) +
-    geom_point(data = subset(df, condition == "D"), aes(fill4 = D)) +
-    scale_fill_multi(aesthetics = c("fill1", "fill2", "fill3", "fill4"),
-                     colours = list(c("white", "#69B5A2"),
-                                    c("white", "#FF9E4A"),
-                                    c("white", "#4C75B3"),
-                                    c("white", "#da5F49"))) + 
-    theme_classic() +                                                              
-    theme(axis.ticks = element_blank(), 
-          legend.text = element_text(size = 30)) +
-    scale_x_discrete(limits = rev, labels = c(" ", " ", " ", " ", " "))  
-  
-  
-  
-  # Setup dummy data
-  df <- rbind(data.frame(x = 1:3, y = 1, A = c(0, 0.5, 1), B = NA, C = NA, D = NA),
-              data.frame(x = 1:3, y = 2, A = NA, B = c(0, 0.5, 1), C = NA, D = NA),
-              data.frame(x = 1:3, y = 3, A = NA, B = NA, C = c(0, 0.5, 1), D = NA),
-              data.frame(x = 1:3, y = 4, A = NA, B = NA, C = NA, D = c(0, 0.5, 1)))
-  
-  ggplot(df, aes(x, y)) +
-    geom_raster(aes(fill1 = A)) +
-    geom_raster(aes(fill2 = B)) +
-    geom_raster(aes(fill3 = C)) +
-    geom_raster(aes(fill4 = D)) +
-    scale_fill_multi(aesthetics = c("fill1", "fill2", "fill3", "fill4"),
-                     colours = list(c("white", "#69B5A2"),
-                                    c("white", "#FF9E4A"),
-                                    c("white", "#4C75B3"),
-                                    c("white", "#da5F49")),
-                     values = NULL, labels = NULL, minor_breaks = NULL, position = 'right') + 
-    coord_fixed()
-  
-  
-  
-  
-  
-}
 
 
 

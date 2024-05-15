@@ -31,6 +31,8 @@ library("pracma")
 library("dplyr")
 library("data.table")
 library("ez")
+library("lsr")
+library("effsize")
 
 
 
@@ -136,7 +138,7 @@ plot_univariate <- function(dataIn, specs) {
 
 
 # Pairwise decoding - accuracy 
-plot_pairwise <- function(dataIn, statsIn, specs) {
+plot_pairwise <- function(dataIn, statsIn, specs, area) {
   
   # Compose filename and path to save figure
   savename <- paste("../../outputs/derivatives/figures/MVPA/", specs, "_plot-pairwise.png", sep="")
@@ -161,35 +163,36 @@ plot_pairwise <- function(dataIn, statsIn, specs) {
                            y = accuracy,
                            colour = cluster),
                position = position_jitter(w = 0.3, h = 0.01),
-               alpha = 0.3,
-               legend = F) +
+               alpha = 0.3, na.rm = FALSE, legend = F) +
     
     # Chance-level
     geom_hline(yintercept = 0.5, size = .25, linetype = "dashed") +  
     
     # Style options
     theme_classic() +                                                              
-    ylim(0.2,1) +        
-    theme(axis.text.x = element_text(vjust=1, hjust=0, size = 10), 
+    ylim(0.2,1) +                                                                    
+    theme(axis.text.x = element_text(size = 12, family = "Avenir", color = "black", vjust = 1, hjust = 0), 
+          axis.text.y = element_text(size = 12, family = "Avenir", color = "black"), 
           axis.ticks = element_blank(),
-          axis.title.x = element_text(size = 15), axis.title.y = element_text(size = 15)) +
+          axis.title.x = element_text(size = 12, family = "Avenir", color = "black", vjust = 0), 
+          axis.title.y = element_text(size = 12, family = "Avenir", color = "black", vjust = 2),
+          legend.position = "none") +
     
     # Labels
     scale_x_discrete(limits=rev,                                                   
-                     labels = c("FRW\nFPW"," ", "FRW\nFNW"," ", "FRW\nFFS"," ", 
-                                "FPW\nFNW"," ", "FPW\nFFS"," ", "FNW\nFFS"," ",
-                                "BRW\nBPW"," ", "BRW\nBNW"," ", "BRW\nBFS"," ", 
-                                "BPW\nBNW"," ", "BPW\nBFS"," ", "BNW\nBFS"," ")) +
-    
-    labs(x = "", y = "Decoding accuracy")          
+                     labels = c("RW\nPW"," ", "RW\nNW"," ", "RW\nFS"," ", 
+                                "PW\nNW"," ", "PW\nFS"," ", "NW\nFS"," ",
+                                "RW\nPW"," ", "RW\nNW"," ", "RW\nFS"," ", 
+                                "PW\nNW"," ", "PW\nFS"," ", "NW\nFS"," ")) +
+    labs(x = "Decoded pairs", y = "Decoding accuracy (%)")           
   
   # Save plot
-  ggsave(savename, width = 3000, height = 1800, dpi = 320, units = "px")
+  ggsave(savename, width = 3000, height = 1800, dpi = 500, units = "px")
 }
 
 
 # Pairwise decoding - average of conditions
-plot_pairwise_average <- function(dataIn, specs) {
+plot_pairwise_average <- function(dataIn, specs, area) {
   
   # Calculate custom stats: 
   # average of pairwise decoding is first calculated on the subject, 
@@ -222,21 +225,30 @@ plot_pairwise_average <- function(dataIn, specs) {
                    y = mean_accu, 
                    colour = cluster),
                position = position_jitter(w = 0.3, h = 0.01),
-               alpha = 0.3) +
+               alpha = 0.3, na.rm = FALSE) +
     geom_hline(yintercept = 0.50, size = .25, linetype = "dashed") +                
     theme_classic() +                                                              
     ylim(0.2,1) +                                                                    
-    theme(axis.text.x = element_blank(), 
+    theme(axis.text.x = element_text(size = 12, family = "Avenir", color = "black"), 
+          axis.text.y = element_text(size = 12, family = "Avenir", color = "black"), 
           axis.ticks = element_blank(),
-          axis.title.x = element_text(size = 15), 
-          axis.title.y = element_text(size = 15)) +
-    scale_x_discrete(limits=rev) +
-    labs(y = "Accuracy", title = "average of pairwise decodings")      
+          axis.title.x = element_text(size = 12, family = "Avenir", color = "black", vjust = 0), 
+          axis.title.y = element_text(size = 12, family = "Avenir", color = "black", vjust = 2),
+          legend.position = "none") +
+    
+    scale_x_discrete(limits = rev,
+                     labels = c("Latin\nExperts",
+                                "Latin\nControls",
+                                "Braille\nExperts",
+                                "Braille\nControls")) +
+    labs(x = "Script x group", y = "Decoding accuracy (%)")      
   
-  ggsave(savename, width = 2500, height = 1800, dpi = 320, units = "px")
   
-  
-  
+  # if(area == 'lLO' || area == 'rLO') {
+  #   ggsave(savename, width = 1700, height = 1800, dpi = 500, units = "px")
+  # } else {
+    ggsave(savename, width = 2200, height = 1800, dpi = 500, units = "px")
+  # }
 }
 
 
@@ -281,7 +293,7 @@ plot_multiclass <- function(dataIn, statsIn, specs) {
 
 
 # Cross-script decoding - mean accuracy
-plot_cross <- function(dataIn, statsIn, specs) {
+plot_cross <- function(dataIn, statsIn, specs, area) {
   
   ## Compose three plots: 
   # - only average of directions
@@ -306,28 +318,35 @@ plot_cross <- function(dataIn, statsIn, specs) {
                         ymin = mean_accuracy - se_accuracy, 
                         ymax = mean_accuracy + se_accuracy, 
                         colour = modality),
-                    position = position_dodge(1), size = 1, linewidth = 2) +
+                    position = position_dodge(1), size = .75, linewidth = 1.7) +
     # Individual data clouds 
     geom_point(data = subset(dataIn, modality == "both"),
                aes(x = reorder(decodingCondition, modality),
                    y = accuracy,
                    colour = modality),
-               position = position_jitter(w = 0.3, h = 0.01),
-               alpha = 0.5,
+               position = position_jitter(w = 0.5, h = 0.2),
+               alpha = 0.5, na.rm = FALSE, 
                legend = F) +
     geom_hline(yintercept = 0.5, size = .25, linetype = "dashed") +            
     theme_classic() +                                                          
-    ylim(0.15,1) +                                                                    
-    theme(axis.text.x = element_text(size = 10), axis.title.x = element_text(size = 15),
-          axis.text.y = element_text(size = 10), axis.title.y = element_text(size = 15),
-          axis.ticks = element_blank()) +      
+    ylim(0.2,1) +                                                                    
+    theme(axis.text.x = element_text(size = 12, family = "Avenir", color = "black"), 
+          axis.text.y = element_blank(), 
+          axis.ticks = element_blank(),
+          axis.title.x = element_text(size = 12, family = "Avenir", color = "black", vjust = 0), 
+          axis.title.y = element_blank(),
+          legend.position = "none") +
     scale_x_discrete(limits=rev,                                                
-                     labels = c("RW\nPW", "RW\nNW", "RW\nFS","PW\nNW", "PW\nFS","NW\nFS")) +
-    labs(x = " ", y = "Decoding accuracy", title = "Cross-script decoding")
+                     labels = c("RW\nPW", "RW\nNW", "RW\nFS", "PW\nNW", "PW\nFS", "NW\nFS")) +
+    labs(x = "Decoded pairs", y = "Decoding accuracy (%)")
   
   # Save plot
-  ggsave(savename_mean, width = 2500, height = 1800, dpi = 320, units = "px")
-  
+  if(area == 'lLO' || area == 'rLO') {
+    ggsave(savename_mean, width = 1600, height = 1800, dpi = 500, units = "px")
+  } else {
+    ggsave(savename_mean, width = 2200, height = 1800, dpi = 500, units = "px")
+  }
+
   
   ## Plot: both directions
   ggplot(subset(statsIn, modality != "both"), aes(x = decodingCondition, y = mean_accuracy)) + 
@@ -385,7 +404,7 @@ plot_cross <- function(dataIn, statsIn, specs) {
 
 
 # Cross-script decoding - average of conditions
-plot_cross_average <- function(dataIn, specs) {
+plot_cross_average <- function(dataIn, specs, area) {
   
   dataIn <- dataIn %>% filter(modality == "both")
   
@@ -396,7 +415,7 @@ plot_cross_average <- function(dataIn, specs) {
     summarize(mean_accuracy = mean(mean_accu), sd_accuracy = sd(mean_accu), se_accuracy = sd(mean_accu)/sqrt(6), .groups = 'keep') 
   
   # Compose filenames and path to save figure
-  savename <- paste("../../outputs/derivatives/figures/MVPA/", specs, "_plot-pairwise-average_direction-both.png", sep="")
+  savename <- paste("../../outputs/derivatives/figures/MVPA/", specs, "_plot-pairwise-average_tweet.png", sep="")
   
   ## Plot: only average
   ggplot(statsIn, aes(x = cluster, y = mean_accuracy)) + 
@@ -410,26 +429,32 @@ plot_cross_average <- function(dataIn, specs) {
                         ymin = mean_accuracy - se_accuracy, 
                         ymax = mean_accuracy + se_accuracy, 
                         colour = cluster),
-                    position = position_dodge(1), size = 1, linewidth = 2) +
+                    position = position_dodge(1), size = .75, linewidth = 1.7) +
     # Individual data clouds 
     geom_point(data = subAverages,
                aes(x = cluster,
                    y = mean_accu,
                    colour = cluster),
-               position = position_jitter(w = 0.3, h = 0.01),
-               alpha = 0.5) +
-    geom_hline(yintercept = 0.5, size = .5, linetype = "dashed") +            
+               position = position_jitter(w = 0.5, h = 0.2),
+               alpha = 0.5, na.rm = FALSE) +
+    geom_hline(yintercept = 0.5, size = .25, linetype = "dashed") +            
     theme_classic() +                                                          
-    ylim(0.15,1) +                                                                    
-    theme(axis.text.x = element_text(size = 10), axis.title.x = element_text(size = 15),
-          axis.text.y = element_text(size = 10), axis.title.y = element_text(size = 15),
-          axis.ticks = element_blank()) +      
-    scale_x_discrete(limits=rev,                                                
-                     labels = c("  ")) +
-    labs(x = "Decoding pair", y = "Decoding accuracy", title = "Cross-script decoding")
+    ylim(0.2,1) +                                                                    
+    theme(axis.text.x = element_text(size = 12, family = "Avenir", color = "black"), 
+          axis.text.y = element_text(size = 12, family = "Avenir", color = "black"), 
+          axis.ticks = element_blank(),
+          axis.title.x = element_text(size = 12, family = "Avenir", color = "black", vjust = 0), 
+          axis.title.y = element_text(size = 12, family = "Avenir", color = "black", vjust = 2),
+          legend.position = "none") +
+    scale_x_discrete(limits=rev, labels = c('Mean\ncut')) +
+    labs(x = "cut", y = "Decoding accuracy (%)")
   
   # Save plot
-  ggsave(savename, width = 1200, height = 1800, dpi = 320, units = "px")
+  if(area == 'lLO' || area == 'rLO') {
+    ggsave(savename, width = 913, height = 1800, dpi = 500, units = "px")
+  } else {
+    ggsave(savename, width = 913, height = 1800, dpi = 500, units = "px")
+  }
 }
 
   
@@ -705,26 +730,26 @@ plot_mds <- function() {
 plot_rsa <- function(dataIn, statsIn, specs) {
   
   nameList <- c(paste("../../outputs/derivatives/figures/RSA/", specs, "_plot-rdm-expfr.png", sep=""), 
-                paste("../../outputs/derivatives/figures/RSA/", specs, "_plot-rdm-expbr.png", sep=""), 
                 paste("../../outputs/derivatives/figures/RSA/", specs, "_plot-rdm-ctrfr.png", sep=""), 
+                paste("../../outputs/derivatives/figures/RSA/", specs, "_plot-rdm-expbr.png", sep=""), 
                 paste("../../outputs/derivatives/figures/RSA/", specs, "_plot-rdm-ctrbr.png", sep=""),
                 paste("../../outputs/derivatives/figures/RSA/", specs, "_plot-rdm-model.png", sep=""))
   
   build_RDM(statsIn, "#69B5A2", "french_experts")
-  ggsave(nameList[1], width = 2000, height = 1600, dpi = 320, units = "px")
+  ggsave(nameList[1], width = 1700, height = 1700, dpi = 700, units = "px")
   
   build_RDM(statsIn, "#4C75B3", "french_controls")
-  ggsave(nameList[2], width = 2000, height = 1600, dpi = 320, units = "px")
+  ggsave(nameList[2], width = 1700, height = 1700, dpi = 700, units = "px")
   
   build_RDM(statsIn, "#FF9E4A", "braille_experts")
-  ggsave(nameList[3], width = 2000, height = 1600, dpi = 320, units = "px")
+  ggsave(nameList[3], width = 1700, height = 1700, dpi = 700, units = "px")
   
   build_RDM(statsIn, "#da5F49", "braille_controls")
-  ggsave(nameList[4], width = 2000, height = 1600, dpi = 320, units = "px")
+  ggsave(nameList[4], width = 1700, height = 1700, dpi = 700, units = "px")
   
   # Extra: make model RDM
   build_RDM(statsIn, "black", "model")
-  ggsave(nameList[5], width = 2000, height = 1600, dpi = 320, units = "px")
+  ggsave(nameList[5], width = 1700, height = 1700, dpi = 700, units = "px")
   
 }
 
@@ -811,10 +836,6 @@ stats_summary <- function(dataIn, analysis, specs) {
 }
 
 
-# RSA: correlations with model - DONE IN MATLAB
-# stats_rsa <- function(dataIn, statsIn, specs) {}
-
-
 # Pairwise averages: t-tests against chance and against other averages
 stats_pairwise_average <- function(dataIn, specs) {
   
@@ -831,7 +852,7 @@ stats_pairwise_average <- function(dataIn, specs) {
   
   tests_table <- data.table(g1name = character(), g1accuracy = numeric(), 
                             g2name = character(), g2accuracy = numeric(), 
-                            ttest = numeric(), df = numeric(), pvalUncorr = numeric())
+                            ttest = numeric(), cohen = numeric(), df = numeric(), pvalUncorr = numeric())
   
   # Manually calculate t-tests
   result <- compare_accuracies(expfr$cluster[1], expfr$mean_accu, expbr$cluster[1], expbr$mean_accu, NA, TRUE)
@@ -887,7 +908,7 @@ stats_multiclass <- function(dataIn, specs) {
   
   tests_table <- data.table(g1name = character(), g1accuracy = numeric(), 
                             g2name = character(), g2accuracy = numeric(), 
-                            ttest = numeric(), df = numeric(), pvalUncorr = numeric())
+                            ttest = numeric(), cohen = numeric(), df = numeric(), pvalUncorr = numeric())
   
   # Manually calculate t-tests
   result <- compare_accuracies(expfr$cluster[1], expfr$accuracy, expbr$cluster[1], expbr$accuracy, NA, TRUE)
@@ -949,7 +970,7 @@ stats_cross <- function(dataIn, specs) {
   
   tests_table <- data.table(g1name = character(), g1accuracy = numeric(), 
                             g2name = character(), g2accuracy = numeric(), 
-                            ttest = numeric(), df = numeric(), pvalUncorr = numeric())
+                            ttest = numeric(), cohen = numeric(), df = numeric(), pvalUncorr = numeric())
   
   # Manually calculate one-sample t-tests
   result <- compare_accuracies(RP$comparison[1], RP$accuracy, "one-sample", NA, 0.5, NA)
@@ -1005,7 +1026,7 @@ build_RDM <- function(statsIn, thisColor, thisCluster) {
   # If model is requested, manually make matrix
   
   if (thisCluster == "model") {
-    a <- c(1/3, 2/3, 1/3, 3/3, 2/3, 1/3)
+    a <- c(0.3, 0.6, 0.3, 0.9, 0.6, 0.3)
   } else {
     a <- temp$mean_accuracy
   } 
@@ -1029,23 +1050,28 @@ build_RDM <- function(statsIn, thisColor, thisCluster) {
   ggplot(rdm_template, aes(X, Y, fill= accuracy)) + 
     geom_tile() + 
     theme_classic() +
+    annotate("rect", xmin = 0.5, xmax = 4.5, ymin = 0.5, ymax = 4.5,
+             alpha = 0,
+             color = thisColor,
+             linewidth = .5,
+             linetype = 1) + 
     theme(axis.title.x=element_blank(), 
           axis.ticks.x=element_blank(), 
           axis.line.x = element_blank(), 
-          axis.text.x = element_text(face="bold", colour="black", size = 20), 
+          axis.text.x = element_blank(), 
           axis.title.y=element_blank(), 
           axis.ticks.y=element_blank(),
           axis.line.y = element_blank(),
-          axis.text.y = element_text(face="bold", colour="black", size = 20)) + 
+          axis.text.y = element_blank(),
+          legend.position = "none",
+          plot.margin = unit(c(0,0,0,0), "pt")) + 
     scale_fill_gradient2(high = thisColor, 
                          limit = c(0,1), 
                          na.value = "white") + 
     guides(fill = guide_colourbar(barwidth = 0.7, 
                                   barheight = 20, 
                                   ticks = FALSE)) + 
-    labs(title = thisCluster)
-  coord_fixed()
-  
+    coord_fixed()
 }
 
 
@@ -1062,10 +1088,13 @@ compare_accuracies <- function(g1name, g1accu, g2name, g2accu, chance, pair) {
     # compute t-test between vectors
     ttest = t.test(g1accu, g2accu, alternative = "two.sided", paired = pair)
     
+    # compute Cohen's D
+    d = cohen.d(g1accu, g2accu, paired = pair)
+    
     # compose result array
     result <- data.table(g1name = g1name, g1accuracy = g1mean, 
                          g2name = g2name, g2accuracy = g2mean, 
-                         ttest = ttest[[1]], df = ttest[2], pvalUncorr = ttest[3])
+                         ttest = ttest[[1]], cohen = d[[3]], df = ttest[[2]], pvalUncorr = ttest[3])
     
   } else {
     
@@ -1075,10 +1104,13 @@ compare_accuracies <- function(g1name, g1accu, g2name, g2accu, chance, pair) {
     # compute t-test against chance
     ttest = t.test(g1accu, mu = chance, alternative = "greater")
     
+    # one sample Cohen's D
+    d = cohensD(g1accu, mu = chance)
+    
     # compose result array
     result <- data.table(g1name = g1name, g1accuracy = g1mean, 
                          g2name = g2name, g2accuracy = NA, 
-                         ttest = ttest[[1]], df = ttest[2], pvalUncorr = ttest[3])
+                         ttest = ttest[[1]], cohen = d, df = ttest[[2]], pvalUncorr = ttest[3])
   }
   
   # Assign result and return

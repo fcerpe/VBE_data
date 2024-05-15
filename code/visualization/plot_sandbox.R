@@ -28,7 +28,11 @@ averages <- subAverages %>% group_by(cluster) %>% summarize(mean_accuracy = mean
 cross <- dataset_import("pairwise", "cross", "experts", "IXI549Space", "expansion")
 cross <- dataset_clean(cross)
 cross <- cross %>% filter(mask == "VWFA")
+cross <- cross %>% filter(modality == "both")
 cross_stats <- dataset_stats(cross)
+crossAverages <- cross %>% group_by(subID, group, script, cluster) %>% summarize(mean_accu = mean(accuracy), sd_accu = sd(accuracy), se_accu = sd(accuracy)/sqrt(6), .groups = 'keep') 
+crossAvgStats <- crossAverages %>% group_by(cluster) %>% summarize(mean_accuracy = mean(mean_accu), sd_accuracy = sd(mean_accu), se_accuracy = sd(mean_accu)/sqrt(6), .groups = 'keep') 
+
 
 ## RSA
 # Select the relevant decodings
@@ -68,22 +72,22 @@ ggplot(pairwise_stats, aes(x = decodingCondition, y = mean_accuracy)) +
   # Style options
   theme_classic() +                                                              
   ylim(0.2,1) +                                                                    
-  theme(axis.text.x = element_text(size = 10, family = "Avenir", color = "black", vjust = 1, hjust = 0), 
-        axis.text.y = element_text(size = 10, family = "Avenir", color = "black"), 
+  theme(axis.text.x = element_text(size = 12, family = "Avenir", color = "black", vjust = 1, hjust = 0), 
+        axis.text.y = element_text(size = 12, family = "Avenir", color = "black"), 
         axis.ticks = element_blank(),
-        axis.title.x = element_text(size = 15, family = "Avenir", color = "black", vjust = 0), 
-        axis.title.y = element_text(size = 15, family = "Avenir", color = "black", vjust = 2),
+        axis.title.x = element_text(size = 12, family = "Avenir", color = "black", vjust = 0), 
+        axis.title.y = element_text(size = 12, family = "Avenir", color = "black", vjust = 2),
         legend.position = "none") +
   
   # Labels
   scale_x_discrete(limits=rev,                                                   
-                   labels = c("RW-PW"," ", "RW-NW"," ", "RW-FS"," ", 
-                              "PW-NW"," ", "PW-FS"," ", "NW-FS"," ",
-                              "RW-PW"," ", "RW-NW"," ", "RW-FS"," ", 
-                              "PW-NW"," ", "PW-FS"," ", "NW-FS"," ")) +
+                   labels = c("RW\nPW"," ", "RW\nNW"," ", "RW\nFS"," ", 
+                              "PW\nNW"," ", "PW\nFS"," ", "NW\nFS"," ",
+                              "RW\nPW"," ", "RW\nNW"," ", "RW\nFS"," ", 
+                              "PW\nNW"," ", "PW\nFS"," ", "NW\nFS"," ")) +
   labs(x = "Decoded pairs", y = "Decoding accuracy (%)")      
 
-ggsave("figures/plot-pairwise_green-69b5a2_blue-4c75b3_orange-ff9e4a_red-da5f49.png", width = 5000, height = 3000, dpi = 700, units = "px")
+ggsave("figures/plot-pairwise_paper.png", width = 3000, height = 1800, dpi = 500, units = "px")
 
 
 
@@ -113,11 +117,11 @@ ggplot(averages, aes(x = cluster, y = mean_accuracy)) +
   geom_hline(yintercept = 0.50, size = .25, linetype = "dashed") +                
   theme_classic() +                                                              
   ylim(0.2,1) +                                                                    
-  theme(axis.text.x = element_text(size = 10, family = "Avenir", color = "black"), 
-        axis.text.y = element_text(size = 10, family = "Avenir", color = "black"), 
+  theme(axis.text.x = element_text(size = 12, family = "Avenir", color = "black"), 
+        axis.text.y = element_text(size = 12, family = "Avenir", color = "black"), 
         axis.ticks = element_blank(),
-        axis.title.x = element_text(size = 15, family = "Avenir", color = "black", vjust = 0), 
-        axis.title.y = element_text(size = 15, family = "Avenir", color = "black", vjust = 2),
+        axis.title.x = element_text(size = 12, family = "Avenir", color = "black", vjust = 0), 
+        axis.title.y = element_text(size = 12, family = "Avenir", color = "black", vjust = 2),
         legend.position = "none") +
   
   scale_x_discrete(limits = rev,
@@ -125,9 +129,9 @@ ggplot(averages, aes(x = cluster, y = mean_accuracy)) +
                               "Latin\nControls",
                               "Braille\nExperts",
                               "Braille\nControls")) +
-  labs(x = "Script x Group", y = "Decoding accuracy (%)")      
+  labs(x = "Script x group", y = "Decoding accuracy (%)")      
 
-ggsave("figures/plot-pairwise-averages_green-69b5a2_blue-4c75b3_orange-ff9e4a_red-da5f49.png", width = 2200, height = 1800, dpi = 500, units = "px")
+ggsave("figures/plot-pairwise-averages_paper.png", width = 2200, height = 1800, dpi = 500, units = "px")
 
 
 
@@ -140,7 +144,7 @@ ggplot(subset(cross_stats, modality == "both"), aes(x = decodingCondition, y = m
                       y = mean_accuracy, 
                       ymin = mean_accuracy - se_accuracy, ymax = mean_accuracy + se_accuracy, 
                       colour = modality),
-                  position = position_dodge(1), size = 1, linewidth = 2) +
+                  position = position_dodge(1), size = .75, linewidth = 1.7) +
   # Individual data clouds 
   geom_point(data = subset(cross, modality == "both"),
              aes(x = reorder(decodingCondition, modality),
@@ -148,15 +152,54 @@ ggplot(subset(cross_stats, modality == "both"), aes(x = decodingCondition, y = m
              position = position_jitter(w = 0.3, h = 0.01), alpha = 0.5, legend = F) +
   geom_hline(yintercept = 0.5, size = .25, linetype = "dashed") +            
   theme_classic() +                                                          
-  ylim(0.15,1) +                                                                    
-  theme(axis.text.x = element_text(size = 10), axis.title.x = element_text(size = 15),
-        axis.text.y = element_text(size = 10), axis.title.y = element_text(size = 15),
-        axis.ticks = element_blank()) +      
+  ylim(0.2,1) +                                                                    
+  theme(axis.text.x = element_text(size = 12, family = "Avenir", color = "black"), 
+        axis.text.y = element_blank(), 
+        axis.ticks = element_blank(),
+        axis.title.x = element_text(size = 12, family = "Avenir", color = "black", vjust = 0), 
+        axis.title.y = element_blank(),
+        legend.position = "none") +
   scale_x_discrete(limits=rev,                                                
-                   labels = c("RW\nPW", "RW\nNW", "RW\nFS","PW\nNW", "PW\nFS","NW\nFS")) +
-  labs(x = "Decoding pair", y = "Decoding accuracy", title = "Cross-script decoding")
+                   labels = c("RW\nPW", "RW\nNW", "RW\nFS", "PW\nNW", "PW\nFS", "NW\nFS")) +
+  labs(x = "Decoded pairs", y = "Decoding accuracy (%)")
 
-ggsave("figures/plot-cross_purple-8b70ca.png", width = 3000, height = 1800, dpi = 320, units = "px")
+ggsave("figures/plot-cross_paper.png", width = 2200, height = 1800, dpi = 500, units = "px")
+
+
+
+## Plot cross-decoding average
+ggplot(crossAvgStats, aes(x = cluster, y = mean_accuracy)) + 
+  scale_color_manual(name = "condtions",
+                     limits = c("NA_experts"),
+                     values = c("#8B70CA"),
+                     labels = c("average")) +
+  # Mean and SE bars
+  geom_pointrange(aes(x = cluster, 
+                      y = mean_accuracy, 
+                      ymin = mean_accuracy - se_accuracy, 
+                      ymax = mean_accuracy + se_accuracy, 
+                      colour = cluster),
+                  position = position_dodge(1), size = .75, linewidth = 1.7) +
+  # Individual data clouds 
+  geom_point(data = crossAverages,
+             aes(x = cluster,
+                 y = mean_accu,
+                 colour = cluster),
+             position = position_jitter(w = 0.3, h = 0.01),
+             alpha = 0.5) +
+  geom_hline(yintercept = 0.5, size = .25, linetype = "dashed") +            
+  theme_classic() +                                                          
+  ylim(0.2,1) +                                                                    
+  theme(axis.text.x = element_text(size = 12, family = "Avenir", color = "black"), 
+        axis.text.y = element_text(size = 12, family = "Avenir", color = "black"), 
+        axis.ticks = element_blank(),
+        axis.title.x = element_text(size = 12, family = "Avenir", color = "black", vjust = 0), 
+        axis.title.y = element_text(size = 12, family = "Avenir", color = "black", vjust = 2),
+        legend.position = "none") +
+  scale_x_discrete(limits=rev, labels = c('Mean of\ndecoded pairs')) +
+  labs(x = "cut", y = "Decoding accuracy (%)")
+
+ggsave("figures/plot-cross-average_paper.png", width = 1000, height = 1800, dpi = 500, units = "px")
 
 
 
@@ -164,22 +207,28 @@ ggsave("figures/plot-cross_purple-8b70ca.png", width = 3000, height = 1800, dpi 
 ggplot(rdm_template, aes(X, Y, fill= accuracy)) + 
   geom_tile() + 
   theme_classic() +
+  annotate("rect", xmin = 0.5, xmax = 4.5, ymin = 0.5, ymax = 4.5,
+           alpha = 0,
+           color = "#69B5A2",
+           linewidth = .5,
+           linetype = 1) + 
   theme(axis.title.x=element_blank(), 
         axis.ticks.x=element_blank(), 
         axis.line.x = element_blank(), 
-        axis.text.x = element_text(face="bold", colour="black", size = 20), 
+        axis.text.x = element_blank(), 
         axis.title.y=element_blank(), 
         axis.ticks.y=element_blank(),
         axis.line.y = element_blank(),
-        axis.text.y = element_text(face="bold", colour="black", size = 20)) + 
-  scale_fill_gradient2(high = thisColor, 
+        axis.text.y = element_blank(),
+        legend.position = "none",
+        plot.margin = unit(c(0,0,0,0), "pt")) + 
+  scale_fill_gradient2(high = "#69B5A2", 
                        limit = c(0,1), 
                        na.value = "white") + 
   guides(fill = guide_colourbar(barwidth = 0.7, 
                                 barheight = 20, 
                                 ticks = FALSE)) + 
-  labs(title = thisCluster)
 coord_fixed()
 
-ggsave("figures/plot-rsa_purple-8b70ca.png", width = 2000, height = 1600, dpi = 320, units = "px")
+ggsave("figures/plot-rsa_paper.png", width = 1700, height = 1700, dpi = 700, units = "px")
 

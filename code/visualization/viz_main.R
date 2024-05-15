@@ -71,5 +71,3 @@ viz_processROI("earlyVisual", "V1")
 
 # viz_additionalAnalyses()
 
-
-

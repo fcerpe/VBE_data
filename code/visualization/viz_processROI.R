@@ -63,8 +63,8 @@ viz_processROI <- function(method, area) {
   pairwise_stats_br <- dataset_stats(pairwise_br)
 
   # Decoding
-  plot_pairwise(pairwise, pairwise_stats, name_specs)
-  plot_pairwise_average(pairwise, name_specs)
+  plot_pairwise(pairwise, pairwise_stats, name_specs, area)
+  plot_pairwise_average(pairwise, name_specs, area)
   
   
   # RSA 
@@ -142,9 +142,9 @@ viz_processROI <- function(method, area) {
   cross_stats <- dataset_stats(cross)
 
   # Plot: all modalities, only both, two directions
-  plot_cross(cross, cross_stats, name_specs)
+  plot_cross(cross, cross_stats, name_specs, area)
   
-  plot_cross_average(cross, name_specs)
+  plot_cross_average(cross, name_specs, area)
   
   # Visualize ANOVAs
   plot_anova_cross(cross_stats, name_specs)
