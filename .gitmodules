@@ -1,6 +1,6 @@
 [submodule "inputs/raw"]
 	path = inputs/raw
-	url = /Users/cerpelloni/Desktop/VisualBraille/analysis/inputs/raw
+	url = git@gin.g-node.org:/fcerpe/VBE_raw.git
 	datalad-id = 0032ad78-7460-4af0-b3e3-30213ac9bbe9
 	datalad-url = /Users/cerpelloni/Desktop/VisualBraille/analysis/inputs/raw
 [submodule "outputs/derivatives/CoSMoMVPA"]
