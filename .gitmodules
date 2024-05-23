@@ -25,3 +25,7 @@
 	path = outputs/bidsMReye
 	url = ./outputs/bidsMReye
 	datalad-id = c366edb7-95df-452e-9e83-1eb1c1d40c29
+[submodule "outputs/cpp_spm-rois"]
+	path = outputs/cpp_spm-rois
+	url = ./outputs/cpp_spm-rois
+	datalad-id = 53ca5a24-f8fe-41c2-b2e1-32360564be1a
