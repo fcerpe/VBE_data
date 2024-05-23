@@ -3,10 +3,6 @@
 	url = /Users/cerpelloni/Desktop/VisualBraille/analysis/inputs/raw
 	datalad-id = 0032ad78-7460-4af0-b3e3-30213ac9bbe9
 	datalad-url = /Users/cerpelloni/Desktop/VisualBraille/analysis/inputs/raw
-[submodule "outputs/bidspm-stats"]
-	path = outputs/bidspm-stats
-	url = ./outputs/bidspm-stats
-	datalad-id = 8994de2b-b902-4622-8ef7-ea3b73856c87
 [submodule "outputs/derivatives/CoSMoMVPA"]
 	path = outputs/derivatives/CoSMoMVPA
 	url = git@gin.g-node.org:/fcerpe/VisualBraille_mvpa.git
@@ -30,3 +26,7 @@
 	path = outputs/derivatives/spm-PPI
 	url = git@gin.g-node.org:/fcerpe/VisualBraille_ppi.git
 	datalad-id = f9e17104-2a29-4e3e-b06f-b9225abbead1
+[submodule "outputs/derivatives/bidspm-stats"]
+	path = outputs/derivatives/bidspm-stats
+	url = ./outputs/derivatives/bidspm-stats
+	datalad-id = 536ec680-2aee-4cf9-b921-a5e1b24395a1
