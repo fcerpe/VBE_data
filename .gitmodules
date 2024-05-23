@@ -9,3 +9,7 @@
 	path = outputs/bidspm-preproc
 	url = ./outputs/bidspm-preproc
 	datalad-id = 3dc00629-bee3-4a33-a33a-744159ec0a02
+[submodule "outputs/bidspm-stats"]
+	path = outputs/bidspm-stats
+	url = ./outputs/bidspm-stats
+	datalad-id = 8994de2b-b902-4622-8ef7-ea3b73856c87
