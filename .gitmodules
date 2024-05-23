@@ -17,3 +17,7 @@
 	path = outputs/spm-PPI
 	url = ./outputs/spm-PPI
 	datalad-id = 272f71d1-9dbe-4f26-a606-78932c92e173
+[submodule "outputs/fmriprep"]
+	path = outputs/fmriprep
+	url = ./outputs/fmriprep
+	datalad-id = f7f90a33-44bf-46df-972f-0097d04da502
