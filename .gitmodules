@@ -5,4 +5,7 @@
 	datalad-url = /Users/cerpelloni/Desktop/VisualBraille/analysis/inputs/raw
 [submodule "code/lib/bidspm"]
 	path = code/lib/bidspm
-	url = git@github.com:cpp-lln-lab/bidspm.git
+	url = git@github.com:cpp-lln-lab/bidspm.git[submodule "outputs/bidspm-preproc"]
+	path = outputs/bidspm-preproc
+	url = ./outputs/bidspm-preproc
+	datalad-id = 3dc00629-bee3-4a33-a33a-744159ec0a02
