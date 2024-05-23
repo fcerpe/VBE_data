@@ -13,3 +13,7 @@
 	path = outputs/bidspm-stats
 	url = ./outputs/bidspm-stats
 	datalad-id = 8994de2b-b902-4622-8ef7-ea3b73856c87
+[submodule "outputs/spm-PPI"]
+	path = outputs/spm-PPI
+	url = ./outputs/spm-PPI
+	datalad-id = 272f71d1-9dbe-4f26-a606-78932c92e173
