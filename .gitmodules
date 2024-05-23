@@ -21,3 +21,7 @@
 	path = outputs/fmriprep
 	url = ./outputs/fmriprep
 	datalad-id = f7f90a33-44bf-46df-972f-0097d04da502
+[submodule "outputs/bidsMReye"]
+	path = outputs/bidsMReye
+	url = ./outputs/bidsMReye
+	datalad-id = c366edb7-95df-452e-9e83-1eb1c1d40c29
