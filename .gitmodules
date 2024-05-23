@@ -1,6 +1,6 @@
-[submodule "outputs/derivatives"]
-	path = outputs/derivatives
-	url = ./outputs/derivatives
+[submodule "outputs/derivatives/bidspm-preproc"]
+	path = outputs/derivatives/bidspm-preproc
+	url = https://gin.g-node.org/fcerpe/VBE_preproc
 	datalad-id = f5ae1392-7108-4c79-b94f-98ddc8cc1982
 [submodule "inputs/raw"]
 	path = inputs/raw
