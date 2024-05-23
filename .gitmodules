@@ -29,7 +29,7 @@
 	path = outputs/cpp_spm-rois
 	url = ./outputs/cpp_spm-rois
 	datalad-id = 53ca5a24-f8fe-41c2-b2e1-32360564be1a
-[submodule "outputs/CoSMoMVPA"]
-	path = outputs/CoSMoMVPA
-	url = ./outputs/CoSMoMVPA
-	datalad-id = e9418219-704f-4934-8b17-7f2761333557
+[submodule "outputs/derivatives/CoSMoMVPA"]
+	path = outputs/derivatives/CoSMoMVPA
+	url = git@gin.g-node.org:/fcerpe/VisualBraille_mvpa.git
+	datalad-id = 0525d842-f555-4955-bbe5-94a28bfddfd1
