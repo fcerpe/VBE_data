@@ -3,33 +3,30 @@
 	url = /Users/cerpelloni/Desktop/VisualBraille/analysis/inputs/raw
 	datalad-id = 0032ad78-7460-4af0-b3e3-30213ac9bbe9
 	datalad-url = /Users/cerpelloni/Desktop/VisualBraille/analysis/inputs/raw
-[submodule "code/lib/bidspm"]
-	path = code/lib/bidspm
-	url = git@github.com:cpp-lln-lab/bidspm.git[submodule "outputs/bidspm-preproc"]
-	path = outputs/bidspm-preproc
-	url = ./outputs/bidspm-preproc
-	datalad-id = 3dc00629-bee3-4a33-a33a-744159ec0a02
 [submodule "outputs/bidspm-stats"]
 	path = outputs/bidspm-stats
 	url = ./outputs/bidspm-stats
 	datalad-id = 8994de2b-b902-4622-8ef7-ea3b73856c87
-[submodule "outputs/spm-PPI"]
-	path = outputs/spm-PPI
-	url = ./outputs/spm-PPI
-	datalad-id = 272f71d1-9dbe-4f26-a606-78932c92e173
-[submodule "outputs/fmriprep"]
-	path = outputs/fmriprep
-	url = ./outputs/fmriprep
-	datalad-id = f7f90a33-44bf-46df-972f-0097d04da502
-[submodule "outputs/bidsMReye"]
-	path = outputs/bidsMReye
-	url = ./outputs/bidsMReye
-	datalad-id = c366edb7-95df-452e-9e83-1eb1c1d40c29
-[submodule "outputs/cpp_spm-rois"]
-	path = outputs/cpp_spm-rois
-	url = ./outputs/cpp_spm-rois
-	datalad-id = 53ca5a24-f8fe-41c2-b2e1-32360564be1a
 [submodule "outputs/derivatives/CoSMoMVPA"]
 	path = outputs/derivatives/CoSMoMVPA
 	url = git@gin.g-node.org:/fcerpe/VisualBraille_mvpa.git
 	datalad-id = 0525d842-f555-4955-bbe5-94a28bfddfd1
+[submodule "outputs/derivatives/bidsMReye"]
+	path = outputs/derivatives/bidsMReye
+	url = ./outputs/derivatives/bidsMReye
+[submodule "outputs/derivatives/bidspm-preproc"]
+	path = outputs/derivatives/bidspm-preproc
+	url = ./outputs/derivatives/bidspm-preproc
+	datalad-id = 28e4d121-4f79-4ad8-82c1-2bae7ae75725
+[submodule "outputs/derivatives/cpp_spm-rois"]
+	path = outputs/derivatives/cpp_spm-rois
+	url = ./outputs/derivatives/cpp_spm-rois
+	datalad-id = c3010519-732b-4b47-8504-60b8a6c90a03
+[submodule "outputs/derivatives/fmriprep"]
+	path = outputs/derivatives/fmriprep
+	url = ./outputs/derivatives/fmriprep
+	datalad-id = c1ea0765-d45a-4e5d-a294-200f1bff2506
+[submodule "outputs/derivatives/spm-PPI"]
+	path = outputs/derivatives/spm-PPI
+	url = git@gin.g-node.org:/fcerpe/VisualBraille_ppi.git
+	datalad-id = f9e17104-2a29-4e3e-b06f-b9225abbead1
