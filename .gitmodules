@@ -24,7 +24,7 @@
 	datalad-id = c1ea0765-d45a-4e5d-a294-200f1bff2506
 [submodule "outputs/derivatives/spm-PPI"]
 	path = outputs/derivatives/spm-PPI
-	url = git@gin.g-node.org:/fcerpe/VisualBraille_ppi.git
+	url = git@gin.g-node.org:/fcerpe/VBE_ppi.git
 	datalad-id = f9e17104-2a29-4e3e-b06f-b9225abbead1
 [submodule "outputs/derivatives/bidspm-stats"]
 	path = outputs/derivatives/bidspm-stats
