@@ -1,1 +1,4 @@
-/annex/objects/MD5E-s180--7851e5143212e7e89a4c9367f9eb7bf1.csv
+"Effect","DFn","DFd","F","p","significance","ges"
+"group",1,14,16.012,"0.001","**",0.168
+"comparison",5,70,1.718,"0.142","ns",0.092
+"group:comparison",5,70,0.717,"0.613","ns",0.04
