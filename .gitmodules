@@ -9,7 +9,7 @@
 	datalad-id = 0525d842-f555-4955-bbe5-94a28bfddfd1
 [submodule "outputs/derivatives/bidsMReye"]
 	path = outputs/derivatives/bidsMReye
-	url = ./outputs/derivatives/bidsMReye
+	url = git@gin.g-node.org:/fcerpe/VBE_bidsmreye.git
 [submodule "outputs/derivatives/bidspm-preproc"]
 	path = outputs/derivatives/bidspm-preproc
 	url = git@gin.g-node.org:/fcerpe/VBE_preproc.git
