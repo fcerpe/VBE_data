@@ -12,7 +12,7 @@
 	url = ./outputs/derivatives/bidsMReye
 [submodule "outputs/derivatives/bidspm-preproc"]
 	path = outputs/derivatives/bidspm-preproc
-	url = ./outputs/derivatives/bidspm-preproc
+	url = git@gin.g-node.org:/fcerpe/VBE_preproc.git
 	datalad-id = 28e4d121-4f79-4ad8-82c1-2bae7ae75725
 [submodule "outputs/derivatives/cpp_spm-rois"]
 	path = outputs/derivatives/cpp_spm-rois
