@@ -16,7 +16,7 @@
 	datalad-id = 28e4d121-4f79-4ad8-82c1-2bae7ae75725
 [submodule "outputs/derivatives/cpp_spm-rois"]
 	path = outputs/derivatives/cpp_spm-rois
-	url = ./outputs/derivatives/cpp_spm-rois
+	url = git@gin.g-node.org:/fcerpe/VBE_rois.git
 	datalad-id = c3010519-732b-4b47-8504-60b8a6c90a03
 [submodule "outputs/derivatives/fmriprep"]
 	path = outputs/derivatives/fmriprep
