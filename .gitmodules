@@ -5,7 +5,7 @@
 	datalad-url = /Users/cerpelloni/Desktop/VisualBraille/analysis/inputs/raw
 [submodule "outputs/derivatives/CoSMoMVPA"]
 	path = outputs/derivatives/CoSMoMVPA
-	url = git@gin.g-node.org:/fcerpe/VisualBraille_mvpa.git
+	url = git@gin.g-node.org:/fcerpe/VBE_mvpa.git
 	datalad-id = 0525d842-f555-4955-bbe5-94a28bfddfd1
 [submodule "outputs/derivatives/bidsMReye"]
 	path = outputs/derivatives/bidsMReye
