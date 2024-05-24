@@ -20,7 +20,7 @@
 	datalad-id = c3010519-732b-4b47-8504-60b8a6c90a03
 [submodule "outputs/derivatives/fmriprep"]
 	path = outputs/derivatives/fmriprep
-	url = ./outputs/derivatives/fmriprep
+	url = git@gin.g-node.org:/fcerpe/VBE_fmriprep.git
 	datalad-id = c1ea0765-d45a-4e5d-a294-200f1bff2506
 [submodule "outputs/derivatives/spm-PPI"]
 	path = outputs/derivatives/spm-PPI
