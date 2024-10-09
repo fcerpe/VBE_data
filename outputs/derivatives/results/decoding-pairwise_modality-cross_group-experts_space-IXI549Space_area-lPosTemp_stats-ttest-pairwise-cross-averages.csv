@@ -1,0 +1,2 @@
+"g1name","g1accuracy","g2name","g2accuracy","ttest","cohen","df","pvalUncorr","pvalFDR"
+"within script","0.806944444444445","cross-script","0.663888888888889","3.2306025625062","2.00805112231501","4","0.0319572729814875","0.0319572729814875"

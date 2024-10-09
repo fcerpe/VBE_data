@@ -87,7 +87,7 @@ ggplot(pairwise_stats, aes(x = decodingCondition, y = mean_accuracy)) +
                               "PW\nNW"," ", "PW\nFS"," ", "NW\nFS"," ")) +
   labs(x = "Decoded pairs", y = "Decoding accuracy (%)")      
 
-ggsave("figures/plot-pairwise_paper.png", width = 3000, height = 1800, dpi = 500, units = "px")
+ggsave("figures/trial_plot-pairwise_paper.png", width = 3000, height = 1800, dpi = 500, units = "px")
 
 
 
@@ -131,7 +131,7 @@ ggplot(averages, aes(x = cluster, y = mean_accuracy)) +
                               "Braille\nControls")) +
   labs(x = "Script x group", y = "Decoding accuracy (%)")      
 
-ggsave("figures/plot-pairwise-averages_paper.png", width = 2200, height = 1800, dpi = 500, units = "px")
+ggsave("figures/trial_plot-pairwise-averages_paper.png", width = 2200, height = 1800, dpi = 500, units = "px")
 
 
 
@@ -163,7 +163,7 @@ ggplot(subset(cross_stats, modality == "both"), aes(x = decodingCondition, y = m
                    labels = c("RW\nPW", "RW\nNW", "RW\nFS", "PW\nNW", "PW\nFS", "NW\nFS")) +
   labs(x = "Decoded pairs", y = "Decoding accuracy (%)")
 
-ggsave("figures/plot-cross_paper.png", width = 2200, height = 1800, dpi = 500, units = "px")
+ggsave("figures/trial_plot-cross_paper.png", width = 2200, height = 1800, dpi = 500, units = "px")
 
 
 
@@ -199,7 +199,7 @@ ggplot(crossAvgStats, aes(x = cluster, y = mean_accuracy)) +
   scale_x_discrete(limits=rev, labels = c('Mean of\ndecoded pairs')) +
   labs(x = "cut", y = "Decoding accuracy (%)")
 
-ggsave("figures/plot-cross-average_paper.png", width = 1000, height = 1800, dpi = 500, units = "px")
+ggsave("figures/trial_plot-cross-average_paper.png", width = 1000, height = 1800, dpi = 500, units = "px")
 
 
 
@@ -230,5 +230,5 @@ ggplot(rdm_template, aes(X, Y, fill= accuracy)) +
                                 ticks = FALSE)) + 
 coord_fixed()
 
-ggsave("figures/plot-rsa_paper.png", width = 1700, height = 1700, dpi = 700, units = "px")
+ggsave("figures/trial_plot-rsa_paper.png", width = 1700, height = 1700, dpi = 700, units = "px")
 

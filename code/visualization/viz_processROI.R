@@ -53,7 +53,7 @@ viz_processROI <- function(method, area) {
   stats_summary(pairwise_anova_both, "both", name_specs)
   
   # t-tests on pairwise averages
-  stats_pairwise_average(pairwise, name_specs)
+  # stats_pairwise_average(pairwise, name_specs)
   
   
   ## Plots
@@ -65,11 +65,11 @@ viz_processROI <- function(method, area) {
   # Decoding
   plot_pairwise(pairwise, pairwise_stats, name_specs, area)
   plot_pairwise_average(pairwise, name_specs, area)
-  
-  
-  # RSA 
+
+
+  # RSA
   plot_rsa(pairwise, pairwise_stats, name_specs)
-  
+
   # Visualize ANOVAs
   plot_anova(pairwise, pairwise_stats_fr, name_specs, "french")
   plot_anova(pairwise, pairwise_stats_br, name_specs, "braille")
@@ -79,8 +79,8 @@ viz_processROI <- function(method, area) {
   
   # -------------------------------------------------------------------------- #
   
-  ### Multiclass decoding 
-  
+  ### Multiclass decoding
+
   ## Load correct file
   decoding <- "multiclass"
 
@@ -92,21 +92,20 @@ viz_processROI <- function(method, area) {
 
   # Generate filename
   name_specs <- make_specs(decoding, modality, group, space, area)
-  
+
 
   ## Stats - permutations done in MATLAB, rest is here
-  
+
   # T-tests on differences between decodings
   stats_multiclass(multiclass, name_specs)
-  
+
 
   ## Plots
-  
+
   # Summarize information for plot
   multiclass_stats <- dataset_stats(multiclass)
 
   plot_multiclass(multiclass, multiclass_stats, name_specs)
-  
   
   
   # -------------------------------------------------------------------------- #
@@ -132,21 +131,25 @@ viz_processROI <- function(method, area) {
   # One-way ANOVA
   cross_anova <- stats_anova_cross(cross)
   stats_summary(cross_anova, "both", name_specs)
-  
-  # T-tests against chance 
+
+  # T-tests against chance
   stats_cross(cross, name_specs)
   
-  
+  # T-tests between within and cross-script
+  stats_WithinCross(pairwise, cross, name_specs)
+
+
   ## Plots
   # Summarize information for plot
   cross_stats <- dataset_stats(cross)
 
   # Plot: all modalities, only both, two directions
   plot_cross(cross, cross_stats, name_specs, area)
-  
+
   plot_cross_average(cross, name_specs, area)
-  
+
   # Visualize ANOVAs
   plot_anova_cross(cross_stats, name_specs)
+  
   
 }

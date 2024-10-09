@@ -1004,6 +1004,43 @@ stats_cross <- function(dataIn, specs) {
 }
 
 
+# Statistical test on difference between within-script and cross-script decodings
+# Limited to VWFA and expert group
+stats_WithinCross <- function(pairwise, cross, specs) {
+  
+  # Average pairwise results
+  pairwise <- pairwise %>% filter(group == "experts")
+  pairwiseAvgs <- pairwise %>% group_by(subID, comparison) %>%
+      summarise(average_accuracy = mean(accuracy, na.rm = TRUE))
+  
+  cross <- cross %>% filter(modality == "both")
+  
+  pairwiseAvgs <- pairwiseAvgs %>% group_by(subID) %>% 
+    summarize(mean_accu = mean(average_accuracy), sd_accu = sd(average_accuracy), se_accu = sd(average_accuracy)/sqrt(6)) 
+  
+  crossAvgs <- cross %>% group_by(subID, script, cluster) %>% 
+    summarize(mean_accu = mean(accuracy), sd_accu = sd(accuracy), se_accu = sd(accuracy)/sqrt(6), .groups = 'keep') 
+  
+  savename <- paste("../../outputs/derivatives/results/", specs, "_stats-ttest-pairwise-cross-averages.csv", sep="")
+  
+  tests_table <- data.table(g1name = character(), g1accuracy = numeric(), 
+                            g2name = character(), g2accuracy = numeric(), 
+                            ttest = numeric(), cohen = numeric(), df = numeric(), pvalUncorr = numeric())
+  
+  # Manually calculate t-tests
+  # within - cross
+  result <- compare_accuracies("within script", pairwiseAvgs$mean_accu, "cross-script", crossAvgs$mean_accu, NA, TRUE)
+  tests_table <- rbind(tests_table, result)
+  
+  # Adjust p-values for false detection rate
+  tests_table$pvalFDR <- p.adjust(tests_table$pvalUncorr, "fdr")
+  
+  # Save table in outputs
+  tests_table <- data.frame(lapply(tests_table, as.character), stringsAsFactors = F)
+  write.csv(tests_table, savename, row.names = F)
+  
+}
+
 
 ### MISC
 
