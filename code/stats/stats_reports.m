@@ -38,6 +38,10 @@ opt = stats_option_decoding();
 % get responses
 stats_reports_behaviouralRespones;
 
+%% Pixel-wise distance matrix of stimuli 
+% Extract the vectors of pixel information from the backstage code and feed
+% it to R to create the RDMs
+stats_reports_stimuliPixels;
 
 %% General univariate activation in different areas and for different stimuli
 % For all the ROIs determined (V1, LOC, VWFA, PosTemp) calculate the 

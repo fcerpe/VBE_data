@@ -23,12 +23,12 @@ clc;
 warning('on');
 
 % cosmo
-cosmo = '~/Applications/CoSMoMVPA';
+cosmo = '/Applications/CoSMoMVPA';
 addpath(genpath(cosmo));
 cosmo_warning('once');
 
 % libsvm
-libsvm = '~/Applications/libsvm';
+libsvm = '/Applications/libsvm';
 addpath(genpath(libsvm));
 
 % verify it worked
@@ -84,3 +84,15 @@ opt = mvpa_option_earlyVisual();
 [visualPairwiseWithin, visualMulticlass, visualPairwiseCross, opt] = mvpa_decoding(opt);
 
 
+%% VWFA decoding using neurosynth ROI
+% Perform within-script and cross-script decoding in VWFA, not using the localizer ROI 
+% but the one extracted from neurosynth, under reviewers' suggestions. 
+% Subject pool and areas from roi_neurosynth
+
+% Load options and overwrite method
+opt = mvpa_option();
+opt.roiMethod = 'neurosynth';
+
+% Perform all the decodings in one function
+% (you know the gist by now)
+[nsPairwiseWithin, ~, nsPairwiseCross, opt] = mvpa_decoding(opt);

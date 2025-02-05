@@ -21,6 +21,88 @@
 # Statistical analyses:
 # TBD
   
+  
+# Pixel RDM
+# make matrices of pixel distance, from information for each stimulus
+stats_pixel_RDM <- function() {
+  
+  # Load the tsv
+  data <- read.delim("../stats/reports/stimuli_pixel_information.tsv", header = TRUE, sep = "\t")
+  
+  # Ensure the pixels column is treated as a character vector
+  data$pixels <- as.character(data$pixels)
+  
+  # Convert 'pixels' column from string to numeric vector
+  data$pixels <- lapply(data$pixels, function(x) as.numeric(strsplit(x, ",")[[1]]))
+  
+  # Check the structure of the data
+  str(data)
+  
+  # Ensure the pixels column is in the correct format (numeric vectors)
+  pixels_matrix <- do.call(rbind, data$pixels)  # Combine the list of numeric vectors into a matrix
+  
+  # Combine 'class' and 'stimulus' into a unique identifier for each pair
+  data$class_stimulus <- paste(data$class, data$stimulus, sep = "_")
+  
+  # Now create a unique combination of 'class' and 'stimulus'
+  unique_combinations <- unique(data$class_stimulus)
+  
+  # Initialize empty distance matrices
+  corr_matrix <- matrix(NA, nrow = length(unique_combinations), ncol = length(unique_combinations))
+  eucl_matrix <- matrix(NA, nrow = length(unique_combinations), ncol = length(unique_combinations))
+  
+  rownames(distance_matrix) <- unique_combinations
+  colnames(distance_matrix) <- unique_combinations
+  
+  
+  ## 1 - correlation 
+  
+  # Calculate the distance matrix based on correlation for each combination of 'class' and 'stimulus'
+  for (i in 1:length(unique_combinations)) {
+    for (j in i:length(unique_combinations)) {
+      # Get the pixel vectors for the i-th and j-th combinations
+      i_pixels <- pixels_matrix[data$class_stimulus == unique_combinations[i], ]
+      j_pixels <- pixels_matrix[data$class_stimulus == unique_combinations[j], ]
+      
+      # Calculate correlation between the pixel vectors
+      if (length(i_pixels) > 0 & length(j_pixels) > 0) {
+        correlation <- cor(i_pixels, j_pixels)  # Correlation between pixel vectors
+        corr_matrix[i, j] <- 1 - correlation  # Convert correlation to distance
+        corr_matrix[j, i] <- corr_matrix[i, j]  # Symmetric distance matrix
+      }
+    }
+  }
+  
+  # View the resulting distance matrix
+  print(corr_matrix)
+  
+
+  ## Euclidean distance
+  
+  # Calculate the distance matrix based on Euclidean distance for each combination of 'class' and 'stimulus'
+  for (i in 1:length(unique_combinations)) {
+    for (j in i:length(unique_combinations)) {
+      # Get the pixel vectors for the i-th and j-th combinations
+      i_pixels <- data$pixels[[which(data$class_stimulus == unique_combinations[i])]]
+      j_pixels <- data$pixels[[which(data$class_stimulus == unique_combinations[j])]]
+      
+      # Compute the Euclidean distance (sum of squared differences)
+      euclidean_distance <- sqrt(sum((i_pixels - j_pixels)^2))
+      
+      # Store the distance in the matrix
+      eucl_matrix[i, j] <- euclidean_distance
+      eucl_matrix[j, i] <- euclidean_distance  # Symmetric distance matrix
+    }
+  }
+  
+  # View the resulting distance matrix
+  print(eucl_matrix)
+  
+  # literal difference (-) of arrays?
+  
+  
+}
+  
 # Braille sensitivity
 # differences in univariate activation for BW and SBW (localizer stimuli) 
 # in different areas
@@ -274,7 +356,6 @@ stats_groupsDifference <- function() {
 # Signal-to-noise ratio
 # from tSNR maps and ROIs, plot tSNR for each task, run, subject 
 # stats_tSNR()
-
 
   
 # Make standard legends

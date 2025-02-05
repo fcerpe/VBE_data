@@ -54,6 +54,7 @@ opt.decodingModality = 'within';
 % - split: antVWFA, posVWFA
 % - splitAtlas: uses VWFA splitted according to atlas (undefined)
 % - earlyVisual: V1
+% - neurosynth: VWFA but from general coordinates
 opt.roiMethod = 'expansion';
 
 % Uncomment the lines below to run preprocessing

@@ -73,6 +73,16 @@ for iSub = 1:numel(opt.subjects)
             opt.maskName = horzcat(opt.maskName, {atlas_files.name});
 
             opt.maskLabel = {'v1'};   
+
+        % Neurosynth analysis for reviews
+        case 'neurosynth'
+            atlas_filename = [opt.dir.rois, '/sub-',num2str(subID),...
+                              '/rsub-',num2str(subID),'_hemi-L_space-',opt.space{1},'_atlas-neurosynth_label-visualWords_vox-100*.nii'];
+            atlas_files = dir(atlas_filename);
+            opt.maskName = horzcat(opt.maskName, {atlas_files.name});
+
+            opt.maskLabel = {'VWFAfr'};   
+
     end
 end
 

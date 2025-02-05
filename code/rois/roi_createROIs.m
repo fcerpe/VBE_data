@@ -88,9 +88,11 @@ for iSub = 1:length(opt.subjects)
             mask1InDir = dir(fullfile(opt.dir.stats, subName, localizerStatsFolder, ...
                 [subName, '_task-visualLocalizer_space-',opt.space{1},'_desc-', contrastName{iReg} ,'*_p-0pt100_k-0_MC-none_mask.nii']));
             
-            % Get the full pathof each thresholded contrast (if exists)
+            % Get the full path of each thresholded contrast, if they
+            % exists. Will be used in case the more strict mask does not
+            % have a sufficiently big cluster
             localizer001Mask = fullfile(mask001InDir.folder, mask001InDir.name);
-
+            
             if not(isempty(mask05InDir))
                 localizer05Mask = fullfile(mask05InDir.folder, mask05InDir.name);
             end
@@ -104,6 +106,7 @@ for iSub = 1:length(opt.subjects)
             end
 
             % specify the sphere parameters for each of them
+            % creates an object for the custom function
             sphereParams = struct;
             sphereParams.location = roiCenter;
             sphereParams.radius = 1; % starting radius
@@ -135,7 +138,7 @@ for iSub = 1:length(opt.subjects)
             sphereMaskNameOnly = sphereMaskName(1:end-4);
             findNbVox = split(sphereMaskNameOnly, {'Vox','_desc'});
 
-            % Custom name
+            % Custom name to be applied to the ROIs
             bidslikeName = fullfile(opt.dir.rois, subName, [subName,'_hemi-',hemiName{iReg},'_space-',opt.space{1}, ...
                                                             '_label-',char(roiNames{iReg}),'_voxels-',findNbVox{2},'_mask']);
 

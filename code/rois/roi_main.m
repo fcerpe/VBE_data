@@ -20,7 +20,7 @@
 clear;
 clc;
 
-% Get path and init bidspm
+% Get path and init bidspm 
 addpath '../lib/bidspm'
 bidspm;
 
@@ -73,5 +73,7 @@ roi_createV1ROIs;
 % roi_overlapMask; 
 
 
+%% Run the pipeline with Neurosynth ROIs
 
+roi_neurosynth;
 

@@ -1,0 +1,184 @@
+{
+  "QA": {
+    "glm": {
+      "do": false
+    }
+  },
+  "anatOnly": false,
+  "bidsFilterFile": {
+    "fmap": {
+      "modality": "fmap"
+    },
+    "bold": {
+      "modality": "func",
+      "suffix": "bold"
+    },
+    "t2w": {
+      "modality": "anat",
+      "suffix": "T2w"
+    },
+    "t1w": {
+      "modality": "anat",
+      "space": "",
+      "suffix": "T1w"
+    },
+    "mp2rage": {
+      "modality": "anat",
+      "space": "",
+      "suffix": "MP2RAGE"
+    },
+    "roi": {
+      "modality": "roi",
+      "suffix": "mask"
+    },
+    "xfm": {
+      "modality": "anat",
+      "suffix": "xfm",
+      "to": "T1w"
+    }
+  },
+  "boilerplateOnly": false,
+  "contrastList": [],
+  "desc": "ROI",
+  "dir": {
+    "cosmo": "/Volumes/fcerpe_phd/VBE_data/outputs/derivatives/CoSMoMVPA",
+    "derivatives": "/Volumes/fcerpe_phd/VBE_data/outputs/derivatives",
+    "input": "/Volumes/fcerpe_phd/VBE_data/outputs/derivatives/bidspm-preproc",
+    "jobs": "/Volumes/fcerpe_phd/VBE_data/outputs/derivatives/bidspm-preproc/jobs/visualLocalizer",
+    "output": "/Volumes/fcerpe_phd/VBE_data/outputs/derivatives/bidspm-preproc",
+    "preproc": "/Volumes/fcerpe_phd/VBE_data/outputs/derivatives/bidspm-preproc",
+    "raw": "/Volumes/fcerpe_phd/VBE_data/inputs/raw",
+    "rois": "/Volumes/fcerpe_phd/VBE_data/outputs/derivatives/cpp_spm-rois",
+    "root": "/Volumes/fcerpe_phd/VBE_data",
+    "stats": "/Volumes/fcerpe_phd/VBE_data/outputs/derivatives/bidspm-stats",
+    "roi": "/Volumes/fcerpe_phd/VBE_data/outputs/derivatives/bidspm-roi"
+  },
+  "dryRun": false,
+  "dummyScans": 0,
+  "funcVolToSelect": [],
+  "funcVoxelDims": [],
+  "fwhm": {
+    "func": 6,
+    "contrast": 0
+  },
+  "glm": {
+    "QA": {
+      "do": false
+    },
+    "concatenateRuns": false,
+    "keepResiduals": false,
+    "maxNbVols": null,
+    "roibased": {
+      "do": false
+    },
+    "useDummyRegressor": false
+  },
+  "groups": [""],
+  "jobsDir": "/Volumes/fcerpe_phd/VBE_data/code/rois/../../outputs/derivatives/bidspm-stats/jobs/visualLocalizer",
+  "model": {
+    "file": "",
+    "designOnly": false
+  },
+  "msg": {
+    "color": ""
+  },
+  "numLanguageVoxels": 80,
+  "numVoxels": 115,
+  "pipeline": {
+    "isBms": false,
+    "name": "bidspm",
+    "type": "roi"
+  },
+  "query": {
+    "modality": [
+      "anat",
+      "func"
+    ]
+  },
+  "radius": 10,
+  "realign": {
+    "useUnwarp": true
+  },
+  "rename": {
+    "do": true,
+    "overwrite": true
+  },
+  "roiList": [
+    "VWFAfr",
+    "VWFAbr",
+    "lLO",
+    "rLO"
+  ],
+  "saveROI": true,
+  "segment": {
+    "do": true,
+    "force": false,
+    "biasfwhm": 60,
+    "samplingDistance": 3
+  },
+  "skullstrip": {
+    "do": true,
+    "force": false,
+    "threshold": 0.75,
+    "mean": false
+  },
+  "space": ["IXI549Space"],
+  "split": ["individual"],
+  "stc": {
+    "referenceSlice": [],
+    "skip": false
+  },
+  "subjects": [
+    "006",
+    "007",
+    "008",
+    "009",
+    "010",
+    "011",
+    "012",
+    "013",
+    "018",
+    "019",
+    "020",
+    "021",
+    "022",
+    "023",
+    "024",
+    "026",
+    "027",
+    "028"
+  ],
+  "taskName": ["visualLocalizer"],
+  "tolerant": true,
+  "toolbox": {
+    "MACS": {
+      "model": {
+        "files": []
+      }
+    }
+  },
+  "useBidsSchema": false,
+  "useFieldmaps": true,
+  "verbosity": 2,
+  "zeropad": 2,
+  "results": {
+    "nodeName": "",
+    "name": [""],
+    "useMask": false,
+    "MC": "FWE",
+    "p": 0.05,
+    "k": 0,
+    "png": true,
+    "csv": true,
+    "atlas": "Neuromorphometrics",
+    "threshSpm": false,
+    "binary": false,
+    "montage": {
+      "do": false,
+      "slices": [],
+      "orientation": "axial",
+      "background": "/Users/cerpelloni/spm12/canonical/avg152T1.nii"
+    },
+    "nidm": true
+  }
+}

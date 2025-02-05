@@ -40,7 +40,7 @@ viz_processROI <- function(method, area) {
   
   ## Stats
   # Generate filename
-  name_specs <- make_specs(decoding, modality, group, space, area)
+  name_specs <- make_specs(decoding, roi, modality, group, space, area)
   
   # Run ANOVAs
   pairwise_anova_fr <- stats_rmANOVA(pairwise_fr, 1)
@@ -53,7 +53,7 @@ viz_processROI <- function(method, area) {
   stats_summary(pairwise_anova_both, "both", name_specs)
   
   # t-tests on pairwise averages
-  # stats_pairwise_average(pairwise, name_specs)
+  stats_pairwise_average(pairwise, name_specs)
   
   
   ## Plots
@@ -91,7 +91,7 @@ viz_processROI <- function(method, area) {
     multiclass <- multiclass %>% filter(mask == area)
 
   # Generate filename
-  name_specs <- make_specs(decoding, modality, group, space, area)
+  name_specs <- make_specs(decoding, roi, modality, group, space, area)
 
 
   ## Stats - permutations done in MATLAB, rest is here
@@ -124,7 +124,7 @@ viz_processROI <- function(method, area) {
     cross <- cross %>% filter(mask == area)
 
   # Generate filename
-  name_specs <- make_specs(decoding, modality, group, space, area)
+  name_specs <- make_specs(decoding, roi, modality, group, space, area)
   
   
   ## Stats

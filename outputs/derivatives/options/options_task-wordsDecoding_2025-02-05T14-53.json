@@ -1,0 +1,575 @@
+{
+  "QA": {
+    "glm": {
+      "do": false
+    }
+  },
+  "anatOnly": false,
+  "bidsFilterFile": {
+    "fmap": {
+      "modality": "fmap"
+    },
+    "bold": {
+      "modality": "func",
+      "suffix": "bold"
+    },
+    "t2w": {
+      "modality": "anat",
+      "suffix": "T2w"
+    },
+    "t1w": {
+      "modality": "anat",
+      "space": "",
+      "suffix": "T1w"
+    },
+    "mp2rage": {
+      "modality": "anat",
+      "space": "",
+      "suffix": "MP2RAGE"
+    },
+    "roi": {
+      "modality": "roi",
+      "suffix": "mask"
+    },
+    "xfm": {
+      "modality": "anat",
+      "suffix": "xfm",
+      "to": "T1w"
+    }
+  },
+  "boilerplateOnly": false,
+  "contrastList": [],
+  "decodingCondition": "pairwise",
+  "decodingModality": "within",
+  "desc": "MVPA",
+  "dir": {
+    "cosmo": "/Volumes/fcerpe_phd/VBE_data/outputs/derivatives/CoSMoMVPA",
+    "derivatives": "/Volumes/fcerpe_phd/VBE_data/outputs/derivatives",
+    "input": "/Volumes/fcerpe_phd/VBE_data/outputs/derivatives/bidspm-preproc",
+    "jobs": "/Volumes/fcerpe_phd/VBE_data/outputs/derivatives/bidspm-stats/jobs/wordsDecoding",
+    "output": "/Volumes/fcerpe_phd/VBE_data/outputs/derivatives/bidspm-stats",
+    "preproc": "/Volumes/fcerpe_phd/VBE_data/outputs/derivatives/bidspm-preproc",
+    "raw": "/Volumes/fcerpe_phd/VBE_data/inputs/raw",
+    "rois": "/Volumes/fcerpe_phd/VBE_data/outputs/derivatives/cpp_spm-rois",
+    "root": "/Volumes/fcerpe_phd/VBE_data",
+    "stats": "/Volumes/fcerpe_phd/VBE_data/outputs/derivatives/bidspm-stats",
+    "roi": "/Volumes/fcerpe_phd/VBE_data/outputs/derivatives/bidspm-roi"
+  },
+  "dryRun": false,
+  "dummyScans": 0,
+  "funcVolToSelect": [],
+  "funcVoxelDims": [2.6,2.6,2.6],
+  "fwhm": {
+    "func": 6,
+    "contrast": 0
+  },
+  "glm": {
+    "QA": {
+      "do": false
+    },
+    "concatenateRuns": false,
+    "keepResiduals": false,
+    "maxNbVols": null,
+    "roibased": {
+      "do": false
+    },
+    "useDummyRegressor": false
+  },
+  "groupName": "all",
+  "groups": [
+    "experts",
+    "controls"
+  ],
+  "jobsDir": "/Volumes/fcerpe_phd/VBE_data/code/mvpa/../../outputs/derivatives/bidspm-stats/jobs/wordsDecoding",
+  "model": {
+    "designOnly": false,
+    "file": "/Volumes/fcerpe_phd/VBE_data/code/mvpa/../models/model-wordsDecoding_smdl.json",
+    "bm": {
+      "SPM": [],
+      "content": {
+        "Name": "wordsDecoding MVPA",
+        "BIDSModelVersion": "1.0.0",
+        "Description": "contrasts for the visbra dataset",
+        "Input": {
+          "task": ["wordsDecoding"]
+        },
+        "Nodes": [
+          {
+            "Level": "Run",
+            "Name": "mvpaGLM",
+            "GroupBy": [
+              "run",
+              "subject"
+            ],
+            "Transformations": {
+              "Description": "merge the different semantic categories of real words into one",
+              "Transformer": "cpp_spm",
+              "Instructions": {
+                "Name": "Replace",
+                "Input": "trial_type",
+                "Replace": [
+                  {
+                    "key": "frw_liv",
+                    "value": "frw"
+                  },
+                  {
+                    "key": "frw_nli",
+                    "value": "frw"
+                  },
+                  {
+                    "key": "frw_mix",
+                    "value": "frw"
+                  },
+                  {
+                    "key": "brw_liv",
+                    "value": "brw"
+                  },
+                  {
+                    "key": "brw_nli",
+                    "value": "brw"
+                  },
+                  {
+                    "key": "brw_mix",
+                    "value": "brw"
+                  }
+                ],
+                "Attribute": "value"
+              }
+            },
+            "Model": {
+              "X": [
+                "trial_type.frw",
+                "trial_type.fpw",
+                "trial_type.fnw",
+                "trial_type.ffs",
+                "trial_type.brw",
+                "trial_type.bpw",
+                "trial_type.bnw",
+                "trial_type.bfs",
+                "trial_type.target",
+                "trans_x",
+                "trans_y",
+                "trans_z",
+                "rot_x",
+                "rot_y",
+                "rot_z"
+              ],
+              "HRF": {
+                "Variables": [
+                  "trial_type.frw",
+                  "trial_type.fpw",
+                  "trial_type.fnw",
+                  "trial_type.ffs",
+                  "trial_type.brw",
+                  "trial_type.bpw",
+                  "trial_type.bnw",
+                  "trial_type.bfs"
+                ],
+                "Model": "spm"
+              },
+              "Type": "glm",
+              "Options": {
+                "HighPassFilterCutoffHz": 0.0039,
+                "Mask": {
+                  "suffix": ["mask"],
+                  "desc": ["brain"]
+                }
+              },
+              "Software": {
+                "SPM": {
+                  "SerialCorrelation": "AR(1)",
+                  "InclusiveMaskingThreshold": 0.8
+                },
+                "bidspm": {
+                  "Results": {
+                    "name": ["mvpaGLM"],
+                    "p": 0.05,
+                    "MC": "FWE",
+                    "png": true,
+                    "binary": true,
+                    "nidm": true,
+                    "montage": {
+                      "do": true,
+                      "orientation": "axial",
+                      "slices": [-20,-18,-16,-14,-12,-10,-8,-6,-4,-2,0],
+                      "background": {
+                        "suffix": "T1w",
+                        "desc": "preproc",
+                        "modality": "anat"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "DummyContrasts": {
+              "Test": "t",
+              "Contrasts": [
+                "trial_type.frw",
+                "trial_type.fpw",
+                "trial_type.fnw",
+                "trial_type.ffs",
+                "trial_type.brw",
+                "trial_type.bpw",
+                "trial_type.bnw",
+                "trial_type.bfs"
+              ]
+            }
+          },
+          {
+            "Level": "Subject",
+            "Name": "subject_level",
+            "GroupBy": [
+              "contrast",
+              "subject"
+            ],
+            "Model": {
+              "X": 1,
+              "Type": "glm"
+            },
+            "DummyContrasts": {
+              "Test": "t"
+            }
+          }
+        ]
+      },
+      "Name": "wordsDecoding MVPA",
+      "Description": "contrasts for the visbra dataset",
+      "BIDSModelVersion": "1.0.0",
+      "Input": {
+        "task": ["wordsDecoding"]
+      },
+      "Nodes": [
+        {
+          "Level": "Run",
+          "Name": "mvpaGLM",
+          "GroupBy": [
+            "run",
+            "subject"
+          ],
+          "Transformations": {
+            "Description": "merge the different semantic categories of real words into one",
+            "Transformer": "cpp_spm",
+            "Instructions": {
+              "Name": "Replace",
+              "Input": "trial_type",
+              "Replace": [
+                {
+                  "key": "frw_liv",
+                  "value": "frw"
+                },
+                {
+                  "key": "frw_nli",
+                  "value": "frw"
+                },
+                {
+                  "key": "frw_mix",
+                  "value": "frw"
+                },
+                {
+                  "key": "brw_liv",
+                  "value": "brw"
+                },
+                {
+                  "key": "brw_nli",
+                  "value": "brw"
+                },
+                {
+                  "key": "brw_mix",
+                  "value": "brw"
+                }
+              ],
+              "Attribute": "value"
+            }
+          },
+          "Model": {
+            "X": [
+              "trial_type.frw",
+              "trial_type.fpw",
+              "trial_type.fnw",
+              "trial_type.ffs",
+              "trial_type.brw",
+              "trial_type.bpw",
+              "trial_type.bnw",
+              "trial_type.bfs",
+              "trial_type.target",
+              "trans_x",
+              "trans_y",
+              "trans_z",
+              "rot_x",
+              "rot_y",
+              "rot_z"
+            ],
+            "HRF": {
+              "Variables": [
+                "trial_type.frw",
+                "trial_type.fpw",
+                "trial_type.fnw",
+                "trial_type.ffs",
+                "trial_type.brw",
+                "trial_type.bpw",
+                "trial_type.bnw",
+                "trial_type.bfs"
+              ],
+              "Model": "spm"
+            },
+            "Type": "glm",
+            "Options": {
+              "HighPassFilterCutoffHz": 0.0039,
+              "Mask": {
+                "suffix": ["mask"],
+                "desc": ["brain"]
+              }
+            },
+            "Software": {
+              "SPM": {
+                "SerialCorrelation": "AR(1)",
+                "InclusiveMaskingThreshold": 0.8
+              },
+              "bidspm": {
+                "Results": {
+                  "name": ["mvpaGLM"],
+                  "p": 0.05,
+                  "MC": "FWE",
+                  "png": true,
+                  "binary": true,
+                  "nidm": true,
+                  "montage": {
+                    "do": true,
+                    "orientation": "axial",
+                    "slices": [-20,-18,-16,-14,-12,-10,-8,-6,-4,-2,0],
+                    "background": {
+                      "suffix": "T1w",
+                      "desc": "preproc",
+                      "modality": "anat"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "DummyContrasts": {
+            "Test": "t",
+            "Contrasts": [
+              "trial_type.frw",
+              "trial_type.fpw",
+              "trial_type.fnw",
+              "trial_type.ffs",
+              "trial_type.brw",
+              "trial_type.bpw",
+              "trial_type.bnw",
+              "trial_type.bfs"
+            ]
+          }
+        },
+        {
+          "Level": "Subject",
+          "Name": "subject_level",
+          "GroupBy": [
+            "contrast",
+            "subject"
+          ],
+          "Model": {
+            "X": 1,
+            "Type": "glm"
+          },
+          "DummyContrasts": {
+            "Test": "t"
+          },
+          "parent": "mvpaGLM"
+        }
+      ],
+      "Edges": [
+        {
+          "Source": "mvpaGLM",
+          "Destination": "subject_level"
+        }
+      ],
+      "tolerant": true,
+      "verbose": true,
+      "dag_built": true
+    }
+  },
+  "msg": {
+    "color": ""
+  },
+  "node": "mvpaGLM",
+  "parallelize": {
+    "do": false,
+    "nbWorkers": 1,
+    "killOnExit": true
+  },
+  "pipeline": {
+    "isBms": false,
+    "name": "bidspm",
+    "type": "stats"
+  },
+  "query": {
+    "modality": [
+      "anat",
+      "func"
+    ]
+  },
+  "realign": {
+    "useUnwarp": true
+  },
+  "rename": {
+    "do": true,
+    "overwrite": true
+  },
+  "result": {
+    "Nodes": {
+      "nodeName": "",
+      "name": [""],
+      "useMask": false,
+      "MC": "FWE",
+      "p": 0.05,
+      "k": 0,
+      "png": true,
+      "csv": true,
+      "atlas": "Neuromorphometrics",
+      "threshSpm": false,
+      "binary": false,
+      "montage": {
+        "do": false,
+        "slices": [],
+        "orientation": "axial",
+        "background": "/Users/cerpelloni/spm12/canonical/avg152T1.nii"
+      },
+      "nidm": true
+    }
+  },
+  "roiMethod": "expansion",
+  "segment": {
+    "do": true,
+    "force": false,
+    "biasfwhm": 60,
+    "samplingDistance": 3
+  },
+  "skullstrip": {
+    "do": true,
+    "force": false,
+    "threshold": 0.75,
+    "mean": false
+  },
+  "space": ["IXI549Space"],
+  "stc": {
+    "referenceSlice": [],
+    "skip": false
+  },
+  "subGroups": {
+    "experts": [
+      "006",
+      "007",
+      "008",
+      "009",
+      "012",
+      "013"
+    ],
+    "controls": [
+      "010",
+      "011",
+      "018",
+      "019",
+      "020",
+      "021",
+      "022",
+      "023",
+      "024",
+      "026",
+      "027",
+      "028"
+    ]
+  },
+  "subjects": [
+    "006",
+    "007",
+    "008",
+    "009",
+    "010",
+    "011",
+    "012",
+    "013",
+    "018",
+    "019",
+    "020",
+    "021",
+    "022",
+    "023",
+    "024",
+    "026",
+    "027",
+    "028"
+  ],
+  "subsCondition": [
+    "006",
+    "007",
+    "008",
+    "009",
+    "010",
+    "011",
+    "012",
+    "013",
+    "018",
+    "019",
+    "020",
+    "021",
+    "022",
+    "023",
+    "024",
+    "026",
+    "027",
+    "028",
+    [1,3,5,7,9,11,2,4,6,8,10,12],
+    [2,4,6,8,10,12,1,3,5,7,9,11],
+    [1,3,5,7,9,11,2,4,6,8,10,12],
+    [2,4,6,8,10,12,1,3,5,7,9,11],
+    [1,3,5,7,9,11,2,4,6,8,10,12],
+    [2,4,6,8,10,12,1,3,5,7,9,11],
+    [1,3,5,7,9,11,2,4,6,8,10,12],
+    [2,4,6,8,10,12,1,3,5,7,9,11],
+    [1,3,5,7,9,11,2,4,6,8,10,12],
+    [2,4,6,8,10,12,1,3,5,7,9,11],
+    [1,3,5,7,9,11,2,4,6,8,10,12],
+    [2,4,6,8,10,12,1,3,5,7,9,11],
+    [2,4,6,8,10,12,1,3,5,7,9,11],
+    [1,3,5,7,9,11,2,4,6,8,10,12],
+    [2,4,6,8,10,12,1,3,5,7,9,11],
+    [2,4,6,8,10,12,1,3,5,7,9,11],
+    [1,3,5,7,9,11,2,4,6,8,10,12],
+    [1,3,5,7,9,11,2,4,6,8,10,12]
+  ],
+  "taskName": ["wordsDecoding"],
+  "tolerant": true,
+  "toolbox": {
+    "MACS": {
+      "model": {
+        "files": []
+      }
+    }
+  },
+  "useBidsSchema": false,
+  "useFieldmaps": true,
+  "verbosity": 2,
+  "zeropad": 2,
+  "results": {
+    "nodeName": "",
+    "name": [""],
+    "useMask": false,
+    "MC": "FWE",
+    "p": 0.05,
+    "k": 0,
+    "png": true,
+    "csv": true,
+    "atlas": "Neuromorphometrics",
+    "threshSpm": false,
+    "binary": false,
+    "montage": {
+      "do": false,
+      "slices": [],
+      "orientation": "axial",
+      "background": "/Users/cerpelloni/spm12/canonical/avg152T1.nii"
+    },
+    "nidm": true
+  }
+}

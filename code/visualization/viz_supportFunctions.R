@@ -162,7 +162,7 @@ plot_pairwise <- function(dataIn, statsIn, specs, area) {
     geom_point(data = dataIn, aes(x = reorder(decodingCondition, cluster),
                            y = accuracy,
                            colour = cluster),
-               position = position_jitter(w = 0.3, h = 0.01),
+               position = position_jitter(w = 0.3, h = 0.01, seed = NA),
                alpha = 0.3, na.rm = FALSE, legend = F) +
     
     # Chance-level
@@ -170,7 +170,7 @@ plot_pairwise <- function(dataIn, statsIn, specs, area) {
     
     # Style options
     theme_classic() +                                                              
-    ylim(0.2,1) +                                                                    
+    ylim(0.1,1) +                                                                    
     theme(axis.text.x = element_text(size = 12, family = "Avenir", color = "black", vjust = 1, hjust = 0), 
           axis.text.y = element_text(size = 12, family = "Avenir", color = "black"), 
           axis.ticks = element_blank(),
@@ -224,11 +224,11 @@ plot_pairwise_average <- function(dataIn, specs, area) {
                aes(x = cluster, 
                    y = mean_accu, 
                    colour = cluster),
-               position = position_jitter(w = 0.3, h = 0.01),
+               position = position_jitter(w = 0.3, h = 0.01, seed = NA),
                alpha = 0.3, na.rm = FALSE) +
     geom_hline(yintercept = 0.50, size = .25, linetype = "dashed") +                
     theme_classic() +                                                              
-    ylim(0.2,1) +                                                                    
+    ylim(0.1,1) +                                                                    
     theme(axis.text.x = element_text(size = 12, family = "Avenir", color = "black"), 
           axis.text.y = element_text(size = 12, family = "Avenir", color = "black"), 
           axis.ticks = element_blank(),
@@ -241,14 +241,14 @@ plot_pairwise_average <- function(dataIn, specs, area) {
                                 "Latin\nControls",
                                 "Braille\nExperts",
                                 "Braille\nControls")) +
-    labs(x = "Script x group", y = "Decoding accuracy (%)")      
+    labs(x = "Script x group", y = "Decoding accuracy")      
   
   
-  # if(area == 'lLO' || area == 'rLO') {
-  #   ggsave(savename, width = 1700, height = 1800, dpi = 500, units = "px")
-  # } else {
+  if(area == 'lLO' || area == 'rLO') {
+    ggsave(savename, width = 1850, height = 1800, dpi = 500, units = "px")
+  } else {
     ggsave(savename, width = 2200, height = 1800, dpi = 500, units = "px")
-  # }
+  }
 }
 
 
@@ -305,48 +305,52 @@ plot_cross <- function(dataIn, statsIn, specs, area) {
   savename_both <- paste("../../outputs/derivatives/figures/MVPA/", specs, "_plot-pairwise_direction-both.png", sep="")
   savename_all <- paste("../../outputs/derivatives/figures/MVPA/", specs, "_plot-pairwise_direction-all.png", sep="")
   
+  iterations <- c(1,2,3,4,5,6,7,8,9)
   
-  ## Plot: only average
-  ggplot(subset(statsIn, modality == "both"), aes(x = decodingCondition, y = mean_accuracy)) + 
-    scale_color_manual(name = "condtions",
-                       limits = c("both"),
-                       values = c("#8B70CA"),
-                       labels = c("average")) +
-    # Mean and SE bars
-    geom_pointrange(aes(x = decodingCondition, 
-                        y = mean_accuracy, 
-                        ymin = mean_accuracy - se_accuracy, 
-                        ymax = mean_accuracy + se_accuracy, 
-                        colour = modality),
-                    position = position_dodge(1), size = .75, linewidth = 1.7) +
-    # Individual data clouds 
-    geom_point(data = subset(dataIn, modality == "both"),
-               aes(x = reorder(decodingCondition, modality),
-                   y = accuracy,
-                   colour = modality),
-               position = position_jitter(w = 0.5, h = 0.2),
-               alpha = 0.5, na.rm = FALSE, 
-               legend = F) +
-    geom_hline(yintercept = 0.5, size = .25, linetype = "dashed") +            
-    theme_classic() +                                                          
-    ylim(0.2,1) +                                                                    
-    theme(axis.text.x = element_text(size = 12, family = "Avenir", color = "black"), 
-          axis.text.y = element_blank(), 
-          axis.ticks = element_blank(),
-          axis.title.x = element_text(size = 12, family = "Avenir", color = "black", vjust = 0), 
-          axis.title.y = element_blank(),
-          legend.position = "none") +
-    scale_x_discrete(limits=rev,                                                
-                     labels = c("RW\nPW", "RW\nNW", "RW\nFS", "PW\nNW", "PW\nFS", "NW\nFS")) +
-    labs(x = "Decoded pairs", y = "Decoding accuracy (%)")
+  for (it in iterations) {
   
-  # Save plot
-  if(area == 'lLO' || area == 'rLO') {
-    ggsave(savename_mean, width = 1600, height = 1800, dpi = 500, units = "px")
-  } else {
-    ggsave(savename_mean, width = 2200, height = 1800, dpi = 500, units = "px")
+    savename_mean <- paste("../../outputs/derivatives/figures/MVPA/", specs, "_plot-pairwise_direction-average_", it, ".png", sep="")
+    
+    ## Plot: only average
+    ggplot(subset(statsIn, modality == "both"), aes(x = decodingCondition, y = mean_accuracy)) + 
+      scale_color_manual(name = "condtions",
+                         limits = c("both"),
+                         values = c("#8B70CA"),
+                         labels = c("average")) +
+      # Mean and SE bars
+      geom_pointrange(aes(x = decodingCondition, 
+                          y = mean_accuracy, 
+                          ymin = mean_accuracy - se_accuracy, 
+                          ymax = mean_accuracy + se_accuracy, 
+                          colour = modality),
+                      position = position_dodge(1), size = .75, linewidth = 1.7) +
+      # Individual data clouds 
+      geom_point(data = subset(dataIn, modality == "both"),
+                 aes(x = reorder(decodingCondition, modality),
+                     y = accuracy,
+                     colour = modality),
+                 position = position_jitter(w = 0.35, h = 0.1),
+                 alpha = 0.5, na.rm = FALSE, legend = F) +
+      geom_hline(yintercept = 0.5, size = .25, linetype = "dashed") +            
+      theme_classic() +                                                          
+      ylim(0.1,1) +                                                                    
+      theme(axis.text.x = element_text(size = 12, family = "Avenir", color = "black"), 
+            axis.text.y = element_blank(), 
+            axis.ticks = element_blank(),
+            axis.title.x = element_text(size = 12, family = "Avenir", color = "black", vjust = 0), 
+            axis.title.y = element_blank(),
+            legend.position = "none") +
+      scale_x_discrete(limits=rev,                                                
+                       labels = c("RW\nPW", "RW\nNW", "RW\nFS", "PW\nNW", "PW\nFS", "NW\nFS")) +
+      labs(x = "Decoded pairs", y = "Decoding accuracy (%)")
+    
+    # Save plot
+    if(area == 'lLO' || area == 'rLO') {
+      ggsave(savename_mean, width = 1600, height = 1800, dpi = 500, units = "px")
+    } else {
+      ggsave(savename_mean, width = 2200, height = 1800, dpi = 500, units = "px")
+    }
   }
-
   
   ## Plot: both directions
   ggplot(subset(statsIn, modality != "both"), aes(x = decodingCondition, y = mean_accuracy)) + 
@@ -364,7 +368,7 @@ plot_cross <- function(dataIn, statsIn, specs, area) {
                position = position_jitter(w = 0.3, h = 0.01), alpha = 0.5, legend = F) +
     geom_hline(yintercept = 0.5, size = .25, linetype = "dashed") +            
     theme_classic() +                                                          
-    ylim(0.15,1) +                                                                    
+    ylim(0.1,1) +                                                                    
     theme(axis.text.x = element_text(size = 10), axis.title.x = element_text(size = 15),
           axis.text.y = element_text(size = 10), axis.title.y = element_text(size = 15),
           axis.ticks = element_blank()) +      
@@ -391,7 +395,7 @@ plot_cross <- function(dataIn, statsIn, specs, area) {
                position = position_jitter(w = 0.3, h = 0.01), alpha = 0.5, legend = F) +
     geom_hline(yintercept = 0.5, size = .25, linetype = "dashed") +            
     theme_classic() +                                                          
-    ylim(0.15,1) +                                                                    
+    ylim(0.1,1) +                                                                    
     theme(axis.text.x = element_text(size = 10), axis.title.x = element_text(size = 15),
           axis.text.y = element_text(size = 10), axis.title.y = element_text(size = 15),
           axis.ticks = element_blank()) +      
@@ -415,7 +419,7 @@ plot_cross_average <- function(dataIn, specs, area) {
     summarize(mean_accuracy = mean(mean_accu), sd_accuracy = sd(mean_accu), se_accuracy = sd(mean_accu)/sqrt(6), .groups = 'keep') 
   
   # Compose filenames and path to save figure
-  savename <- paste("../../outputs/derivatives/figures/MVPA/", specs, "_plot-pairwise-average_tweet.png", sep="")
+  savename <- paste("../../outputs/derivatives/figures/MVPA/", specs, "_plot-pairwise-average.png", sep="")
   
   ## Plot: only average
   ggplot(statsIn, aes(x = cluster, y = mean_accuracy)) + 
@@ -435,11 +439,11 @@ plot_cross_average <- function(dataIn, specs, area) {
                aes(x = cluster,
                    y = mean_accu,
                    colour = cluster),
-               position = position_jitter(w = 0.5, h = 0.2),
+               position = position_jitter(w = 0.3, h = 0),
                alpha = 0.5, na.rm = FALSE) +
     geom_hline(yintercept = 0.5, size = .25, linetype = "dashed") +            
     theme_classic() +                                                          
-    ylim(0.2,1) +                                                                    
+    ylim(0.1,1) +                                                                    
     theme(axis.text.x = element_text(size = 12, family = "Avenir", color = "black"), 
           axis.text.y = element_text(size = 12, family = "Avenir", color = "black"), 
           axis.ticks = element_blank(),
@@ -1046,9 +1050,9 @@ stats_WithinCross <- function(pairwise, cross, specs) {
 
 # Compose name with specs of decoding analysed
 # Creates first part of filename to be used in plots
-make_specs <- function(decoding, modality, group, space, area) {
+make_specs <- function(decoding, roi, modality, group, space, area) {
   
-  specs <- paste("decoding-",decoding,"_modality-",modality,"_group-",group,"_space-",space,
+  specs <- paste("decoding-",decoding,"_atlas-",roi,"_modality-",modality,"_group-",group,"_space-",space,
                  "_area-", area, sep="")
   
   misc_specs <- specs
@@ -1155,5 +1159,3 @@ compare_accuracies <- function(g1name, g1accu, g2name, g2accu, chance, pair) {
   
   
 }
-
-
