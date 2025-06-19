@@ -12,9 +12,9 @@
 
 # TO-DO
 # * make general plot function
-# * check scripts in this function for overlap with previous dataset cleanings
-# * give up and put scripts here, as much modular as possible
-# * save Chi2 as csv result ~
+# * check for overlap with previous dataset cleanings
+# * improve modularity
+# * save Chi2 as csv result 
 
 # Figures:
 # TBD
@@ -22,87 +22,256 @@
 # TBD
   
   
-# Pixel RDM
+# Low-level RDM
 # make matrices of pixel distance, from information for each stimulus
-stats_pixel_RDM <- function() {
+stats_pixel_RDMs <- function() {
   
-  # Load the tsv
-  data <- read.delim("../stats/reports/stimuli_pixel_information.tsv", header = TRUE, sep = "\t")
+  # Load the csv files 
+  br_number <- read.csv('../stats/reports/rdm_number_braille.csv', header = F)
+  fr_number <- read.csv('../stats/reports/rdm_number_french.csv', header = F)
+  br_position <- read.csv('../stats/reports/rdm_position_braille.csv', header = F)
+  fr_position <- read.csv('../stats/reports/rdm_position_french.csv', header = F)
   
-  # Ensure the pixels column is treated as a character vector
-  data$pixels <- as.character(data$pixels)
+  labels <- c('RW1', 'RW2', 'RW3', 'RW4', 'RW5', 'RW6', 'RW7', 'RW8', 'RW9', 'RW10', 'RW11', 'RW12',
+              'PW1', 'PW2', 'PW3', 'PW4', 'PW5', 'PW6', 'PW7', 'PW8', 'PW9', 'PW10', 'PW11', 'PW12', 
+              'NW1', 'NW2', 'NW3', 'NW4', 'NW5', 'NW6', 'NW7', 'NW8', 'NW9', 'NW10', 'NW11', 'NW12',
+              'FS1', 'FS2', 'FS3', 'FS4', 'FS5', 'FS6', 'FS7', 'FS8', 'FS9', 'FS10', 'FS11', 'FS12')
   
-  # Convert 'pixels' column from string to numeric vector
-  data$pixels <- lapply(data$pixels, function(x) as.numeric(strsplit(x, ",")[[1]]))
+  # Call plotting for each matrix
+  # Pure RDM, no outlines to cluster stimuli 
+  build_stimulus_RDM(br_number, labels, "#de3d03", "braille - number of white pixels", FALSE)
+  ggsave('../../outputs/derivatives/figures/RSA/rdm_number_braille_outlines-false.png', width = 1700, height = 1700, dpi = 300, units = "px")
   
-  # Check the structure of the data
-  str(data)
+  build_stimulus_RDM(fr_number, labels, "#0C8F5A", "french - number of white pixels", FALSE)
+  ggsave('../../outputs/derivatives/figures/RSA/rdm_number_french_outlines-false.png', width = 1700, height = 1700, dpi = 300, units = "px")
   
-  # Ensure the pixels column is in the correct format (numeric vectors)
-  pixels_matrix <- do.call(rbind, data$pixels)  # Combine the list of numeric vectors into a matrix
+  build_stimulus_RDM(br_position, labels, "#de3d03", "braille - overlap difference", FALSE)
+  ggsave('../../outputs/derivatives/figures/RSA/rdm_position_braille_outlines-false.png', width = 1700, height = 1700, dpi = 300, units = "px")
   
-  # Combine 'class' and 'stimulus' into a unique identifier for each pair
-  data$class_stimulus <- paste(data$class, data$stimulus, sep = "_")
+  build_stimulus_RDM(fr_position, labels, "#0C8F5A", "french - overlap difference", FALSE)
+  ggsave('../../outputs/derivatives/figures/RSA/rdm_position_french_outlines-false.png', width = 1700, height = 1700, dpi = 300, units = "px")
   
-  # Now create a unique combination of 'class' and 'stimulus'
-  unique_combinations <- unique(data$class_stimulus)
+  # With outlines
+  build_stimulus_RDM(br_number, labels, "#de3d03", "braille - number of white pixels", TRUE)
+  ggsave('../../outputs/derivatives/figures/RSA/rdm_number_braille_outlines-true.png', width = 1700, height = 1700, dpi = 300, units = "px")
   
-  # Initialize empty distance matrices
-  corr_matrix <- matrix(NA, nrow = length(unique_combinations), ncol = length(unique_combinations))
-  eucl_matrix <- matrix(NA, nrow = length(unique_combinations), ncol = length(unique_combinations))
+  build_stimulus_RDM(fr_number, labels, "#0C8F5A", "french - number of white pixels", TRUE)
+  ggsave('../../outputs/derivatives/figures/RSA/rdm_number_french_outlines-true.png', width = 1700, height = 1700, dpi = 300, units = "px")
   
-  rownames(distance_matrix) <- unique_combinations
-  colnames(distance_matrix) <- unique_combinations
+  build_stimulus_RDM(br_position, labels, "#de3d03", "braille - overlap difference", TRUE)
+  ggsave('../../outputs/derivatives/figures/RSA/rdm_position_braille_outlines-true.png', width = 1700, height = 1700, dpi = 300, units = "px")
+  
+  build_stimulus_RDM(fr_position, labels, "#0C8F5A", "french - overlap difference", TRUE)
+  ggsave('../../outputs/derivatives/figures/RSA/rdm_position_french_outlines-true.png', width = 1700, height = 1700, dpi = 300, units = "px")
   
   
-  ## 1 - correlation 
+  ## Average matrices per condition
+  br_num_average <- average_conditions(br_number)
+  fr_num_average <- average_conditions(fr_number)
+  br_pos_average <- average_conditions(br_position)
+  fr_pos_average <- average_conditions(fr_position)
   
-  # Calculate the distance matrix based on correlation for each combination of 'class' and 'stimulus'
-  for (i in 1:length(unique_combinations)) {
-    for (j in i:length(unique_combinations)) {
-      # Get the pixel vectors for the i-th and j-th combinations
-      i_pixels <- pixels_matrix[data$class_stimulus == unique_combinations[i], ]
-      j_pixels <- pixels_matrix[data$class_stimulus == unique_combinations[j], ]
-      
-      # Calculate correlation between the pixel vectors
-      if (length(i_pixels) > 0 & length(j_pixels) > 0) {
-        correlation <- cor(i_pixels, j_pixels)  # Correlation between pixel vectors
-        corr_matrix[i, j] <- 1 - correlation  # Convert correlation to distance
-        corr_matrix[j, i] <- corr_matrix[i, j]  # Symmetric distance matrix
-      }
-    }
-  }
+  labels <- c('RW', 'PW', 'NW', 'FS')
   
-  # View the resulting distance matrix
-  print(corr_matrix)
+  build_lowlevel_RDM(br_num_average, labels, "#de3d03", "braille - number of white pixels (average)")
+  ggsave('../../outputs/derivatives/figures/RSA/rdm_number_average_braille.png', width = 1700, height = 1700, dpi = 300, units = "px")
   
+  build_lowlevel_RDM(fr_num_average, labels, "#0C8F5A", "french - number of white pixels (average)")
+  ggsave('../../outputs/derivatives/figures/RSA/rdm_number_average_french.png', width = 1700, height = 1700, dpi = 300, units = "px")
+  
+  build_lowlevel_RDM(br_pos_average, labels, "#de3d03", "braille - overlap difference (average)")
+  ggsave('../../outputs/derivatives/figures/RSA/rdm_position_average_braille.png', width = 1700, height = 1700, dpi = 300, units = "px")
+  
+  build_lowlevel_RDM(fr_pos_average, labels, "#0C8F5A", "french - overlap difference (average)")
+  ggsave('../../outputs/derivatives/figures/RSA/rdm_position_average_french.png', width = 1700, height = 1700, dpi = 300, units = "px")
+  
+  ## Correlate visual models and linguistic one
+  mlang <- c(1,2,3,1,2,1)
+  mlatin <- c(fr_pos_average[2],fr_pos_average[3],fr_pos_average[4],fr_pos_average[7],fr_pos_average[8],fr_pos_average[12])
+  mbraille <- c(br_pos_average[2],br_pos_average[3],br_pos_average[4],br_pos_average[7],br_pos_average[8],br_pos_average[12])
 
-  ## Euclidean distance
+  # collect in a list
+  models <- list(array1 = mlang, array2 = mlatin, array3 = mbraille)
   
-  # Calculate the distance matrix based on Euclidean distance for each combination of 'class' and 'stimulus'
-  for (i in 1:length(unique_combinations)) {
-    for (j in i:length(unique_combinations)) {
-      # Get the pixel vectors for the i-th and j-th combinations
-      i_pixels <- data$pixels[[which(data$class_stimulus == unique_combinations[i])]]
-      j_pixels <- data$pixels[[which(data$class_stimulus == unique_combinations[j])]]
-      
-      # Compute the Euclidean distance (sum of squared differences)
-      euclidean_distance <- sqrt(sum((i_pixels - j_pixels)^2))
-      
-      # Store the distance in the matrix
-      eucl_matrix[i, j] <- euclidean_distance
-      eucl_matrix[j, i] <- euclidean_distance  # Symmetric distance matrix
-    }
+  # Get all pairwise combinations
+  combinations <- combn(names(models), 2, simplify = FALSE)
+  
+  # Compute correlations and p-values
+  results <- data.frame(Model1 = character(), Model2 = character(), Correlation = numeric(), P_value = numeric(), stringsAsFactors = FALSE)
+  
+  for (pair in combinations) {
+    test <- cor.test(models[[pair[1]]], models[[pair[2]]])
+    
+    results <- rbind(results, data.frame(
+      Model1 = pair[1],
+      Model2 = pair[2],
+      Correlation = test$estimate,
+      P_value = test$p.value
+    ))
   }
-  
-  # View the resulting distance matrix
-  print(eucl_matrix)
-  
-  # literal difference (-) of arrays?
-  
   
 }
+
+stats_strokes_rdm <- function() {
   
+  ### Individual number of strokes 
+  
+  br_strokes <- read.csv('../stats/reports/rdm_strokes_braille.csv', header = F)
+  fr_strokes <- read.csv('../stats/reports/rdm_strokes_french.csv', header = F)
+  
+  labels <- c('RW1', 'RW2', 'RW3', 'RW4', 'RW5', 'RW6', 'RW7', 'RW8', 'RW9', 'RW10', 'RW11', 'RW12',
+              'PW1', 'PW2', 'PW3', 'PW4', 'PW5', 'PW6', 'PW7', 'PW8', 'PW9', 'PW10', 'PW11', 'PW12', 
+              'NW1', 'NW2', 'NW3', 'NW4', 'NW5', 'NW6', 'NW7', 'NW8', 'NW9', 'NW10', 'NW11', 'NW12',
+              'FS1', 'FS2', 'FS3', 'FS4', 'FS5', 'FS6', 'FS7', 'FS8', 'FS9', 'FS10', 'FS11', 'FS12')
+  
+  build_stimulus_RDM(br_strokes, labels, "#de3d03", "braille - number of dots", FALSE)
+  ggsave('../../outputs/derivatives/figures/RSA/rdm_strokes_braille.png', width = 1700, height = 1700, dpi = 300, units = "px")
+  
+  build_stimulus_RDM(fr_strokes, labels, "#0C8F5A", "french - number of strokes", FALSE)
+  ggsave('../../outputs/derivatives/figures/RSA/rdm_strokes_french.png', width = 1700, height = 1700, dpi = 300, units = "px")
+  
+  ## Average matrices per condition
+  br_str_average <- average_conditions(br_strokes)
+  fr_str_average <- average_conditions(fr_strokes)
+  
+  labels <- c('RW', 'PW', 'NW', 'FS')
+  
+  build_lowlevel_RDM(br_str_average, labels, "#de3d03", "braille - number of dots (average)")
+  ggsave('../../outputs/derivatives/figures/RSA/rdm_strokes_average_braille.png', width = 1700, height = 1700, dpi = 300, units = "px")
+  
+  build_lowlevel_RDM(fr_str_average, labels, "#0C8F5A", "french - number of strokes (average)")
+  ggsave('../../outputs/derivatives/figures/RSA/rdm_strokes_average_french.png', width = 1700, height = 1700, dpi = 300, units = "px")
+  
+  ## Correlate visual models and linguistic one
+  mlang <- c(1,2,3,1,2,1)
+  mlatin <- c(fr_str_average[2],fr_str_average[3],fr_str_average[4],fr_str_average[7],fr_str_average[8],fr_str_average[12])
+  mbraille <- c(br_str_average[2],br_str_average[3],br_str_average[4],br_str_average[7],br_str_average[8],br_str_average[12])
+  
+  # collect in a list
+  models <- list(array1 = mlang, array2 = mlatin, array3 = mbraille)
+  
+  # Get all pairwise combinations
+  combinations <- combn(names(models), 2, simplify = FALSE)
+  
+  # Compute correlations and p-values
+  results <- data.frame(Model1 = character(), Model2 = character(), Correlation = numeric(), P_value = numeric(), stringsAsFactors = FALSE)
+  
+  for (pair in combinations) {
+    test <- cor.test(models[[pair[1]]], models[[pair[2]]])
+    
+    results <- rbind(results, data.frame(
+      Model1 = pair[1],
+      Model2 = pair[2],
+      Correlation = test$estimate,
+      P_value = test$p.value
+    ))
+  }
+
+  
+  ### Average number of strokes 
+  
+  br_avgstroke <- read.csv('../stats/reports/rdm_avgstroke_braille.csv', header = F)
+  fr_avgstroke <- read.csv('../stats/reports/rdm_avgstroke_french.csv', header = F)
+  
+  labels <- c('RW', 'PW', 'NW', 'FS')
+  
+  build_lowlevel_RDM(br_strokes, labels, "#de3d03", "braille - number of strokes (average)")
+  ggsave('../../outputs/derivatives/figures/RSA/rdm_average-stroke_braille.png', width = 1700, height = 1700, dpi = 300, units = "px")
+  
+  build_lowlevel_RDM(fr_strokes, labels, "#0C8F5A", "french - number of strokes (average)")
+  ggsave('../../outputs/derivatives/figures/RSA/rdm_average-stroke_french.png', width = 1700, height = 1700, dpi = 300, units = "px")
+
+  ## Correlate visual models and linguistic one
+  mlang <- c(1,2,3,1,2,1)
+  mStrLatin <- c(fr_strokes$V1[2],fr_strokes$V1[3],fr_strokes$V1[4],fr_strokes$V2[3],fr_strokes$V2[4],fr_strokes$V3[4])
+  mStrBraille <- c(br_strokes$V1[2],br_strokes$V1[3],br_strokes$V1[4],br_strokes$V2[3],br_strokes$V2[4],br_strokes$V3[4])
+  
+  # collect in a list
+  models <- list(array1 = mlang, array2 = mStrLatin, array3 = mStrBraille)
+  
+  # Get all pairwise combinations
+  combinations <- combn(names(models), 2, simplify = FALSE)
+  
+  # Compute correlations and p-values
+  avgresults <- data.frame(Model1 = character(), Model2 = character(), Correlation = numeric(), P_value = numeric(), stringsAsFactors = FALSE)
+  
+  for (pair in combinations) {
+    test <- cor.test(models[[pair[1]]], models[[pair[2]]])
+    
+    avgresults <- rbind(results, data.frame(
+      Model1 = pair[1],
+      Model2 = pair[2],
+      Correlation = test$estimate,
+      P_value = test$p.value
+    ))
+  }
+  
+}
+
+  
+# t-test to compare within-modality decoding in l-PosTemp and in VWFA
+stats_decoding_comparison <- function() {
+  
+  # Load and clean files 
+  vwfa <- dataset_import("pairwise", "within", "all", "IXI549Space", "expansion")
+  vwfa <- dataset_clean(vwfa)
+  vwfa <- vwfa %>% filter(mask == "VWFA")
+  
+  postemp <- dataset_import("pairwise", "within", "all", "IXI549Space", "language")
+  postemp <- dataset_clean(postemp)
+  
+  
+  # Compute averages 
+  vwfaAvg <- vwfa %>% group_by(subID, group, script, cluster) %>% 
+                      summarize(mean_accu = mean(accuracy), sd_accu = sd(accuracy), se_accu = sd(accuracy)/sqrt(6), .groups = 'keep') 
+  postempAvg <- postemp %>% group_by(subID, group, script, cluster) %>% 
+                            summarize(mean_accu = mean(accuracy), sd_accu = sd(accuracy), se_accu = sd(accuracy)/sqrt(6), .groups = 'keep') 
+  
+  
+  # Cluster the values for script and group 
+  vwfaEF <- vwfaAvg %>% filter(cluster == "french_experts")
+  vwfaEB <- vwfaAvg %>% filter(cluster == "braille_experts")
+  vwfaCF <- vwfaAvg %>% filter(cluster == "french_controls")
+  vwfaCB <- vwfaAvg %>% filter(cluster == "braille_controls")
+  
+  postempEF <- postempAvg %>% filter(cluster == "french_experts")
+  postempEB <- postempAvg %>% filter(cluster == "braille_experts")
+  postempCF <- postempAvg %>% filter(cluster == "french_controls")
+  postempCB <- postempAvg %>% filter(cluster == "braille_controls")
+  
+  
+  # Prepare table to store t-tests
+  tests_table <- data.table(g1name = character(), g1accuracy = numeric(), 
+                            g2name = character(), g2accuracy = numeric(), 
+                            ttest = numeric(), cohen = numeric(), df = numeric(), pvalUncorr = numeric())
+  
+  
+  # Get correlations 
+  result <- compare_accuracies(vwfaEF$cluster[1], vwfaEF$mean_accu, postempEF$cluster[1], postempEF$mean_accu, NA, FALSE)
+  tests_table <- rbind(tests_table, result)
+  
+  result <- compare_accuracies(vwfaEB$cluster[1], vwfaEB$mean_accu, postempEB$cluster[1], postempEB$mean_accu, NA, FALSE)
+  tests_table <- rbind(tests_table, result)
+  
+  result <- compare_accuracies(vwfaCF$cluster[1], vwfaCF$mean_accu, postempCF$cluster[1], postempCF$mean_accu, NA, FALSE)
+  tests_table <- rbind(tests_table, result)
+  
+  result <- compare_accuracies(vwfaCB$cluster[1], vwfaCB$mean_accu, postempCB$cluster[1], postempCB$mean_accu, NA, FALSE)
+  tests_table <- rbind(tests_table, result)
+  
+  
+  # Adjust p-values for false detection rate
+  tests_table$pvalFDR <- p.adjust(tests_table$pvalUncorr, "fdr")
+  
+  # Save table in outputs
+  savename <- "../../outputs/derivatives/results/MVPA/decoding-pairwise_modality-within_group-all_space-IXI549Space_areas-vwfa-postemp_stats-ttest-comparison.csv"
+  
+  tests_table <- data.frame(lapply(tests_table, as.character), stringsAsFactors = F)
+  write.csv(tests_table, "", row.names = F)
+  
+}
+
+
 # Braille sensitivity
 # differences in univariate activation for BW and SBW (localizer stimuli) 
 # in different areas
@@ -311,8 +480,79 @@ stats_brailleSensitivity <- function() {
 }  
 
 # Behavioural analysis
-# responses to MVPA task - correct answers, missed targets, false detections
-# stats_behaviouralResponses()
+# responses to MVPA task - correct answers, missed targets, false detections.
+# Plots only control group and percentage of correct answers, as asked by reviewer
+stats_behaviouralResponses <- function() {
+
+  # Load report
+  beh <- read.csv("../stats/reports/behaviouralReport.txt")
+  
+  ### Manipulate the matrix to get something readable by ggplot
+  beh <- as.data.frame(beh)
+  
+  # Correct names of stimuli for real words
+  beh <- beh %>% mutate(trial_type = ifelse(trial_type %in% c("frw_liv", "frw_nli", "frw_mix"), "frw", trial_type))
+  beh <- beh %>% mutate(trial_type = ifelse(trial_type %in% c("brw_liv", "brw_nli", "brw_mix"), "brw", trial_type))
+  
+  # add cluster information
+  beh <- beh %>% mutate(cluster = ifelse(subject %in% c("sub-006", "sub-009", "sub-012"), 
+                                         ifelse(trial_type %in% c("frw","fpw","fnw","ffs"), 
+                                                "french_expert", "braille_expert"),
+                                         ifelse(trial_type %in% c("frw","fpw","fnw","ffs"), 
+                                                "french_control", "braille_control")))
+  # specify group in trial_type
+  beh$trial_type <- ifelse(beh$subject %in% c("sub-006","sub-009","sub-012"),
+                           paste(beh$trial_type,"_exp",sep=""), 
+                           paste(beh$trial_type,"_ctr",sep=""))
+  
+  
+  ## delete experts, keep only controls 
+  beh <- beh %>% filter(!cluster %in% c("french_expert","braille_expert"))
+  
+  # response as facotr, to be counted
+  beh$response_type <- as.factor(beh$response_type)
+  
+  # subejcts as number, to ease printing in barplot
+  beh$subject <- as.numeric(gsub('sub-0*', '', beh$subject))
+  
+  # summarize behavioural responses: for each sub / stim, how many correct, miss, fp?
+  counts_beh <- beh %>% group_by(subject, trial_type, cluster, .drop = FALSE) %>% count(response_type)
+  
+  stats_beh <- counts_beh %>% group_by(trial_type, response_type, cluster) %>% summarize(mean_resp = mean(n), .groups = 'keep')  
+  
+  ## Calculate responses as percentage of correct answers (ignore False Positives)
+  result <- counts_beh %>% filter(response_type %in% c("correct", "miss")) %>%
+    group_by(subject, trial_type, cluster) %>% 
+    summarise(correct_count = sum(n[response_type == "correct"]),
+              miss_count = sum(n[response_type == "miss"]),
+              percentage = (correct_count / (correct_count + miss_count)) * 100
+    ) %>%
+    select(subject, trial_type, cluster, percentage)
+  
+  # Filter out sub-009, partial data
+  percentages_beh <- result %>% filter(subject != "9")
+  
+  stats_percent <- percentages_beh %>% group_by(trial_type, cluster) %>% 
+    summarize(mean_resp = mean(percentage), sd_resp = sd(percentage), .groups = 'keep')  
+  
+  ## Plot percentage of correct answers 
+  ggplot(data = stats_percent, aes(x = trial_type, y = mean_resp)) + 
+    geom_col(aes(x = trial_type, y = mean_resp, fill = cluster), alpha = 0.7) +
+    scale_fill_manual(name = "Script",
+                      values = c("#da5F49", "#699ae5"),
+                      labels = c("braille alphabet", "latin alphabet"),
+                      aesthetics = c("colour", "fill")) +
+    geom_point(data = percentages_beh, aes(x = trial_type, y = percentage, colour = cluster),
+               position = position_jitter(w = 0.3, h = 0.01, seed = NA), alpha = 0.8, na.rm = FALSE) +
+    geom_errorbar(aes(ymin = mean_resp - sd_resp, ymax = mean_resp + sd_resp), width = 0, color = "black") +
+    theme_classic() +                                                              
+    theme(axis.ticks = element_blank()) +
+    scale_x_discrete(limits=rev, labels = c("FRW","FPW","FNW","FFS","BRW","BPW","BNW","BFS")) +
+    labs(x = "Stimulus condition", y = "Average correct responses (%)", title = "Percentage correct answers")      
+  
+  ggsave("../../outputs/derivatives/figures/beh-percentages.png", width = 3000, height = 1800, dpi = 320, units = "px")
+  
+}
   
   
 # Comparison between groups in terms of Braille activation
@@ -484,6 +724,30 @@ make_legend_circle <- function(tab, lim, lab, val, savename) {
 }
   
 
-
+# Function to extract 4x4 blocks and calculate their averages
+average_conditions <- function(mat) {
+  
+  # Set fixed block size
+  size <- 12
+  n <- nrow(mat)
+  
+  # Initiate matrix with averages
+  averages <- matrix(NA, nrow = n / size, ncol = n / size)
+  
+  # Extract blocks and compute averages
+  row_idx <- 1
+  for (i in seq(1, n, by = size)) {
+    col_idx <- 1
+    for (j in seq(1, n, by = size)) {
+      block <- mat[i:(i + size - 1), j:(j + size - 1)]
+      averages[row_idx, col_idx] <- (sum(block[,1]) + sum(block[,2]) + sum(block[,3]) + sum(block[,4]) + 
+                                     sum(block[,5]) + sum(block[,6]) + sum(block[,7]) + sum(block[,8]) + 
+                                     sum(block[,9]) + sum(block[,10]) + sum(block[,11]) + sum(block[,12]))/144
+      col_idx <- col_idx + 1
+    }
+    row_idx <- row_idx + 1
+  }
+  return(averages)
+}
 
 

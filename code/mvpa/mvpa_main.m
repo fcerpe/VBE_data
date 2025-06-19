@@ -84,7 +84,7 @@ opt = mvpa_option_earlyVisual();
 [visualPairwiseWithin, visualMulticlass, visualPairwiseCross, opt] = mvpa_decoding(opt);
 
 
-%% VWFA decoding using neurosynth ROI
+%% JOCN REVIEW: VWFA decoding using neurosynth ROI
 % Perform within-script and cross-script decoding in VWFA, not using the localizer ROI 
 % but the one extracted from neurosynth, under reviewers' suggestions. 
 % Subject pool and areas from roi_neurosynth
@@ -96,3 +96,15 @@ opt.roiMethod = 'neurosynth';
 % Perform all the decodings in one function
 % (you know the gist by now)
 [nsPairwiseWithin, ~, nsPairwiseCross, opt] = mvpa_decoding(opt);
+
+
+%% JOCN REVIEW: RSA with linguistic and visual models
+% Perform RSA using partical correlation with visual models
+
+% Load options and overwrite method
+opt = mvpa_option_languageROIs();
+
+% Perform only the essential aspects of the analyses
+mvpa_stats_RSA_partial(opt);
+
+uy∑

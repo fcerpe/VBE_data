@@ -57,9 +57,11 @@ nbIterations = 100000;
 %               2: EXP-BR
 %               3: CTR-FR
 %               4: CTR-BR
-%               5: MODEL
+%               5: MODEL - Linguistic
+%               6: MODEL - Low-level position FR
+%               7: MODEL - Low-level position BR
 rdmComparisons = [1 2; 1 3; 1 4; 2 3; 2 4; 3 4];
-modelComparisons = [1 5; 2 5; 3 5; 4 5];
+modelComparisons = [1 5; 2 5; 3 5; 4 5; 1 6; 3 6; 2 7; 4 7];
 
 % Set output structure
 statsResults = struct('mask', [], ...
@@ -87,7 +89,7 @@ for iRoi = 1:numel(roiList)
     for iRCom = 1:length(rdmComparisons)
 
         % Follow the steps by Mattioni et al. 2020 (eLife)
-        
+
         % Extract Group1 information
         [g1name, g1script, g1subs] = getGroupInformation(res, thisROI, opt, rdmComparisons, iRCom, 1);
 
@@ -105,7 +107,7 @@ for iRoi = 1:numel(roiList)
         subG1corrs = zeros(numel(g1subs), 1);
 
         for iSG1 = 1:numel(g1subs)
-            
+
             % Tell the user
             fprintf(['- computing correlation between sub-', g1subs{iSG1}, ' and the mean of ', g2name, '\n']);
 
@@ -116,7 +118,7 @@ for iRoi = 1:numel(roiList)
             % Adjust group's subject pool: 
             % if it's the same group, mean of G2 should not include this sub
             otherSubs = isSameGroup(g1name, g2name, g1subs{iSG1}, g2subs);
-            
+
             % Find values for group RDM
             groupRDM = computeGroupRDM(res, otherSubs, opt.mvpa.map4D{1}, thisROI, g2script);
 
@@ -125,7 +127,7 @@ for iRoi = 1:numel(roiList)
             % - G2 group RDM (minus G1 sub if from the same group)
             thisCorr = corr([subRDM' groupRDM]);
             subG1corrs(iSG1) = thisCorr(2);
-         
+
             % Randomize order of RDM elements and compute 10k correlations,
             % to create null distribution 
             for iIter = 1:nbIterations
@@ -196,7 +198,7 @@ for iRoi = 1:numel(roiList)
         % - result is a 1 x [NbIterations] distribution
         nullG1 = mean(subG1sample);
         nullG2 = mean(subG2sample);
-        
+
         nullDistribution = mean([nullG1; nullG2]);
 
 
@@ -231,11 +233,15 @@ for iRoi = 1:numel(roiList)
 
         % Extract model information, could use the proper function but we
         % only need one static value
-        modelName = 'MODEL';
+        switch modelComparisons(iMCom,2)
+            case 5, modelName = 'MLANG';
+            case 6, modelName = 'MLATIN';
+            case 7, modelName = 'MBRAILLE';
+        end
 
         % Correlate each Group1 subejct's RDM with Model RDM
-        fprintf(['\n\nComputing correlations between ', g1name, ' and model\n\n']);
-        fprintf(['Correlations of ', g1name,' subejcts RDMs with the model RDM\n']);
+        fprintf(['\n\nComputing correlations between ', g1name, ' and ', modelName, '\n\n']);
+        fprintf(['Correlations of ', g1name,' subejcts RDMs with the ', modelName, ' RDM\n']);
 
         % Pre-allocate space in which to save subject's bootstraps
         subG1sample = zeros(numel(g1subs), nbIterations);
@@ -243,6 +249,7 @@ for iRoi = 1:numel(roiList)
         % Pre-allocate space in which to save subject's actual accuracy
         subG1corrs = zeros(numel(g1subs), 1);
 
+        % Correlate every subject with the model
         for iS = 1:numel(g1subs)
             
             % Tell the user
@@ -252,16 +259,19 @@ for iRoi = 1:numel(roiList)
             % subject, area, image, script
             subRDM = computeSubjectRDM(res, g1subs{iS}, opt.mvpa.map4D{1}, thisROI, g1script);
 
+            % To implement the latest models, need the full square
+            % subRDM = squareRDM(subRDM);
+
             % Adjust group's subject pool: 
             % if it's the same group, mean of G2 should not include this sub
             
             % Find values for group RDM
-            modelRDM = computeModelRDM();
+            modelRDM = computeModelRDM(modelComparisons(iMCom,2));
 
             % Compute correlation between
             % - G1 subject's RDM 
             % - model RDM
-            subG1corrs(iS) = corr(subRDM', modelRDM, 'Tail', 'right');
+            subG1corrs(iS) = corr(subRDM, modelRDM, 'Tail', 'right');
          
             % Randomize order of RDM elements and compute 10k correlations,
             % to create null distribution 
@@ -326,12 +336,12 @@ end
 savefileMat = fullfile(opt.dir.cosmo, ...
                        ['decoding-', opt.decodingCondition,'_modality-',opt.decodingModality, ...
                         '_group-',opt.groupName, '_space-',opt.space{1},'_rois-', opt.roiMethod, ...
-                        '_stats-rsa.mat']);
+                        '_stats-rsa_reviews.mat']);
 
 savefileCsv = fullfile(opt.dir.cosmo, ...
                        ['decoding-', opt.decodingCondition,'_modality-',opt.decodingModality, ...
                         '_group-',opt.groupName, '_space-',opt.space{1},'_rois-', opt.roiMethod, ...
-                        '_stats-rsa.csv']);
+                        '_stats-rsa_reviews.csv']);
 
 % Save as .mat 
 save(savefileMat, 'statsResults');
@@ -398,7 +408,7 @@ if ~strcmp(sub, 'none')
                                   strcmp({results.mask}, roi) & ...
                                   startsWith({results.decodingCondition}, script);
     
-    rdm = [results(whichAccuracies).accuracy];
+    rdm = [results(whichAccuracies).accuracy]';
 else
     % use model RDM
     rdm = [1/3, 2/3, 3/3, 1/3, 2/3, 1/3];
@@ -425,10 +435,22 @@ end
 
 % Compute model RDM
 % Only linguistic model implemented, just one RDM possible
-function rdm = computeModelRDM()
+function rdm = computeModelRDM(modelNumber)
 
-% use model RDM
-rdm = [1/3, 2/3, 3/3, 1/3, 2/3, 1/3]';
+switch modelNumber
+
+    case 5 % MODEL - Linguistic
+        rdm = [1, 2, 3, 1, 2, 1]';
+        % Full rdm = [NaN; 1; 2; 3; 1; NaN; 1; 2; 2; 1; NaN; 1; 3; 2; 1; NaN];
+
+    case 6 % MODEL - Low-level French script
+        rdm = [6168.611; 7043.542; 7523.750; 7188.403; 7679.264; 8084.153];
+        % Full rdm = [5751.097; 6168.611; 7043.542; 7523.750; 6168.611; 5798.486; 7188.403; 7679.264; 7043.542; 7188.403; 7164.333; 8084.153; 7523.750; 7679.264; 8084.153; 7315.708];
+
+    case 7 % MODEL - Low-level Braille script
+        rdm = [2786.889; 3227.736; 6882.014; 3254.986; 6896.833; 6868.958];
+        % Full rdm = [2688.389; 2786.889; 3227.736; 6882.014; 2786.889; 2560.806; 3254.986; 6896.833; 3227.736; 3254.986; 2957.347; 6868.958; 6882.014; 6896.833; 6868.958; 6133.806];
+end
 
 end
 
@@ -456,10 +478,10 @@ permGrpRDM = datasample(groupRDM, length(groupRDM), 'Replace', false);
 
 if model
     % Correlate RDMs - model
-    corrOut = corr(permSubRDM', permGrpRDM, 'Tail', 'right');
+    corrOut = corr(permSubRDM, permGrpRDM, 'Tail', 'right');
 else
     % Correlate RDMs 
-    permCorr = corr([permSubRDM' permGrpRDM]);
+    permCorr = corr([permSubRDM permGrpRDM]);
     corrOut = permCorr(2);
 end
 
@@ -468,5 +490,13 @@ end
 end
 
 
+% Convert the array of accuracies into a 4-by-4 matrix, to be correlated 
+% with the model
+function rdm = squareRDM(rdmIn)
 
+rdm = [NaN;      rdmIn(1); rdmIn(2); rdmIn(3);
+       rdmIn(1); NaN;      rdmIn(4); rdmIn(5);
+       rdmIn(2); rdmIn(4); NaN;      rdmIn(6);
+       rdmIn(3); rdmIn(5); rdmIn(6); NaN];
 
+end

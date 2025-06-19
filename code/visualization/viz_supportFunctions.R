@@ -34,8 +34,6 @@ library("ez")
 library("lsr")
 library("effsize")
 
-
-
 # TO DO
 # - add MDS plot
 # - add univariate plot
@@ -1113,6 +1111,122 @@ build_RDM <- function(statsIn, thisColor, thisCluster) {
                                   barheight = 20, 
                                   ticks = FALSE)) + 
     coord_fixed()
+}
+
+
+build_lowlevel_RDM <- function(dataIn, labels, colour, title) {
+  
+  # Assign labels to the matrix 
+  rownames(dataIn) <- labels
+  colnames(dataIn) <- labels
+  
+  # Create a grid of labels in the desired order
+  matrix <- expand.grid(X = labels, Y = rev(labels))
+  
+  # Fill the 'distance' column with the corresponding values from the RDM
+  for(i in 1:nrow(matrix)) {
+    matrix$distance[i] <- dataIn[as.character(matrix$X[i]), as.character(matrix$Y[i])]
+  }
+  
+  # Plot with selected color 
+  ggplot(matrix, aes(X, Y, fill = distance)) + 
+    geom_tile() + 
+    theme_classic() +
+    annotate("rect", xmin = 0.5, xmax = 4.5, ymin = 0.5, ymax = 4.5,
+             alpha = 0,
+             color = colour,
+             linewidth = .5,
+             linetype = 1) + 
+    theme(axis.title.x = element_blank(), 
+          axis.ticks.x = element_blank(), 
+          axis.line.x = element_blank(), 
+          axis.text.x = element_blank(), 
+          axis.title.y = element_blank(), 
+          axis.ticks.y = element_blank(),
+          axis.line.y = element_blank(),
+          axis.text.y = element_blank(),
+          legend.position = "none",
+          plot.margin = unit(c(0,0,0,0), "pt")) + 
+    scale_fill_gradient2(high = colour, 
+                         na.value = "white") + 
+    guides(fill = guide_colourbar(barwidth = 0.7, 
+                                  barheight = 20, 
+                                  ticks = FALSE)) + 
+    coord_fixed()
+}
+
+
+build_stimulus_RDM <- function(dataIn, labels, colour, title, outlines) {
+    
+  # Assign labels to the matrix 
+  rownames(dataIn) <- labels
+  colnames(dataIn) <- labels
+  
+  # Create a grid of labels in the desired order
+  matrix <- expand.grid(X = labels, Y = rev(labels))
+  
+  # Fill the 'distance' column with the corresponding values from the RDM
+  for(i in 1:nrow(matrix)) {
+    matrix$distance[i] <- dataIn[as.character(matrix$X[i]), as.character(matrix$Y[i])]
+  }
+  
+  if (outlines) {
+    
+    # Plot with selected color 
+    ggplot(matrix, aes(X, Y, fill = distance)) + 
+      geom_tile() + 
+      theme_classic() +
+      annotate("rect", xmin = 0.5, xmax = 48.5, ymin = 0.5, ymax = 48.5,
+               alpha = 0, color = colour, linewidth = .5, linetype = 1) + 
+      
+      annotate("rect", xmin = 0.5, xmax = 12.5, ymin = 0.5, ymax = 12.5,
+               alpha = 0, color = colour, linewidth = .5, linetype = 1) +
+      annotate("rect", xmin = 12.5, xmax = 24.5, ymin = 0.5, ymax = 12.5,
+               alpha = 0, color = colour, linewidth = .5, linetype = 1) +
+      annotate("rect", xmin = 24.5, xmax = 36.5, ymin = 0.5, ymax = 12.5,
+               alpha = 0, color = colour, linewidth = .5, linetype = 1) +
+      annotate("rect", xmin = 0.5, xmax = 12.5, ymin = 12.5, ymax = 24.5,
+               alpha = 0, color = colour, linewidth = .5, linetype = 1) +
+      annotate("rect", xmin = 12.5, xmax = 24.5, ymin = 12.5, ymax = 24.5,
+               alpha = 0, color = colour, linewidth = .5, linetype = 1) +
+      annotate("rect", xmin = 0.5, xmax = 12.5, ymin = 24.5, ymax = 36.5,
+               alpha = 0, color = colour, linewidth = .5, linetype = 1) +
+      
+      theme(axis.title.x = element_blank(), 
+            axis.ticks.x = element_blank(), 
+            axis.line.x = element_blank(), 
+            axis.text.x = element_text(angle = 90),
+            axis.title.y = element_blank(), 
+            axis.ticks.y = element_blank(),
+            axis.line.y = element_blank()) + 
+      scale_fill_gradient2(high = colour, 
+                           na.value = "white") + 
+      guides(fill = guide_colourbar(ticks = FALSE)) + 
+      coord_fixed()  
+  
+    # No outlines  
+  } else {
+    
+    # Plot with selected color 
+    ggplot(matrix, aes(X, Y, fill = distance)) + 
+      geom_tile() + 
+      theme_classic() +
+      annotate("rect", xmin = 0.5, xmax = 48.5, ymin = 0.5, ymax = 48.5,
+               alpha = 0, color = colour, linewidth = .5, linetype = 1) + 
+      theme(axis.title.x = element_blank(), 
+            axis.ticks.x = element_blank(), 
+            axis.line.x = element_blank(), 
+            axis.text.x = element_text(angle = 90),
+            axis.title.y = element_blank(), 
+            axis.ticks.y = element_blank(),
+            axis.line.y = element_blank(),
+            plot.margin = unit(c(0, 0, 0, 0), "pt")) + 
+      scale_fill_gradient2(high = colour, 
+                           na.value = "white") + 
+      guides(fill = guide_colourbar(ticks = FALSE)) + 
+      coord_fixed()  
+  }
+
 }
 
 
